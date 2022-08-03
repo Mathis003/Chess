@@ -28,18 +28,19 @@ class Pieces:
                 if move not in dico_board[key][3]: # If the move isn't in the list
                     dico_board[key][3].append(move) # Add the move to the list
 
-
-    def move_piece(self, piece, current_tile, new_tile):
+    def remove_from_list_piece_eaten(self, new_tile):
         # Remove the object (in the pieces list) from the old tile
-        if dico_board[new_tile][0] != None:
-            if dico_board[new_tile][2] == 1:
-                LIST_WHITE_PIECES.remove(dico_board[new_tile][0])
-            else:
-                LIST_BLACK_PIECES.remove(dico_board[new_tile][0])
-        print(new_tile)
+        if dico_board[new_tile][0] != None: # If the tile contain a piece (= isn't empty)
+            if dico_board[new_tile][2] == 1: # If the piece is white
+                LIST_WHITE_PIECES.remove(dico_board[new_tile][0]) # Remove the white piece from the list of pieces
+            else: # If the piece is black
+                LIST_BLACK_PIECES.remove(dico_board[new_tile][0]) # Remove the black piece from the list of pieces
+
+    def update_dico_pieces(self, piece, new_tile):
         # Update the position of the piece_image on the board (which tile)
         dico_pieces[piece][0] = new_tile
 
+    def update_dico_board(self, piece, current_tile, new_tile):
         # Update dico_moves_pieces to change the object's tile to the new tile
         dico_board[new_tile][0] = piece
         dico_board[current_tile][0] = None
@@ -56,9 +57,12 @@ class Pieces:
         dico_board[new_tile][3] = []
         dico_board[current_tile][3] = []
 
+    def move_piece(self, piece, current_tile, new_tile):
+        self.remove_from_list_piece_eaten(new_tile)
+        self.update_dico_pieces(piece, new_tile)
+        self.update_dico_board(piece, current_tile, new_tile)
         # Update position of the piece on the board => piece.tile = new_tile
         piece.tile = new_tile
-
         try: # If the piece is a pawn
             if piece.first_move == True: # If the pawn is on its first move
                 piece.first_move = False # The pawn is not on its first move anymore
