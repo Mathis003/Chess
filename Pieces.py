@@ -1,39 +1,63 @@
 from Assets import dico_board, dico_pieces, LIST_BLACK_PIECES, LIST_WHITE_PIECES
+from all_pieces import King
 
 class Pieces:
 
-    def __init__(self):
-        pass
-
-    def get_key(self, val):
-        """ Search the key who match with the value 'val' in dico_board """
-        for key, value in dico_board.items():
-            if val == value[0]:
-                return key
+    def __init__(self, king_white, king_black):
+        self.king_white = king_white
+        self.king_black = king_black
+        self.dico_list_pieces = {1 : LIST_WHITE_PIECES, -1 : LIST_BLACK_PIECES}
 
     def possible_moves(self):
-        for piece in LIST_BLACK_PIECES: # Loop for each black piece
-            key = self.get_key(piece) # find the right key
-            list_new_moves_possible = piece.update_possible_moves() # Update possible moves of the piece
-            # Move is in fact a tile which the piece can move on
-            for move in list_new_moves_possible: # Loop for each move
-                if move not in dico_board[key][3]: # If the move isn't in the list
-                    dico_board[key][3].append(move) # Add the move to the list
+        for i in range(-1,2,2): # If i = -1 or i = 1
+            for piece in self.dico_list_pieces[i]: # Loop for each piece
+                tile_piece = dico_pieces[piece][0]
+                list_new_moves_possible = piece.update_possible_moves() # Update possible moves of the piece
+                # Move is in fact a tile which the piece can move on
+                for move in list_new_moves_possible: # Loop for each move
+                    if move not in dico_board[tile_piece][3]: # If the move isn't in the list
+                        dico_board[tile_piece][3].append(move) # Add the move to the list
 
-        for piece in LIST_WHITE_PIECES: # Loop for each white piece
-            key = self.get_key(piece) # find the right key
-            list_new_moves_possible = piece.update_possible_moves() # Update possible moves of the piece
-            # Move is in fact a tile which the piece can move on
-            for move in list_new_moves_possible: # Loop for each move
-                if move not in dico_board[key][3]: # If the move isn't in the list
-                    dico_board[key][3].append(move) # Add the move to the list
+    def check_square(self):
+        """
+        Detect if a piece put the king in Chess
+        => If Chess, return the piece who put the king in Chess.
+        """
+        tile_king_white = self.king_white.tile
+        tile_king_black = self.king_black.tile
+        for i in range(-1,2,2): # If i = -1 or i = 1
+            for piece in self.dico_list_pieces[i]:
+                tile_piece = dico_pieces[piece][0]
+                all_possible_moves_piece = dico_board[tile_piece][3]
+                for move_tile in all_possible_moves_piece:
+                    if i == 1:
+                        if tuple(move_tile) == tile_king_white:
+                            return piece
+                    if i == -1:
+                        if tuple(move_tile) == tile_king_black:
+                            return piece
+        return None
+
+    def Chess_Mod_update_possibles_move(self, king_chess, piece_put_in_chess):
+        """Update all the possible move if the king is in Chess.
+        color_king_in_chess = 1 if white / -1 if black"""
+        for piece in self.dico_list_pieces[- king_chess.opponent_color]:
+            tile_piece = dico_pieces[piece][0]
+            all_possible_moves_piece = dico_board[tile_piece][3]
+            for move_tile in all_possible_moves_piece:
+                # Check with a simulation if the piece can protect the king by moving => If not, remove the move_tile !
+                dico_board[move_tile][3] = 1
+                new_list_possible_moves_piece = piece_put_in_chess.update_possible_moves()
+                if list(king_chess.tile) in new_list_possible_moves_piece:
+                    dico_board[tile_piece][3].remove(move_tile)
+                dico_board[move_tile][3] = 0
 
     def remove_from_list_piece_eaten(self, new_tile):
         # Remove the object (in the pieces list) from the old tile
         if dico_board[new_tile][0] != None: # If the tile contain a piece (= isn't empty)
             if dico_board[new_tile][2] == 1: # If the piece is white
                 LIST_WHITE_PIECES.remove(dico_board[new_tile][0]) # Remove the white piece from the list of pieces
-            else: # If the piece is black
+            elif dico_board[new_tile][2] == -1: # If the piece is black
                 LIST_BLACK_PIECES.remove(dico_board[new_tile][0]) # Remove the black piece from the list of pieces
 
     def update_dico_pieces(self, piece, new_tile):

@@ -1,13 +1,13 @@
 from Pieces import Pieces
 from Board import Board
-from Assets import screen, dico_board, pygame
+from all_pieces import King
+from Assets import screen, dico_board, pygame, king_white, king_black
 from Configs import *
 import time
 
 # Initialize classes
 board = Board(screen)
-pieces = Pieces()
-
+pieces = Pieces(king_white, king_black)
 pygame.init()
 
 class Game:
@@ -37,19 +37,22 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN: # If the mouse is clicked
                     pos_mouse = pygame.mouse.get_pos()  # Get the mouse position (x, y)
                     # Update the dico_mouse correctly
-                    if self.dico_mouse["click_before_playing"] == False:
-                        tile = (pos_mouse[1] // SQUARE, pos_mouse[0] // SQUARE)
+                    if self.dico_mouse["click_before_playing"] == False: # If the player click to play (to have the possibility)
+                        tile = (pos_mouse[1] // SQUARE, pos_mouse[0] // SQUARE) # current tile
                         if dico_board[tile][3] != []:  # If the pressed piece can move
-                            start = time.time()
+                            start = time.time() # Timer on
+                            # Update dico_mouse
                             self.dico_mouse["click_before_playing"] = True
                             self.dico_mouse["click_after_playing"] = False
-                    else:
+                    else: # If the player click to move
+                        # Update dico_mouse
                         self.dico_mouse["click_before_playing"] = False
                         self.dico_mouse["click_after_playing"] = True
 
+            # Update the board
             self.board.draw_board()
-            self.board.draw_pieces()
             self.pieces.possible_moves()
+            self.board.draw_pieces()
 
 
             # Deal with mouse's clicks and update pieces's positions,...
@@ -85,8 +88,12 @@ class Game:
                 save_tile = True
                 if [pos_mouse[1] // SQUARE, pos_mouse[0] // SQUARE] in dico_board[tile][3]:  # If the player clicked to play
                     new_tile = (pos_mouse[1] // SQUARE, pos_mouse[0] // SQUARE)
-                    if dico_board[new_tile][2] in [0, - dico_board[tile][2]]:
-                        self.pieces.move_piece(dico_board[tile][0], tile, new_tile)
+                    if type(dico_board[tile][0]) == type(king_white): # If the piece is the king (type of king) => black or white
+                        if dico_board[new_tile][2] in [0, - dico_board[tile][2] / 2]:
+                            self.pieces.move_piece(dico_board[tile][0], tile, new_tile)
+                    else : # If the piece is not the king
+                        if dico_board[new_tile][2] in [0, - dico_board[tile][2]]:
+                            self.pieces.move_piece(dico_board[tile][0], tile, new_tile)
                     self.dico_mouse["click_after_playing"] = False
             pygame.display.update()
 
