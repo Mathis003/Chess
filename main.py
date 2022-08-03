@@ -20,6 +20,7 @@ class Game:
 
         # All variables
         self.running = True
+        self.ChessMod = False
         self.dico_mouse = {"click_before_playing" : False, "click_after_playing" : False}
 
     def run(self):
@@ -51,7 +52,17 @@ class Game:
 
             # Update the board
             self.board.draw_board()
-            self.pieces.possible_moves()
+            if not self.ChessMod:
+                self.pieces.possible_moves()
+            piece_put_in_chess = self.pieces.CheckSquare()
+            print(piece_put_in_chess)
+            if piece_put_in_chess != None:
+                self.ChessMod = True
+                if piece_put_in_chess.color == 1:
+                    king_chess = king_black
+                else:
+                    king_chess = king_white
+                self.pieces.ChessMod_update_possibles_move(king_chess, piece_put_in_chess)
             self.board.draw_pieces()
 
 
