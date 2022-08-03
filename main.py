@@ -1,10 +1,12 @@
-from Assets import *
 from Pieces import Pieces
 from Board import Board
+from Assets import screen, dico_board, pygame
+from Configs import *
 import time
 
+# Initialize classes
 board = Board(screen)
-pieces = Pieces(screen, board, black_king_rect, [0,0], 1, first_move=0)
+pieces = Pieces()
 
 pygame.init()
 
@@ -14,9 +16,9 @@ class Game:
         # All classes
         self.screen = screen
         self.board = board
-        # Pieces (general class)
         self.pieces = pieces
 
+        # All variables
         self.running = True
         self.dico_mouse = {"click_before_playing" : False, "click_after_playing" : False}
 
@@ -24,7 +26,7 @@ class Game:
         tile = None
         pos_mouse = [0, 0]
         save_tile = True
-        while self.running:
+        while self.running: # Main loop
 
             # Events
             for event in pygame.event.get():
@@ -48,7 +50,6 @@ class Game:
             self.board.draw_board()
             self.board.draw_pieces()
             self.pieces.possible_moves()
-            print(self.dico_mouse["click_after_playing"])
 
 
             # Deal with mouse's clicks and update pieces's positions,...
@@ -84,14 +85,12 @@ class Game:
                 save_tile = True
                 if [pos_mouse[1] // SQUARE, pos_mouse[0] // SQUARE] in dico_board[tile][3]:  # If the player clicked to play
                     new_tile = (pos_mouse[1] // SQUARE, pos_mouse[0] // SQUARE)
-                    print(new_tile)
                     if dico_board[new_tile][2] in [0, - dico_board[tile][2]]:
-                        print(dico_board[tile][0])
                         self.pieces.move_piece(dico_board[tile][0], tile, new_tile)
                     self.dico_mouse["click_after_playing"] = False
             pygame.display.update()
 
 
-if __name__ == '__main__':
-    game = Game(screen, board, pieces)
+if __name__ == '__main__': # If the program is run directly, not imported
+    game = Game(screen, board, pieces) # Create a new game
     game.run() # Run the game

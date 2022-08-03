@@ -1,35 +1,32 @@
-from Assets import dico_board, LIST_BLACK_PIECES, LIST_WHITE_PIECES
-from Configs import *
+from Assets import dico_board, dico_pieces, LIST_BLACK_PIECES, LIST_WHITE_PIECES
 
 class Pieces:
 
-    def __init__(self, screen, board, rect, tile, opponent_color, first_move=0):
-        self.screen = screen
-        self.board = board
-        self.rect = rect # Rectangle of the piece
-        self.tile = tile # The tile of the piece
-        self.opponent_color = opponent_color # - 1 for white, 1 for black
-        self.first_move = first_move
+    def __init__(self):
+        pass
 
-    def get_key(self, dico_board, val):
+    def get_key(self, val):
+        """ Search the key who match with the value 'val' in dico_board """
         for key, value in dico_board.items():
             if val == value[0]:
                 return key
 
     def possible_moves(self):
-        for piece in LIST_BLACK_PIECES:
-            key = self.get_key(dico_board, piece)
-            list_new_moves_possible = piece.update_possible_moves()
-            for move in list_new_moves_possible:
-                if move not in dico_board[key][3]:
-                    dico_board[key][3].append(move)
+        for piece in LIST_BLACK_PIECES: # Loop for each black piece
+            key = self.get_key(piece) # find the right key
+            list_new_moves_possible = piece.update_possible_moves() # Update possible moves of the piece
+            # Move is in fact a tile which the piece can move on
+            for move in list_new_moves_possible: # Loop for each move
+                if move not in dico_board[key][3]: # If the move isn't in the list
+                    dico_board[key][3].append(move) # Add the move to the list
 
-        for piece in LIST_WHITE_PIECES:
-            key = self.get_key(dico_board, piece)
-            list_new_moves_possible = piece.update_possible_moves()
-            for move in list_new_moves_possible:
-                if move not in dico_board[key][3]:
-                    dico_board[key][3].append(move)
+        for piece in LIST_WHITE_PIECES: # Loop for each white piece
+            key = self.get_key(piece) # find the right key
+            list_new_moves_possible = piece.update_possible_moves() # Update possible moves of the piece
+            # Move is in fact a tile which the piece can move on
+            for move in list_new_moves_possible: # Loop for each move
+                if move not in dico_board[key][3]: # If the move isn't in the list
+                    dico_board[key][3].append(move) # Add the move to the list
 
 
     def move_piece(self, piece, current_tile, new_tile):
@@ -39,6 +36,10 @@ class Pieces:
                 LIST_WHITE_PIECES.remove(dico_board[new_tile][0])
             else:
                 LIST_BLACK_PIECES.remove(dico_board[new_tile][0])
+        print(new_tile)
+        # Update the position of the piece_image on the board (which tile)
+        dico_pieces[piece][0] = new_tile
+
         # Update dico_moves_pieces to change the object's tile to the new tile
         dico_board[new_tile][0] = piece
         dico_board[current_tile][0] = None

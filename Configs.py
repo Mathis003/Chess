@@ -1,4 +1,5 @@
 """ALL THE CONSTANT CONFIGS"""
+
 # Size of a tile in pixels
 SQUARE = 100
 # Number of rows and columns in the board
