@@ -8,12 +8,42 @@ class Pieces:
         self.king_black = king_black
         self.dico_list_pieces = {1 : LIST_WHITE_PIECES, -1 : LIST_BLACK_PIECES}
 
+    def regroup_all_possibe_move(self, color_number):
+        """ Regroup all the possible move of all the pieces of the color_number."""
+        list_all_moves = []
+        for piece in self.dico_list_pieces[color_number]:
+            possible_move = piece.update_possible_moves()
+            for move in possible_move:
+                list_all_moves.append(move)
+        return list_all_moves
+
+    def CheckOwnChess(self, color_number, chess_tile):
+        """Return if the move put the king in Chess."""
+        list_all_moves = self.regroup_all_possibe_move(color_number)
+        if chess_tile in list_all_moves:
+            return True
+        return False
+
+######### CheckOwnChess in possible_move doesn't work !!!! #########
+######### CheckOwnChess in possible_move doesn't work !!!! #########
+######### CheckOwnChess in possible_move doesn't work !!!! #########
+######### CheckOwnChess in possible_move doesn't work !!!! #########
+
     def possible_moves(self, piece_moved, initial_tile, last_tile_moved):
+
+        #color_opponent = - piece_moved.color
+        #if piece_moved.color == 1:
+         #   king_tile = self.king_white.tile
+        #if piece_moved.color == -1:
+         #   king_tile = self.king_black.tile
+
+        # Update the possible moves of the piece_moved
         list_new_moves_possible = piece_moved.update_possible_moves()
         tile_piece = dico_pieces[piece_moved][0]
         dico_board[tile_piece][3] = []  # Reset the list of possible moves of the piece
         # Move is in fact a tile which the piece can move on
         for move in list_new_moves_possible:  # Loop for each move
+            #if not self.CheckOwnChess(color_opponent, king_tile):
             dico_board[tile_piece][3].append(move)  # Add the move to the list
 
         for i in range(-1,2,2): # If i = -1 or i = 1
@@ -24,6 +54,7 @@ class Pieces:
                     dico_board[tile_piece][3] = []  # Reset the list of possible moves of the piece
                     # Move is in fact a tile which the piece can move on
                     for move in list_new_moves_possible:  # Loop for each move
+                        #if not self.CheckOwnChess(color_opponent, king_tile):
                         dico_board[tile_piece][3].append(move)  # Add the move to the list
                 else:
                     if last_tile_moved in dico_board[tile_piece][3] or initial_tile in dico_board[tile_piece][3]: # If the piece can move to the last_tile_moved or to the initial_tile
@@ -31,7 +62,9 @@ class Pieces:
                         dico_board[tile_piece][3] = [] # Reset the list of possible moves of the piece
                         # Move is in fact a tile which the piece can move on
                         for move in list_new_moves_possible: # Loop for each move
+                            #if not self.CheckOwnChess(color_opponent, king_tile):
                             dico_board[tile_piece][3].append(move) # Add the move to the list
+
 
     def Promotion_Pawn(self, piece, new_tile):
         """ If the piece is a Pawn and move to the last line, the pawn must be promoted to a Queen => Return True."""
@@ -71,6 +104,7 @@ class Pieces:
             tile_king = self.king_black.tile
         if piece_moved.color == -1:
             tile_king = self.king_white.tile
+
         tile_piece_moved =  dico_pieces[piece_moved][0]
         if tile_king in dico_board[tile_piece_moved][3]:
             return True

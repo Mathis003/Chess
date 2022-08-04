@@ -237,8 +237,7 @@ class Queen:
                         list_possible_moves.append(
                             list(new_tile))  # Add the tile to the possible moves
                     elif dico_board[new_tile][2] == - self.color:  # If the tile is empty or an opponent piece
-                        list_possible_moves.append(
-                            list(new_tile))  # Add the tile to the possible moves
+                        list_possible_moves.append(list(new_tile))  # Add the tile to the possible moves
                         enter_left_down = False
                     elif dico_board[new_tile][
                         2] == self.color:  # If the tile is an ally piece
@@ -252,8 +251,7 @@ class Queen:
                         list_possible_moves.append(
                             [self.tile[0] + i, self.tile[1] - i])  # Add the tile to the possible moves
                     elif dico_board[(self.tile[0] + i, self.tile[1] - i)][2] == - self.color:  # If the tile is empty or an opponent piece
-                        list_possible_moves.append(
-                            [self.tile[0] + i, self.tile[1] - i])  # Add the tile to the possible moves
+                        list_possible_moves.append([self.tile[0] + i, self.tile[1] - i])  # Add the tile to the possible moves
                         enter_right_up = False
                     elif dico_board[(self.tile[0] + i, self.tile[1] - i)][
                         2] == self.color:  # If the tile is an ally piece

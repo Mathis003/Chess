@@ -100,7 +100,7 @@ def create_dico_board():
     dico_board = {(0, 0): [rook_black_1, black_rook_image, -1, []],
                   (0, 1): [knight_black_1, black_knight_image, -1, [[2, 0], [2, 2]]],
                   (0, 2): [bishop_black_1, black_bishop_image, -1, []],
-                  (0, 3): [queen_black, black_queen_image, -1, []], (0, 4): [king_black, black_king_image, -2, []],
+                  (0, 3): [queen_black, black_queen_image, -1, []], (0, 4): [king_black, black_king_image, -1, []],
                   (0, 5): [bishop_black_2, black_bishop_image, -1, []],
                   (0, 6): [knight_black_2, black_knight_image, -1, [[2, 5], [2, 7]]],
                   (0, 7): [rook_black_2, black_rook_image, -1, []],
@@ -122,7 +122,7 @@ def create_dico_board():
                   (6, 6): [pawn_white_7, white_pawn_image, 1, [[5, 6], [4, 6]]], (6, 7): [pawn_white_8, white_pawn_image, 1, [[5, 7], [4, 7]]],
                   (7, 0): [rook_white_1, white_rook_image, 1, []], (7, 1): [knight_white_1, white_knight_image, 1, [[5, 0], [5, 2]]],
                   (7, 2): [bishop_white_1, white_bishop_image, 1, []], (7, 3): [queen_white, white_queen_image, 1, []],
-                  (7, 4): [king_white, white_king_image, 2, []], (7, 5): [bishop_white_2, white_bishop_image, 1, []],
+                  (7, 4): [king_white, white_king_image, 1, []], (7, 5): [bishop_white_2, white_bishop_image, 1, []],
                   (7, 6): [knight_white_2, white_knight_image, 1, [[5, 5], [5, 7]]], (7, 7): [rook_white_2, white_rook_image, 1, []]}
 
     # Return the dictionary

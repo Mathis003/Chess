@@ -79,7 +79,6 @@ class Game:
 
             if not self.mouse_pressed and self.enter: # If the mouse is not pressed anymore
                 self.enter_mouse_pressed = False
-                #dico_board[self.player_tile_clicked][1] = save_image_tile_clicked
                 self.enter = False
                 self.end_pressed = True
 
@@ -88,9 +87,9 @@ class Game:
                 final_pos_mouse = pygame.mouse.get_pos() # Get the final mouse position of the click (x, y)
                 self.player_tile_moved = (final_pos_mouse[1] // SQUARE, final_pos_mouse[0] // SQUARE) # Tile moved
                 if list(self.player_tile_moved) in dico_board[self.player_tile_clicked][3]:
-                    piece_moved = dico_board[self.player_tile_moved][0]
                     if self.pieces.Promotion_Pawn(dico_board[self.player_tile_clicked][0], self.player_tile_moved):
                         self.pieces.PromotePawn_into_Queen(dico_board[self.player_tile_clicked][0], self.player_tile_moved)
+                        piece_moved = dico_board[self.player_tile_moved][0]
 
                     else:
                         if dico_board[self.player_tile_moved][2] in [0, - dico_board[self.player_tile_clicked][2]]:
@@ -101,8 +100,8 @@ class Game:
                     self.list_color_case[1] = self.player_tile_moved
                     self.color_case_waiting = tile_clicked
                     self.pieces.possible_moves(piece_moved, self.player_tile_clicked, self.player_tile_moved)  # Update the movement of the pieces on which there are changes about their possibilities of moves
-
                     if self.pieces.CheckChess(piece_moved):  # If the piece put the opponent king in check
+                        print("Check")
                         self.pieces.ChessMod_update_possibles_move(piece_moved)  # Reupdate correctly the possibility of the pieces to move and protect the king
                         if self.pieces.Check_Checkmate(piece_moved):  # If the king is in checkmate
                             print("END GAME")  # End the game
