@@ -29,10 +29,11 @@ class Pawn:
 
 class King:
 
-    def __init__(self, rect, tile, color):
+    def __init__(self, rect, tile, color, first_move):
         self.rect = rect  # Rect of the piece's image
         self.tile = tile  # Tile where the pieces is
         self.color = color  # 1 if white, -1 if black
+        self.first_move = first_move # Usefull in pieces.possible_move()
 
     def update_possible_moves(self):
         from Assets import dico_board
@@ -50,10 +51,11 @@ class King:
 
 class Knight:
 
-    def __init__(self, rect, tile, color):
+    def __init__(self, rect, tile, color, first_move):
         self.rect = rect  # Rect of the piece's image
         self.tile = tile  # Tile where the pieces is
         self.color = color  # 1 if white, -1 if black
+        self.first_move = first_move  # Usefull in pieces.possible_move()
 
     def update_possible_moves(self):
         from Assets import dico_board
@@ -75,11 +77,11 @@ class Knight:
 
 class Rook:
 
-    def __init__(self, rect, tile, color):
+    def __init__(self, rect, tile, color, first_move):
         self.rect = rect  # Rect of the piece's image
         self.tile = tile  # Tile where the pieces is
         self.color = color  # 1 if white, -1 if black
-        self.first_move = True # For the 'Rook' (special stroke)
+        self.first_move = first_move # Usefull in pieces.possible_move()
 
     def update_possible_moves(self):
         from Assets import dico_board
@@ -136,10 +138,11 @@ class Rook:
 
 class Bishop:
 
-    def __init__(self, rect, tile, color):
+    def __init__(self, rect, tile, color, first_move):
         self.rect = rect  # Rect of the piece's image
         self.tile = tile  # Tile where the pieces is
         self.color = color  # 1 if white, -1 if black  # -1 if white, 1 if black
+        self.first_move = first_move  # Usefull in pieces.possible_move()
 
     def update_possible_moves(self):
         from Assets import dico_board
@@ -199,10 +202,11 @@ class Bishop:
 
 class Queen:
 
-    def __init__(self, rect, tile, color):
+    def __init__(self, rect, tile, color, first_move):
         self.rect = rect  # Rect of the piece's image
         self.tile = tile  # Tile where the pieces is
         self.color = color  # 1 if white, -1 if black
+        self.first_move = first_move  # Usefull in pieces.possible_move()
 
     def update_possible_moves(self):
         from Assets import dico_board
@@ -215,30 +219,28 @@ class Queen:
         for i in range(1, ROW):
             try:
                 if enter_left_up:
-                    if dico_board[(self.tile[0] - i, self.tile[1] - i)][
-                        2] == 0:  # If the tile is empty or an opponent piece
-                        list_possible_moves.append(
-                            [self.tile[0] - i, self.tile[1] - i])  # Add the tile to the possible moves
-                    elif dico_board[(self.tile[0] - i, self.tile[1] - i)][2] == - self.color:  # If the tile is empty or an opponent piece
-                        list_possible_moves.append(
-                            [self.tile[0] - i, self.tile[1] - i])  # Add the tile to the possible moves
+                    new_tile = (self.tile[0] - i, self.tile[1] - i)
+                    if dico_board[new_tile][2] == 0:  # If the tile is empty
+                        list_possible_moves.append(list(new_tile))  # Add the tile to the possible moves
+                    elif dico_board[new_tile][2] == - self.color:  # If the tile is empty or an opponent piece
+                        list_possible_moves.append(list(new_tile))  # Add the tile to the possible moves
                         enter_left_up = False
-                    elif dico_board[(self.tile[0] - i, self.tile[1] - i)][
-                        2] == self.color:  # If the tile is an ally piece
+                    elif dico_board[new_tile][2] == self.color:  # If the tile is an ally piece
                         enter_left_up = False
             except:
                 enter_left_up = False  # Deal with the out of range error
             try:
                 if enter_left_down:
-                    if dico_board[(self.tile[0] - i, self.tile[1] + i)][
+                    new_tile = (self.tile[0] - i, self.tile[1] + i)
+                    if dico_board[new_tile][
                         2] == 0:  # If the tile is empty or an opponent piece
                         list_possible_moves.append(
-                            [self.tile[0] - i, self.tile[1] + i])  # Add the tile to the possible moves
-                    elif dico_board[(self.tile[0] - i, self.tile[1] + i)][2] == - self.color:  # If the tile is empty or an opponent piece
+                            list(new_tile))  # Add the tile to the possible moves
+                    elif dico_board[new_tile][2] == - self.color:  # If the tile is empty or an opponent piece
                         list_possible_moves.append(
-                            [self.tile[0] - i, self.tile[1] + i])  # Add the tile to the possible moves
+                            list(new_tile))  # Add the tile to the possible moves
                         enter_left_down = False
-                    elif dico_board[(self.tile[0] - i, self.tile[1] + i)][
+                    elif dico_board[new_tile][
                         2] == self.color:  # If the tile is an ally piece
                         enter_left_down = False
             except:
