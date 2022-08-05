@@ -210,12 +210,49 @@ class Pieces:
         dico_board[new_tile][3] = []
         dico_board[current_tile][3] = []
 
+# ERREUR DANS LE CODAGE DE MOVE PIECE POUR LE STROKE "EN PASSANT"!!
     def move_piece(self, piece, current_tile, new_tile):
-        self.remove_from_list_piece_eaten(new_tile)
-        self.update_dico_pieces(piece, new_tile)
-        self.update_dico_board(piece, current_tile, new_tile)
+        if type(piece) == type(Pawn(pygame.Rect(50, 50, 50, 50), [6, 0], 1, True)) and dico_board[new_tile][2] == 0:
+            if new_tile == (current_tile[0] - piece.color, current_tile[1] + 1) or new_tile == (current_tile[0] - piece.color, current_tile[1] - 1):
+                # Stroke "En Passant"
+
+                #dico_pieces[piece][0] = new_tile
+                del dico_pieces[dico_board[(new_tile[0] + piece.color, new_tile[1])]]
+                # Update dico_moves_pieces to change the object's tile to the new tile
+                dico_board[new_tile][0] = piece
+                dico_board[current_tile][0] = None
+                dico_board[(new_tile[0] + piece.color, new_tile[1])][0] = None
+
+                # Update dico_pieces_images_on_board to change the piece's image on the board
+                dico_board[new_tile][1] = dico_board[current_tile][1]
+                dico_board[current_tile][1] = None
+                dico_board[(new_tile[0] + piece.color, new_tile[1])][1] = None
+
+                # Update dico_board to change the letter of the piece on the board
+                dico_board[new_tile][2] = dico_board[current_tile][2]
+                dico_board[current_tile][2] = 0
+                dico_board[(new_tile[0] + piece.color, new_tile[1])][2] = 0
+
+                # Reset the list of possible moves of the piece => it will be updated again in the next turn
+                dico_board[new_tile][3] = []
+                dico_board[current_tile][3] = []
+                dico_board[(new_tile[0] + piece.color, new_tile[1])][3] = []
+
+                self.remove_from_list_piece_eaten((new_tile[0] + piece.color, new_tile[1]))
+
+        else:
+            self.remove_from_list_piece_eaten(new_tile)
+            self.update_dico_pieces(piece, new_tile)
+            self.update_dico_board(piece, current_tile, new_tile)
+
         # Update position of the piece on the board => piece.tile = new_tile
         piece.tile = list(new_tile)
 
-        if piece.first_move == True: # If the pawn is on its first move
+        if type(piece) == type(Pawn(pygame.Rect(50,50,50,50), [6, 0], 1, True)):
+            if piece.first_move:
+                piece.just_moved = True
+            else:
+                piece.just_moved = False
+
+        if piece.first_move: # If the pawn is on its first move
             piece.first_move = False # The pawn is not on its first move anymore

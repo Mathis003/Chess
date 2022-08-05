@@ -6,6 +6,7 @@ class Pawn:
         self.tile = tile # Tile where the pieces is
         self.color = color  # 1 if white, -1 if black
         self.first_move = first_move # Special variable for Pawn pieces
+        self.just_moved = False # Special variable for Pawn pieces
 
     def update_possible_moves(self):
         """ Update the possible moves of the pawn """
@@ -24,6 +25,21 @@ class Pawn:
                     list_possible_moves.append([self.tile[0] - self.color, self.tile[1] + i]) # Add the tile to the possible moves
             except:
                 pass # Deal with the out of range error
+
+        # Special Stroke ! ("En Passant")
+        right_tile = (self.tile[0], self.tile[1] + 1)
+        try:
+            if type(dico_board[right_tile][0]) == type(self) and dico_board[right_tile][0].just_moved:
+                list_possible_moves.append([self.tile[0] - self.color, self.tile[1] + 1])
+        except:
+            pass # Deal with the out of range error
+
+        left_tile = (self.tile[0], self.tile[1] - 1)
+        try:
+            if type(dico_board[left_tile][0]) == type(self) and dico_board[left_tile][0].just_moved:
+                list_possible_moves.append([self.tile[0] - self.color, self.tile[1] - 1])
+        except:
+            pass # Deal with the out of range error
 
         return list_possible_moves
 

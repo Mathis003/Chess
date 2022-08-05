@@ -96,6 +96,7 @@ class Game:
                 self.end_pressed = False
                 final_pos_mouse = pygame.mouse.get_pos() # Get the final mouse position of the click (x, y)
                 self.player_tile_moved = (final_pos_mouse[1] // SQUARE, final_pos_mouse[0] // SQUARE) # Tile moved
+                print(dico_board[self.player_tile_clicked])
                 if list(self.player_tile_moved) in dico_board[self.player_tile_clicked][3]:
                     if self.pieces.Promotion_Pawn(dico_board[self.player_tile_clicked][0], self.player_tile_moved):
                         self.pieces.PromotePawn_into_Queen(dico_board[self.player_tile_clicked][0], self.player_tile_moved)
