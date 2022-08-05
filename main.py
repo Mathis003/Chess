@@ -48,15 +48,26 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN: # If the mouse is clicked
                     initial_pos_mouse = pygame.mouse.get_pos()  # Get the initial mouse position of the click (x, y)
                     tile_clicked = (initial_pos_mouse[1] // SQUARE, initial_pos_mouse[0] // SQUARE)  # Tile clicked
-                    if dico_board[tile_clicked][0] != None: # If the tile clicked isn't empty
-                        self.enter = True
-                        self.player_tile_clicked = tile_clicked # Update the player_tile_clicked
 
-                        self.list_color_case[0] = tile_clicked
+                    if self.dico_turn["turn_white"]:
+                        if dico_board[tile_clicked][0] != None: # If the tile clicked isn't empty
+                            if dico_board[tile_clicked][0].color == 1: # If the tile clicked is a white piece
+                                self.enter = True
+                                self.player_tile_clicked = tile_clicked # Update the player_tile_clicked
+                                self.list_color_case[0] = tile_clicked
+                                save_image_tile_clicked = dico_board[self.player_tile_clicked][1] # Save the image of the tile clicked
+                                self.enter_mouse_pressed = True
+                                dico_pieces[dico_board[self.player_tile_clicked][0]][1] = None # Update the image of the piece and replace it by None
 
-                        save_image_tile_clicked = dico_board[self.player_tile_clicked][1] # Save the image of the tile clicked
-                        self.enter_mouse_pressed = True
-                        dico_pieces[dico_board[self.player_tile_clicked][0]][1] = None # Update the image of the piece and replace it by None
+                    if self.dico_turn["turn_black"]:
+                        if dico_board[tile_clicked][0] != None:  # If the tile clicked isn't empty
+                            if dico_board[tile_clicked][0].color == -1:  # If the tile clicked is a white piece
+                                self.enter = True
+                                self.player_tile_clicked = tile_clicked  # Update the player_tile_clicked
+                                self.list_color_case[0] = tile_clicked
+                                save_image_tile_clicked = dico_board[self.player_tile_clicked][1]  # Save the image of the tile clicked
+                                self.enter_mouse_pressed = True
+                                dico_pieces[dico_board[self.player_tile_clicked][0]][1] = None  # Update the image of the piece and replace it by None
 
 
             self.mouse_pressed = pygame.mouse.get_pressed()[0]
@@ -90,12 +101,26 @@ class Game:
                     if self.pieces.Promotion_Pawn(dico_board[self.player_tile_clicked][0], self.player_tile_moved):
                         self.pieces.PromotePawn_into_Queen(dico_board[self.player_tile_clicked][0], self.player_tile_moved)
                         piece_moved = dico_board[self.player_tile_moved][0]
+                        # Update dico_turn
+                        if self.dico_turn["turn_white"]:
+                            self.dico_turn["turn_white"] = False
+                            self.dico_turn["turn_black"] = True
+                        else:
+                            self.dico_turn["turn_white"] = True
+                            self.dico_turn["turn_black"] = False
 
                     else:
                         if dico_board[self.player_tile_moved][2] in [0, - dico_board[self.player_tile_clicked][2]]:
                             self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked, self.player_tile_moved)
                             piece_moved = dico_board[self.player_tile_moved][0]
                             dico_pieces[piece_moved][1] = save_image_tile_clicked
+                            # Update dico_turn
+                            if self.dico_turn["turn_white"]:
+                                self.dico_turn["turn_white"] = False
+                                self.dico_turn["turn_black"] = True
+                            else:
+                                self.dico_turn["turn_white"] = True
+                                self.dico_turn["turn_black"] = False
 
                     self.list_color_case[1] = self.player_tile_moved
                     self.color_case_waiting = tile_clicked
@@ -112,14 +137,6 @@ class Game:
                     # Reset the color of the tile clicked
                     self.player_tile_clicked = (-1, -1)
                     self.list_color_case[0] = (-1, -1)
-
-
-
-            if self.dico_turn["turn_white"]: # If the turn is to the white
-                pass
-
-            if self.dico_turn["turn_black"]: # If the turn is to the black
-                pass
 
             pygame.display.update()
 

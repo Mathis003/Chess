@@ -8,21 +8,20 @@ class Pieces:
         self.king_black = king_black
         self.dico_list_pieces = {1 : LIST_WHITE_PIECES, -1 : LIST_BLACK_PIECES}
 
-    def regroup_all_possibe_move(self, color_number):
-        """ Regroup all the possible move of all the pieces of the color_number."""
-        list_all_moves = []
-        for piece in self.dico_list_pieces[color_number]:
-            possible_move = piece.update_possible_moves()
-            for move in possible_move:
-                list_all_moves.append(move)
-        return list_all_moves
+    def CheckOwnChess(self, own_piece, king_tile):
+        """Return if the own move put the king in Chess."""
+        for piece in self.dico_list_pieces[- own_piece.color]:
+            if own_piece.tile in dico_board[dico_pieces[piece][0]][3]:
+                # Simu
+                save_possible_moves_piece = dico_board[dico_pieces[piece][0]][3]
+                dico_board[dico_pieces[own_piece][0]][2] = 0
+                new_list_possible_moves = piece.update_possible_moves()
+                if king_tile in new_list_possible_moves:
+                    dico_board[dico_pieces[own_piece][0]][3] = []
+                else:
+                    dico_board[dico_pieces[piece][0]][3] = save_possible_moves_piece
+                dico_board[dico_pieces[own_piece][0]][2] = own_piece.color
 
-    def CheckOwnChess(self, color_number, chess_tile):
-        """Return if the move put the king in Chess."""
-        list_all_moves = self.regroup_all_possibe_move(color_number)
-        if chess_tile in list_all_moves:
-            return True
-        return False
 
 ######### CheckOwnChess in possible_move doesn't work !!!! #########
 ######### CheckOwnChess in possible_move doesn't work !!!! #########
@@ -30,20 +29,12 @@ class Pieces:
 ######### CheckOwnChess in possible_move doesn't work !!!! #########
 
     def possible_moves(self, piece_moved, initial_tile, last_tile_moved):
-
-        #color_opponent = - piece_moved.color
-        #if piece_moved.color == 1:
-         #   king_tile = self.king_white.tile
-        #if piece_moved.color == -1:
-         #   king_tile = self.king_black.tile
-
         # Update the possible moves of the piece_moved
         list_new_moves_possible = piece_moved.update_possible_moves()
         tile_piece = dico_pieces[piece_moved][0]
         dico_board[tile_piece][3] = []  # Reset the list of possible moves of the piece
         # Move is in fact a tile which the piece can move on
         for move in list_new_moves_possible:  # Loop for each move
-            #if not self.CheckOwnChess(color_opponent, king_tile):
             dico_board[tile_piece][3].append(move)  # Add the move to the list
 
         for i in range(-1,2,2): # If i = -1 or i = 1
@@ -54,7 +45,6 @@ class Pieces:
                     dico_board[tile_piece][3] = []  # Reset the list of possible moves of the piece
                     # Move is in fact a tile which the piece can move on
                     for move in list_new_moves_possible:  # Loop for each move
-                        #if not self.CheckOwnChess(color_opponent, king_tile):
                         dico_board[tile_piece][3].append(move)  # Add the move to the list
                 else:
                     if last_tile_moved in dico_board[tile_piece][3] or initial_tile in dico_board[tile_piece][3]: # If the piece can move to the last_tile_moved or to the initial_tile
@@ -62,8 +52,16 @@ class Pieces:
                         dico_board[tile_piece][3] = [] # Reset the list of possible moves of the piece
                         # Move is in fact a tile which the piece can move on
                         for move in list_new_moves_possible: # Loop for each move
-                            #if not self.CheckOwnChess(color_opponent, king_tile):
                             dico_board[tile_piece][3].append(move) # Add the move to the list
+
+        if piece_moved.color == 1:
+            king_tile = self.king_black.tile
+        if piece_moved.color == -1:
+            king_tile = self.king_white.tile
+
+        # Remove all moves of the piece(s) that put his own king in chess
+        #for piece in self.dico_list_pieces[- piece_moved.color]:
+         #   self.CheckOwnChess(piece, king_tile)
 
 
     def Promotion_Pawn(self, piece, new_tile):
@@ -105,7 +103,7 @@ class Pieces:
         if piece_moved.color == -1:
             tile_king = self.king_white.tile
 
-        tile_piece_moved =  dico_pieces[piece_moved][0]
+        tile_piece_moved = dico_pieces[piece_moved][0]
         if tile_king in dico_board[tile_piece_moved][3]:
             return True
         return False
@@ -123,14 +121,40 @@ class Pieces:
         for piece in self.dico_list_pieces[- piece_put_in_chess.color]:
             tile_piece = dico_pieces[piece][0]
             all_possible_moves_piece = dico_board[tile_piece][3]
-            for move_tile in all_possible_moves_piece:
-                if tuple(move_tile) != tile_piece_put_in_chess:
-                    # Check with a simulation if the piece can protect the king by moving => If not, remove the move_tile !
+            l_to_remove_move_tile = []
+            if type(piece) == type(self.king_white): # If the piece is the king
+                # See if the king can move to ESCAPE
+                for move_tile in all_possible_moves_piece:
+                    # Check with a simulation if the king can escape by moving => If not, remove the move_tile !
+                    # Changes for the simu
+                    dico_board[tuple(king_chess.tile)][2] = 0
+                    save_color_tile = dico_board[tuple(move_tile)][2]
                     dico_board[tuple(move_tile)][2] = - piece_put_in_chess.color
+                    # Check the simu
                     new_list_possible_moves_piece = piece_put_in_chess.update_possible_moves()
-                    if list(king_chess.tile) in new_list_possible_moves_piece:
-                        dico_board[tile_piece][3].remove(move_tile)
-                    dico_board[tuple(move_tile)][2] = 0
+                    if move_tile in new_list_possible_moves_piece:
+                        l_to_remove_move_tile.append(move_tile)
+                    # Reset
+                    dico_board[tuple(king_chess.tile)][2] = king_chess.color
+                    dico_board[tuple(move_tile)][2] = save_color_tile
+
+                # Remove the move_tile from the list of possible move of the piece (if necessary)
+                for move_tile in l_to_remove_move_tile:
+                    dico_board[tile_piece][3].remove(move_tile)
+
+            else: # If the piece is not the king
+                # See if the piece can move to PROTECT the king
+                for move_tile in all_possible_moves_piece:
+                    if tuple(move_tile) != tile_piece_put_in_chess:
+                        # Check with a simulation if the piece can protect the king by moving => If not, remove the move_tile !
+                        dico_board[tuple(move_tile)][2] = - piece_put_in_chess.color
+                        new_list_possible_moves_piece = piece_put_in_chess.update_possible_moves()
+                        if king_chess.tile in new_list_possible_moves_piece:
+                            l_to_remove_move_tile.append(move_tile)
+                        dico_board[tuple(move_tile)][2] = 0
+                # Remove the move_tile from the list of possible move of the piece
+                for move_tile in l_to_remove_move_tile:
+                    dico_board[tile_piece][3].remove(move_tile)
 
     def Check_Checkmate(self, piece_put_in_chess):
         """ Check if the king is in Checkmate => If Checkmate, return True to end the game."""
@@ -176,7 +200,7 @@ class Pieces:
         self.update_dico_pieces(piece, new_tile)
         self.update_dico_board(piece, current_tile, new_tile)
         # Update position of the piece on the board => piece.tile = new_tile
-        piece.tile = new_tile
+        piece.tile = list(new_tile)
 
         if piece.first_move == True: # If the pawn is on its first move
             piece.first_move = False # The pawn is not on its first move anymore
