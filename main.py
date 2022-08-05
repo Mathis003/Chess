@@ -69,7 +69,6 @@ class Game:
                                 self.enter_mouse_pressed = True
                                 dico_pieces[dico_board[self.player_tile_clicked][0]][1] = None  # Update the image of the piece and replace it by None
 
-
             self.mouse_pressed = pygame.mouse.get_pressed()[0]
             self.board.draw_board()
             # Display the colors of the possible moves / the tile clicked
@@ -130,6 +129,7 @@ class Game:
                         self.pieces.ChessMod_update_possibles_move(piece_moved)  # Reupdate correctly the possibility of the pieces to move and protect the king
                         if self.pieces.Check_Checkmate(piece_moved):  # If the king is in checkmate
                             print("END GAME")  # End the game
+                    self.pieces.UpdateKingMoves(piece_moved)
 
                 else:
                     piece_moved = dico_board[self.player_tile_clicked][0]

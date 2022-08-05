@@ -8,60 +8,69 @@ class Pieces:
         self.king_black = king_black
         self.dico_list_pieces = {1 : LIST_WHITE_PIECES, -1 : LIST_BLACK_PIECES}
 
-    def CheckOwnChess(self, own_piece, king_tile):
+    def King_ownChess(self, king_piece, move_tile):
+        l_remove_from_list = []
+        save_color_case = dico_board[tuple(move_tile)][2]
+        dico_board[tuple(move_tile)][2] = 0
+        for piece in self.dico_list_pieces[- king_piece.color]:
+            new_list_possible_moves = piece.update_possible_moves()
+            if move_tile in new_list_possible_moves:
+                l_remove_from_list.append(move_tile)
+                break
+
+        dico_board[tuple(move_tile)][2] = save_color_case
+        print(l_remove_from_list)
+        return l_remove_from_list
+
+
+    def CheckOwnChess_pieces(self, own_piece, king_tile):
         """Return if the own move put the king in Chess."""
         for piece in self.dico_list_pieces[- own_piece.color]:
             if own_piece.tile in dico_board[dico_pieces[piece][0]][3]:
-                # Simu
-                save_possible_moves_piece = dico_board[dico_pieces[piece][0]][3]
-                dico_board[dico_pieces[own_piece][0]][2] = 0
-                new_list_possible_moves = piece.update_possible_moves()
-                if king_tile in new_list_possible_moves:
-                    dico_board[dico_pieces[own_piece][0]][3] = []
-                else:
-                    dico_board[dico_pieces[piece][0]][3] = save_possible_moves_piece
-                dico_board[dico_pieces[own_piece][0]][2] = own_piece.color
+
+                if type(own_piece) != type(self.king_white): # If the piece is not the king
+                    # Simu
+                    save_possible_moves_piece = dico_board[dico_pieces[piece][0]][3]
+                    save_color_piece = dico_board[dico_pieces[own_piece][0]][2]
+                    dico_board[dico_pieces[own_piece][0]][2] = 0
+                    new_list_possible_moves = piece.update_possible_moves()
+                    if king_tile in new_list_possible_moves:
+                        dico_board[dico_pieces[own_piece][0]][3] = []
+                    else:
+                        dico_board[dico_pieces[piece][0]][3] = save_possible_moves_piece
+                    dico_board[dico_pieces[own_piece][0]][2] = save_color_piece
+                else: # If the piece is the king
+
+                    all_possible_moves_piece = dico_board[tuple(own_piece.tile)][3]
+                    l_to_remove_move_tile = []
+
+                    # See if the king can move to ESCAPE
+                    dico_board[tuple(own_piece.tile)][2] = 0
+                    for move_tile in all_possible_moves_piece:
+                        # Check with a simulation if the king can escape by moving => If not, remove the move_tile !
+                        # Changes for the simu
+                        save_color_tile = dico_board[tuple(move_tile)][2]
+                        dico_board[tuple(move_tile)][2] = own_piece.color
+                        # Check the simu
+                        new_list_possible_moves_piece = piece.update_possible_moves()
+                        if move_tile in new_list_possible_moves_piece:
+                            l_to_remove_move_tile.append(move_tile)
+                        # Reset
+                        dico_board[tuple(own_piece.tile)][2] = own_piece.color
+                        dico_board[tuple(move_tile)][2] = save_color_tile
+
+                    # Remove the move_tile from the list of possible move of the piece (if necessary)
+                    for move_tile in l_to_remove_move_tile:
+                        dico_board[tuple(own_piece.tile)][3].remove(move_tile)
 
 
-######### CheckOwnChess in possible_move doesn't work !!!! #########
-######### CheckOwnChess in possible_move doesn't work !!!! #########
-######### CheckOwnChess in possible_move doesn't work !!!! #########
-######### CheckOwnChess in possible_move doesn't work !!!! #########
 
     def possible_moves(self, piece_moved, initial_tile, last_tile_moved):
-        # Update the possible moves of the piece_moved
-        list_new_moves_possible = piece_moved.update_possible_moves()
-        tile_piece = dico_pieces[piece_moved][0]
-        dico_board[tile_piece][3] = []  # Reset the list of possible moves of the piece
-        # Move is in fact a tile which the piece can move on
-        for move in list_new_moves_possible:  # Loop for each move
-            dico_board[tile_piece][3].append(move)  # Add the move to the list
-
+        """Update the basics possible moves of the pieces."""
         for i in range(-1,2,2): # If i = -1 or i = 1
             for piece in self.dico_list_pieces[i]: # Loop for each piece of the good color
                 tile_piece = dico_pieces[piece][0]
-                if piece.first_move:
-                    list_new_moves_possible = piece.update_possible_moves()  # Update possible moves of the piece
-                    dico_board[tile_piece][3] = []  # Reset the list of possible moves of the piece
-                    # Move is in fact a tile which the piece can move on
-                    for move in list_new_moves_possible:  # Loop for each move
-                        dico_board[tile_piece][3].append(move)  # Add the move to the list
-                else:
-                    if last_tile_moved in dico_board[tile_piece][3] or initial_tile in dico_board[tile_piece][3]: # If the piece can move to the last_tile_moved or to the initial_tile
-                        list_new_moves_possible = piece.update_possible_moves() # Update possible moves of the piece
-                        dico_board[tile_piece][3] = [] # Reset the list of possible moves of the piece
-                        # Move is in fact a tile which the piece can move on
-                        for move in list_new_moves_possible: # Loop for each move
-                            dico_board[tile_piece][3].append(move) # Add the move to the list
-
-        if piece_moved.color == 1:
-            king_tile = self.king_black.tile
-        if piece_moved.color == -1:
-            king_tile = self.king_white.tile
-
-        # Remove all moves of the piece(s) that put his own king in chess
-        #for piece in self.dico_list_pieces[- piece_moved.color]:
-         #   self.CheckOwnChess(piece, king_tile)
+                dico_board[tile_piece][3] = piece.update_possible_moves()  # Update possible moves of the piece
 
 
     def Promotion_Pawn(self, piece, new_tile):
@@ -95,7 +104,6 @@ class Pieces:
         list_piece.remove(piece) # Remove the pawn from the list of pieces
         list_piece.append(new_queen) # Add the queen to the list of pieces
 
-
     def CheckChess(self, piece_moved):
         """ Detect if a piece put the king in Chess => If Chess, return the piece who put the king in Chess."""
         if piece_moved.color == 1:
@@ -107,6 +115,31 @@ class Pieces:
         if tile_king in dico_board[tile_piece_moved][3]:
             return True
         return False
+
+    def UpdateKingMoves(self, piece_moved):
+        if piece_moved.color == 1:
+            king_chess = self.king_black
+        if piece_moved.color == -1:
+            king_chess = self.king_white
+
+        l_to_remove_move_tile = []
+        for move_tile in dico_board[tuple(king_chess.tile)][3]:
+            dico_board[tuple(king_chess.tile)][2] = 0
+            save_color_case = dico_board[tuple(move_tile)][2]
+            dico_board[tuple(move_tile)][2] = king_chess.color
+            for piece in self.dico_list_pieces[piece_moved.color]:
+                new_all_possible_moves = piece.update_possible_moves()
+                if move_tile in new_all_possible_moves:
+                    l_to_remove_move_tile.append(move_tile)
+                    dico_board[tuple(move_tile)][2] = save_color_case
+                    break
+            dico_board[tuple(move_tile)][2] = save_color_case
+
+        dico_board[tuple(king_chess.tile)][2] = king_chess.color
+        # Remove the move_tile from the list of possible move of the piece (if necessary)
+        for move_tile in l_to_remove_move_tile:
+            dico_board[tuple(king_chess.tile)][3].remove(move_tile)
+
 
     def ChessMod_update_possibles_move(self, piece_put_in_chess):
         """Update all the possible move if the king is in Chess.
@@ -123,24 +156,7 @@ class Pieces:
             all_possible_moves_piece = dico_board[tile_piece][3]
             l_to_remove_move_tile = []
             if type(piece) == type(self.king_white): # If the piece is the king
-                # See if the king can move to ESCAPE
-                for move_tile in all_possible_moves_piece:
-                    # Check with a simulation if the king can escape by moving => If not, remove the move_tile !
-                    # Changes for the simu
-                    dico_board[tuple(king_chess.tile)][2] = 0
-                    save_color_tile = dico_board[tuple(move_tile)][2]
-                    dico_board[tuple(move_tile)][2] = - piece_put_in_chess.color
-                    # Check the simu
-                    new_list_possible_moves_piece = piece_put_in_chess.update_possible_moves()
-                    if move_tile in new_list_possible_moves_piece:
-                        l_to_remove_move_tile.append(move_tile)
-                    # Reset
-                    dico_board[tuple(king_chess.tile)][2] = king_chess.color
-                    dico_board[tuple(move_tile)][2] = save_color_tile
-
-                # Remove the move_tile from the list of possible move of the piece (if necessary)
-                for move_tile in l_to_remove_move_tile:
-                    dico_board[tile_piece][3].remove(move_tile)
+                self.UpdateKingMoves(piece_put_in_chess)
 
             else: # If the piece is not the king
                 # See if the piece can move to PROTECT the king
@@ -163,7 +179,6 @@ class Pieces:
             if dico_board[tile_piece][3] != []:
                 return False
         return True
-
 
     def remove_from_list_piece_eaten(self, new_tile):
         # Remove the object (in the pieces list) from the old tile
