@@ -45,11 +45,13 @@ class Pawn:
 
 class King:
 
-    def __init__(self, rect, tile, color, first_move):
+    def __init__(self, rect, tile, color, first_move, rook_1, rook_2):
         self.rect = rect  # Rect of the piece's image
         self.tile = tile  # Tile where the pieces is
         self.color = color  # 1 if white, -1 if black
         self.first_move = first_move # Usefull in pieces.possible_move()
+        self.rook_1 = rook_1 # Rook left of the king
+        self.rook_2 = rook_2 # Rook right of the king
 
     def update_possible_moves(self):
         from Assets import dico_board
@@ -64,6 +66,16 @@ class King:
                     pass # Deal with the out of range error
 
         return list_possible_moves
+
+    def Rook_LeftStroke(self):
+        if self.first_move and self.rook_1.first_move: # If the king is on its first move and the rook left is on its first move
+            return True
+        return False
+
+    def Rook_RightStroke(self):
+        if self.first_move and self.rook_2.first_move: # If the king is on its first move and the rook right is on its first move
+            return True
+        return False
 
 class Knight:
 

@@ -52,8 +52,8 @@ def create_pieces():
     queen_white = Queen(white_queen_rect, [7, 3], 1, True)
     queen_black = Queen(black_queen_rect, [0, 3], -1, True)
     # King
-    king_white = King(white_king_rect, [7, 4], 1, True)
-    king_black = King(black_king_rect, [0, 4], -1, True)
+    king_white = King(white_king_rect, [7, 4], 1, True, rook_white_1, rook_white_2)
+    king_black = King(black_king_rect, [0, 4], -1, True, rook_black_1, rook_black_2)
     # Knight
     knight_white_1 = Knight(white_knight_rect, [7, 1], 1, True)
     knight_white_2 = Knight(white_knight_rect, [7, 6], 1, True)
