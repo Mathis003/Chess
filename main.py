@@ -1,10 +1,7 @@
-import time
-
 from Pieces import Pieces
 from Board import Board
-from Assets import screen, dico_board, dico_pieces, pygame, king_white, king_black
+from Assets import screen, dico_board, pygame, king_white, king_black
 from Configs import *
-
 
 # Initialize classes
 board = Board(screen)
@@ -12,32 +9,26 @@ pieces = Pieces(king_white, king_black)
 pygame.init()
 
 class Game:
-
+    """Game class represent the Game himself with the method Run() that launch the game."""
     def __init__(self, screen, board, pieces):
         # All classes
         self.screen = screen
         self.board = board
         self.pieces = pieces
 
-        # All variables
-        self.running = True
-        self.ChessMod = False
-        self.dico_mouse = {"click_before_playing" : False, "click_after_playing" : False}
-        self.dico_turn = {"turn_white" : True, "turn_black" : False}
-        self.mouse_pressed = False
-        self.player_tile_clicked = (-1, -1)
-        self.player_tile_moved = (-1, -1)
-        self.enter = False
-        self.end_pressed = False
-        self.enter_mouse_pressed = False
-        self.list_color_case = [(-1, -1), (-1, -1)]
-        self.color_case_waiting = (-1, -1)
-        self.enter_to_count = False
-        self.save_pawn_first_move = None
+        # All variables (configs)
+        self.running = True # Boolean to know if the game is running or not (True = running, False = not running)
+        self.dico_turn = {"turn_white" : True, "turn_black" : False} # Dictionary to know which player is playing
+        self.player_tile_clicked = (-1, -1) # Tile where the player clicked on the board to begin to play (initialize on (-1, -1) to be out of the board without causing error)
+        self.player_tile_moved = (-1, -1) # Tile where the player clicked on the board to move (after playing) (initialize on (-1, -1) to be out of the board without causing error)
+        self.end_pressed = False # Boolean to switch between pressing mouse and no pressing mouse anymore (True = no pressing mouse anymore, False = pressing mouse or no pressing mouse anymore but already passed on 'True')
+        self.enter_mouse_pressed = False # Allow to not click after drop the mouse's pression on a random tile and move the Rect on the image of the piece just before (If True = pressed mouse and Rect's moving, if False = no pressing mouse and Rect's not moving)
+        self.list_color_case = [(-1, -1), (-1, -1)] # List of the color of the case where the player clicked on the board (to have the historic and draw constantly the color until the next player play)
+        self.color_case_waiting = (-1, -1) # Color of the case where the player clicked on the board (to have the historic and draw constantly the color until the next player play)
+        self.enter_to_reset_EnPassant = False # Allow to reset some stuffs for the "En Passant" move
+        self.save_pawn_first_move = None # Save the object : Pawn that has done, the turn before, his first move => Will be reset the next Turn => Usefull for the "En Passant" rule :)
 
     def run(self):
-        pos_mouse = [0, 0]
-        enter = True
         while self.running: # Main loop
 
             # Events
@@ -54,29 +45,27 @@ class Game:
                     if self.dico_turn["turn_white"]:
                         if dico_board[tile_clicked][0] != None: # If the tile clicked isn't empty
                             if dico_board[tile_clicked][0].color == 1: # If the tile clicked is a white piece
-                                self.enter = True
                                 self.player_tile_clicked = tile_clicked # Update the player_tile_clicked
                                 self.list_color_case[0] = tile_clicked
                                 save_image_tile_clicked = dico_board[self.player_tile_clicked][1] # Save the image of the tile clicked
                                 self.enter_mouse_pressed = True
-                                dico_pieces[dico_board[self.player_tile_clicked][0]][1] = None # Update the image of the piece and replace it by None
+                                dico_board[self.player_tile_clicked][1] = None # Update the image of the piece and replace it by None
 
                     if self.dico_turn["turn_black"]:
                         if dico_board[tile_clicked][0] != None:  # If the tile clicked isn't empty
                             if dico_board[tile_clicked][0].color == -1:  # If the tile clicked is a white piece
-                                self.enter = True
                                 self.player_tile_clicked = tile_clicked  # Update the player_tile_clicked
                                 self.list_color_case[0] = tile_clicked
                                 save_image_tile_clicked = dico_board[self.player_tile_clicked][1]  # Save the image of the tile clicked
                                 self.enter_mouse_pressed = True
-                                dico_pieces[dico_board[self.player_tile_clicked][0]][1] = None  # Update the image of the piece and replace it by None
+                                dico_board[self.player_tile_clicked][1] = None  # Update the image of the piece and replace it by None
 
             self.mouse_pressed = pygame.mouse.get_pressed()[0]
             self.board.draw_board()
             # Display the colors of the possible moves / the tile clicked
-            self.board.draw_tile_player(self.list_color_case[0], COLOR_PLAYER_BEFORE_MOVE)  # Draw the tile clicked by the player
-            self.board.draw_tile_player(self.list_color_case[1], COLOR_PLAYER_AFTER_MOVE)  # Draw the tile played by the player
-            self.board.draw_tile_player(self.color_case_waiting, COLOR_PLAYER_BEFORE_MOVE)  # Draw the tile played by the player
+            self.board.draw_tile(self.list_color_case[0], COLOR_PLAYER_BEFORE_MOVE)  # Draw the tile clicked by the player
+            self.board.draw_tile(self.list_color_case[1], COLOR_PLAYER_AFTER_MOVE)  # Draw the tile played by the player
+            self.board.draw_tile(self.color_case_waiting, COLOR_PLAYER_BEFORE_MOVE)  # Draw the tile played by the player
             self.board.draw_possible_moves(self.player_tile_clicked)
             self.board.draw_pieces()
 
@@ -84,21 +73,19 @@ class Game:
             if self.mouse_pressed and self.enter_mouse_pressed: # If the mouse is pressed
                 if self.player_tile_clicked != (-1, -1): # If the player_tile_clicked isn't (-1, -1)
                     pos_mouse = pygame.mouse.get_pos() # Get the current mouse position (x, y)
-                    self.board.draw_tile_player(self.player_tile_clicked, COLOR_PLAYER_BEFORE_MOVE) # Draw the tile clicked by the player
+                    self.board.draw_tile(self.player_tile_clicked, COLOR_PLAYER_BEFORE_MOVE) # Draw the tile clicked by the player
                     # Update the image of the piece clicked
-                    dico_board[self.player_tile_clicked][0].rect.center = pos_mouse
-                    self.screen.blit(save_image_tile_clicked, dico_board[self.player_tile_clicked][0].rect)
+                    self.screen.blit(save_image_tile_clicked, pygame.Rect(pos_mouse[0] - SQUARE / 2, pos_mouse[1] - SQUARE / 2, SQUARE, SQUARE))
 
-            if not self.mouse_pressed and self.enter: # If the mouse is not pressed anymore
+            if not self.mouse_pressed and self.enter_mouse_pressed: # If the mouse is not pressed anymore
                 self.enter_mouse_pressed = False
-                self.enter = False
                 self.end_pressed = True
 
             if self.end_pressed: # If the player clicked to play (if the player stayed the left button mouse pressed => This section is useless
                 self.end_pressed = False
                 final_pos_mouse = pygame.mouse.get_pos() # Get the final mouse position of the click (x, y)
                 self.player_tile_moved = (final_pos_mouse[1] // SQUARE, final_pos_mouse[0] // SQUARE) # Tile moved
-                if list(self.player_tile_moved) in dico_board[self.player_tile_clicked][3]:
+                if self.player_tile_moved in dico_board[self.player_tile_clicked][3]:
                     if self.pieces.Promotion_Pawn(dico_board[self.player_tile_clicked][0], self.player_tile_moved):
                         self.pieces.PromotePawn_into_Queen(dico_board[self.player_tile_clicked][0], self.player_tile_moved)
                         piece_moved = dico_board[self.player_tile_moved][0]
@@ -114,7 +101,7 @@ class Game:
                         if dico_board[self.player_tile_moved][2] in [0, - dico_board[self.player_tile_clicked][2]]:
                             self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked, self.player_tile_moved)
                             piece_moved = dico_board[self.player_tile_moved][0]
-                            dico_pieces[piece_moved][1] = save_image_tile_clicked
+                            dico_board[self.player_tile_moved][1] = save_image_tile_clicked
                             # Update dico_turn
                             if self.dico_turn["turn_white"]:
                                 self.dico_turn["turn_white"] = False
@@ -135,17 +122,17 @@ class Game:
                         self.pieces.ReUpdate_ToNot_OwnChess(piece_moved)
                     self.pieces.UpdateKingMoves(piece_moved)
 
-                    if self.enter_to_count:
-                        self.save_pawn_first_move.just_moved = False
-                        self.enter_to_count = False
-
+                    # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
+                    if self.enter_to_reset_EnPassant:
+                        # Reset the old Pawn's object and the enter
+                        self.save_pawn_first_move.just_moved = None
+                        self.enter_to_reset_EnPassant = False
                     if self.pieces.JustMovedPawn(piece_moved):
-                        self.enter_to_count = True
+                        self.enter_to_reset_EnPassant = True
                         self.save_pawn_first_move = piece_moved
-
                 else:
                     piece_moved = dico_board[self.player_tile_clicked][0]
-                    dico_pieces[piece_moved][1] = save_image_tile_clicked
+                    dico_board[self.player_tile_clicked][1] = save_image_tile_clicked
                     # Reset the color of the tile clicked
                     self.player_tile_clicked = (-1, -1)
                     self.list_color_case[0] = (-1, -1)
