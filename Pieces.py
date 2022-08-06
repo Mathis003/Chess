@@ -21,7 +21,6 @@ class Pieces:
 
         return l_remove_from_list
 
-
     def CheckOwnChess_pieces(self, own_piece, king_tile):
         """Return if the own move put the king in Chess."""
         for piece in self.dico_list_pieces[- own_piece.color]:  # dico_board[piece.tile][3]
@@ -48,37 +47,38 @@ class Pieces:
                     for move_tile in all_possible_moves_piece:
                         # Check with a simulation if the king can escape by moving => If not, remove the move_tile !
                         # Changes for the simu
-                        save_color_tile = dico_board[tuple(move_tile)][2]
-                        dico_board[tuple(move_tile)][2] = own_piece.color
+                        save_color_tile = dico_board[move_tile][2]
+                        dico_board[move_tile][2] = own_piece.color
                         # Check the simu
                         new_list_possible_moves_piece = piece.update_possible_moves()
                         if move_tile in new_list_possible_moves_piece:
                             l_to_remove_move_tile.append(move_tile)
                         # Reset
                         dico_board[own_piece.tile][2] = own_piece.color
-                        dico_board[tuple(move_tile)][2] = save_color_tile
+                        dico_board[move_tile][2] = save_color_tile
 
                     # Remove the move_tile from the list of possible move of the piece (if necessary)
                     for move_tile in l_to_remove_move_tile:
                         dico_board[own_piece.tile][3].remove(move_tile)
 
     def TileBetweenEmpty(self, list_tile):
+        """Check if the tiles in the "list_tile" are all empty => return True, False otherwise."""
         for tile in list_tile:
             if dico_board[tile][2] != 0:
                 return False
         return True
 
-    def ChessTileBetween(self, list_tile, piece):
+    def ChessTileBetween(self, list_tile, king_piece):
+        """Check if the tiles in the "list_tile" are all not in Check => return True, False otherwise."""
         list_tile.append((7, 4))
-        for piece in self.dico_list_pieces[- piece.color]:
+        for piece in self.dico_list_pieces[- king_piece.color]:
             list_possible_moves = piece.update_possible_moves()
             for tile in list_tile:
                 if tile in list_possible_moves:
                     return True
         return False
 
-
-    def possible_moves(self):
+    def basics_possible_moves(self):
         """Update the basics possible moves of the pieces."""
         for i in range(-1, 2, 2): # If i = -1 or i = 1
             for piece in self.dico_list_pieces[i]: # Loop for each piece of the good color
@@ -89,13 +89,12 @@ class Pieces:
                         list_tile = [(7,5), (7,6)]
                         if self.TileBetweenEmpty(list_tile):
                             if not self.ChessTileBetween(list_tile, piece):
-                                dico_board[piece.tile][3].append([7, 6])
+                                dico_board[piece.tile][3].append((7, 6))
                     if piece.Rook_RightStroke():
                         list_tile = [(7, 3), (7, 2), (7, 1)]
                         if self.TileBetweenEmpty(list_tile):
                             if not self.ChessTileBetween(list_tile, piece):
-                                dico_board[piece.tile][3].append([7, 2])
-
+                                dico_board[piece.tile][3].append((7, 2))
 
     def Promotion_Pawn(self, piece, new_tile):
         """ If the piece is a Pawn and move to the last line, the pawn must be promoted to a Queen => Return True."""
@@ -235,87 +234,88 @@ class Pieces:
             elif dico_board[new_tile][2] == -1: # If the piece is black
                 LIST_BLACK_PIECES.remove(dico_board[new_tile][0]) # Remove the black piece from the list of pieces
 
-    def update_dico_board(self, piece, current_tile, new_tile):
-        # Update dico_moves_pieces to change the object's tile to the new tile
-        dico_board[new_tile][0] = piece
-        dico_board[current_tile][0] = None
+    def update_dico_board_basic_stroke(self, piece, current_tile, new_tile):
+        # Update dico_board
+        dico_board[new_tile] = [piece, dico_board[current_tile][1], dico_board[current_tile][2], []]
+        dico_board[current_tile] = [None, None, 0, []]
 
-        # Update dico_pieces_images_on_board to change the piece's image on the board
-        dico_board[new_tile][1] = dico_board[current_tile][1]
-        dico_board[current_tile][1] = None
+    def move_pawn(self, pawn_piece, current_tile, new_tile):
+        if new_tile == (current_tile[0] - pawn_piece.color, current_tile[1] + 1) or new_tile == (current_tile[0] - pawn_piece.color, current_tile[1] - 1):  # If the pawn move to an empty tile to eat an opponent piece ("En Passant")
+            # Stroke "En Passant"
+            tile_piece_eaten = (current_tile[0], new_tile[1])
+            piece_eaten = dico_board[tile_piece_eaten][0]
+            # Update the list of pieces (remove the piece eaten)
+            self.dico_list_pieces[- pawn_piece.color].remove(piece_eaten)
 
-        # Update dico_board to change the letter of the piece on the board
-        dico_board[new_tile][2] = dico_board[current_tile][2]
-        dico_board[current_tile][2] = 0
+            # Update dico_board
+            self.update_dico_board_basic_stroke(pawn_piece, current_tile, new_tile)
+            dico_board[tile_piece_eaten] = [None, None, 0, []]
 
-        # Reset the list of possible moves of the piece => it will be updated again in the next turn
-        dico_board[new_tile][3] = []
-        dico_board[current_tile][3] = []
+        else:  # If the pawn move to an empty tile to move forward
+            self.update_dico_board_basic_stroke(pawn_piece, current_tile, new_tile)
 
-# ERREUR DANS LE CODAGE DE MOVE PIECE POUR LE STROKE "EN PASSANT"!!
+        if pawn_piece.first_move:  # If the pawn is on his first move, it can move 2 tiles
+            if abs(current_tile[0] - new_tile[0]) == 2:  # If the pawn has moved 2 tiles
+                pawn_piece.just_moved = True
+        else:  # If the pawn is not on his first move anymore
+            pawn_piece.just_moved = False
+
+    def move_king(self, king_piece, current_tile, new_tile):
+        if king_piece.first_move:  # If the king is on his first move
+            if new_tile == (7, 6):  # Right Castling
+                # Update dico_board for the special stroke "Right Castling"
+                dico_board[(7, 6)] = [dico_board[(7, 4)][0], dico_board[(7, 4)][1], dico_board[(7, 4)][2], []]
+                dico_board[(7, 4)] = [None, None, 0, []]
+                dico_board[(7, 5)] = [dico_board[(7, 7)][0], dico_board[(7, 7)][1], dico_board[(7, 7)][2], []]
+                dico_board[(7, 7)] = [None, None, 0, []]
+                rook_piece = dico_board[(7, 5)][0]
+                rook_piece.tile = (7, 5)  # Update the rook's tile
+                rook_piece.first_move = False  # The rook has moved
+
+            elif new_tile == (7, 2):  # Left Castling
+                # Update dico_board for the special stroke "Left Castling"
+                dico_board[(7, 2)] = [dico_board[(7, 4)][0], dico_board[(7, 4)][1], dico_board[(7, 4)][2], []]
+                dico_board[(7, 4)] = [None, None, 0, []]
+                dico_board[(7, 3)] = [dico_board[(7, 0)][0], dico_board[(7, 0)][1], dico_board[(7, 0)][2], []]
+                dico_board[(7, 0)] = [None, None, 0, []]
+                rook_piece = dico_board[(7, 3)][0]
+                rook_piece.tile = (7, 3)  # Update the rook's tile
+                rook_piece.first_move = False  # The rook has moved
+
+            else:  # If the king move to a tile (other than the special's tile for stroke "Castling")
+                self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
+                self.update_dico_board_basic_stroke(king_piece, current_tile, new_tile)
+
+        else:  # If the king is not on his first move anymore
+            self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
+            self.update_dico_board_basic_stroke(king_piece, current_tile, new_tile)
+
+    def move_other_pieces(self, moved_piece, current_tile, new_tile):
+        self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
+        self.update_dico_board_basic_stroke(moved_piece, current_tile, new_tile)
+
     def move_piece(self, piece, current_tile, new_tile):
-        if isinstance(piece, type(Pawn([6, 0], 1, True))) and dico_board[new_tile][2] == 0:
-            if new_tile == (current_tile[0] - piece.color, current_tile[1] + 1) or new_tile == (current_tile[0] - piece.color, current_tile[1] - 1):
-                # Stroke "En Passant"
-                tile_piece_eaten = (current_tile[0], new_tile[1])
-                piece_eaten = dico_board[tile_piece_eaten][0]
-                self.dico_list_pieces[- piece.color].remove(piece_eaten)
+        """Move the piece to the new tile and update all the necessary elements."""
 
-                # Update dico_board
-                dico_board[new_tile] = [piece, dico_board[current_tile][1], piece.color, []]
-                dico_board[current_tile]= [None, None, 0, []]
-                dico_board[tile_piece_eaten] = [None, None, 0, []]
+        if isinstance(piece, type(Pawn((6, 0), 1, True))) and dico_board[new_tile][2] == 0: # If the piece is a pawn that move to an empty tile
+            self.move_pawn(piece, current_tile, new_tile)
 
-            else:
-                self.remove_from_list_piece_eaten(new_tile)
-                self.update_dico_board(piece, current_tile, new_tile)
+        elif isinstance(piece, type(self.king_white)): # If the piece is the king
+            self.move_king(piece, current_tile, new_tile)
 
-            if piece.first_move:
-                if abs(current_tile[0] - new_tile[0]) == 2:
-                    piece.just_moved = True
-            else:
-                piece.just_moved = False
+        else: # If the piece is not a pawn or a king
+            self.move_other_pieces(piece, current_tile, new_tile)
 
-        elif isinstance(piece, type(self.king_white)):
-            if piece.first_move:
-                if new_tile == (7, 6): # Right castling
-                    dico_board[(7, 6)] = [dico_board[(7, 4)][0], dico_board[(7, 4)][1], dico_board[(7, 4)][2], []]
-                    dico_board[(7, 4)] = [None, None, 0, []]
-                    dico_board[(7, 5)] = [dico_board[(7,7)][0], dico_board[(7,7)][1], dico_board[(7,7)][2], []]
-                    dico_board[(7, 7)] = [None, None, 0, []]
-                    rook_piece = dico_board[(7, 5)][0]
-                    rook_piece.tile = [7, 5]
-                    rook_piece.first_move = False
-
-                elif new_tile == (7, 2): # Left castling
-                    dico_board[(7, 2)] = [dico_board[(7, 4)][0], dico_board[(7, 4)][1], dico_board[(7, 4)][2], []]
-                    dico_board[(7, 4)] = [None, None, 0, []]
-                    dico_board[(7, 3)] = [dico_board[(7, 0)][0], dico_board[(7, 0)][1], dico_board[(7, 0)][2], []]
-                    dico_board[(7, 0)] = [None, None, 0, []]
-                    rook_piece = dico_board[(7, 3)][0]
-                    rook_piece.tile = [7, 3]
-                    rook_piece.first_move = False
-
-                else:
-                    self.remove_from_list_piece_eaten(new_tile)
-                    self.update_dico_board(piece, current_tile, new_tile)
-
-            else:
-                self.remove_from_list_piece_eaten(new_tile)
-                self.update_dico_board(piece, current_tile, new_tile)
-
-        else:
-            self.remove_from_list_piece_eaten(new_tile)
-            self.update_dico_board(piece, current_tile, new_tile)
-
-        # Update position of the piece on the board => piece.tile = new_tile
+        # Update position of the moved piece on the board => piece.tile = new_tile
         piece.tile = new_tile
 
-        if piece.first_move: # If the pawn is on its first move
+        # Update the first move of the piece
+        if piece.first_move: # If the piece is on its first move
             piece.first_move = False # The pawn is not on its first move anymore
 
     def JustMovedPawn(self, piece):
-        if isinstance(piece, type(Pawn([6, 0], 1, True))):
+        """Check if the pawn just moved => If yes, return True."""
+        if isinstance(piece, type(Pawn((6, 0), 1, True))):
             if piece.just_moved:
                 return True
         return False

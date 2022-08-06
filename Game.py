@@ -78,11 +78,9 @@ class Game:
             # Draw all the tile on the board
             self.board.draw_board()
             # Display the colors of the possible moves / the tile clicked
-            self.board.draw_tile(self.list_color_case[0],
-                                 COLOR_PLAYER_BEFORE_MOVE)  # Draw the tile clicked by the player
+            self.board.draw_tile(self.list_color_case[0], COLOR_PLAYER_BEFORE_MOVE)  # Draw the tile clicked by the player
             self.board.draw_tile(self.list_color_case[1], COLOR_PLAYER_AFTER_MOVE)  # Draw the tile played by the player
-            self.board.draw_tile(self.color_case_waiting,
-                                 COLOR_PLAYER_BEFORE_MOVE)  # Draw the tile played by the player
+            self.board.draw_tile(self.color_case_waiting, COLOR_PLAYER_BEFORE_MOVE)  # Draw the tile played by the player
             self.board.draw_possible_moves(self.player_tile_clicked)
             # Display the pieces on the board (Done at the end of the loop to be sure that the pieces aren't hide by the tiles's color)
             self.board.draw_pieces()
@@ -90,12 +88,9 @@ class Game:
             # Section use during one of the player plays and keep the mouse pressed to choose a tile to move
 
             if self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is pressed and the enter_mouse_pressed is open (= True)
-                if self.player_tile_clicked != (
-                -1, -1):  # If the player_tile_clicked isn't (-1, -1) => Different of the initialisation
+                if self.player_tile_clicked != (-1, -1):  # If the player_tile_clicked isn't (-1, -1) => Different of the initialisation
                     pos_mouse = pygame.mouse.get_pos()  # Get the current mouse position (x, y) (usefull to update the rect's position of the piece)
-                    self.screen.blit(self.save_image_tile_clicked,
-                                     pygame.Rect(pos_mouse[0] - SQUARE / 2, pos_mouse[1] - SQUARE / 2, SQUARE,
-                                                 SQUARE))  # Update the image of the piece clicked
+                    self.screen.blit(self.save_image_tile_clicked, pygame.Rect(pos_mouse[0] - SQUARE / 2, pos_mouse[1] - SQUARE / 2, SQUARE, SQUARE))  # Update the image of the piece clicked
 
             # Section use during one of the player has finished to play and release the mouse to choose a tile to move (until the player press the mouse again)
 
@@ -103,24 +98,18 @@ class Game:
                 self.enter_mouse_pressed = False  # Close the enter_mouse_pressed variable to pass this section just ONCE
                 final_pos_mouse = pygame.mouse.get_pos()  # Get the final mouse position of the click (x, y)
                 self.player_tile_moved = (final_pos_mouse[1] // SQUARE, final_pos_mouse[0] // SQUARE)  # Tile moved
-                if self.player_tile_moved in dico_board[self.player_tile_clicked][
-                    3]:  # If the tile moved is in the list of possible moves of the tile clicked
-                    if self.pieces.Promotion_Pawn(dico_board[self.player_tile_clicked][0],
-                                                  self.player_tile_moved):  # If the player has done a promotion (Pawn at the last line)
-                        self.pieces.PromotePawn_into_Queen(dico_board[self.player_tile_clicked][0],
-                                                           self.player_tile_moved)  # Promote the pawn into a queen
+                if self.player_tile_moved in dico_board[self.player_tile_clicked][3]:  # If the tile moved is in the list of possible moves of the tile clicked
+                    if self.pieces.Promotion_Pawn(dico_board[self.player_tile_clicked][0], self.player_tile_moved):  # If the player has done a promotion (Pawn at the last line)
+                        self.pieces.PromotePawn_into_Queen(dico_board[self.player_tile_clicked][0], self.player_tile_moved)  # Promote the pawn into a queen
                         self.piece_moved = dico_board[self.player_tile_moved][0]  # Get the piece moved
                         # Update dico_turn to change the turn because the player has played
                         self.change_turn()
 
                     else:
-                        if dico_board[self.player_tile_moved][2] in [0, - dico_board[self.player_tile_clicked][
-                            2]]:  # If the tile moved is a valid move (the tile moved is an empty tile or a tile occupied by an opponent piece))
-                            self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked,
-                                                   self.player_tile_moved)  # Move the piece and update the dico_board and all the necessary variables
+                        if dico_board[self.player_tile_moved][2] in [0, - dico_board[self.player_tile_clicked][2]]:  # If the tile moved is a valid move (the tile moved is an empty tile or a tile occupied by an opponent piece))
+                            self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked, self.player_tile_moved)  # Move the piece and update the dico_board and all the necessary variables
                             self.piece_moved = dico_board[self.player_tile_moved][0]  # Get the piece moved
-                            dico_board[self.player_tile_moved][
-                                1] = self.save_image_tile_clicked  # Update the image of the tile moved with the image of the tile clicked
+                            dico_board[self.player_tile_moved][1] = self.save_image_tile_clicked  # Update the image of the tile moved with the image of the tile clicked
                             # Update dico_turn to change the turn because the player has played
                             self.change_turn()
 
@@ -129,16 +118,14 @@ class Game:
                     self.color_case_waiting = self.player_tile_clicked
 
                     # Deal with the big update of all piece !
-                    self.pieces.possible_moves()  # Update the movement of the pieces on which there are changes about their possibilities of moves
+                    self.pieces.basics_possible_moves()  # Update the movement of the pieces on which there are changes about their possibilities of moves
                     if self.pieces.CheckChess(self.piece_moved):  # If the piece put the opponent king in check
                         print("Check")
-                        self.pieces.ChessMod_update_possibles_move(
-                            self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and protect the king
+                        self.pieces.ChessMod_update_possibles_move(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and protect the king
                         if self.pieces.Check_Checkmate(self.piece_moved):  # If the king is in checkmate
                             print("END GAME")  # End the game
                     else:
-                        self.pieces.ReUpdate_ToNot_OwnChess(
-                            self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
+                        self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
                     self.pieces.UpdateKingMoves(self.piece_moved)  # Update the king's moves
 
                     # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
