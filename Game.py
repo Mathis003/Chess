@@ -118,15 +118,16 @@ class Game:
                     self.color_case_waiting = self.player_tile_clicked
 
                     # Deal with the big update of all piece !
-                    self.pieces.basics_possible_moves()  # Update the movement of the pieces on which there are changes about their possibilities of moves
-                    if self.pieces.CheckChess(self.piece_moved):  # If the piece put the opponent king in check
+                    self.pieces.basics_possible_moves(self.piece_moved)  # Update the movement of the pieces on which there are changes about their possibilities of moves
+                    enter, piece_that_check = self.pieces.CheckOpponent(self.piece_moved, self.player_tile_clicked)
+                    if enter:  # If the piece put the opponent king in check
                         print("Check")
-                        self.pieces.ChessMod_update_possibles_move(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and protect the king
-                        if self.pieces.Check_Checkmate(self.piece_moved):  # If the king is in checkmate
+                        self.pieces.CheckMod_reupdate_possibles_move(piece_that_check)  # ReUpdate correctly the possibility of the pieces to move and protect the king
+                        if self.pieces.Check_Checkmate(piece_that_check): # If the dico_board hasn't changed => No possible move => Checkmate => End game
                             print("END GAME")  # End the game
                     else:
                         self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
-                    self.pieces.UpdateKingMoves(self.piece_moved)  # Update the king's moves
+                        self.pieces.UpdateKingMoves_inCheck(self.piece_moved)  # Update the king's moves
 
                     # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
                     if self.enter_to_reset_EnPassant:
