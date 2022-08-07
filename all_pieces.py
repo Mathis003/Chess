@@ -36,22 +36,30 @@ class Pawn:
             except:
                 pass # Deal with the out of range error (By example, if the pawn is on the last column and the player want to move it to the diagonal RIGHT, the program will raise an error)
 
+        return list_possible_moves
+
+    def EnPassantMove(self):
         # Special Stroke ! ("En Passant")
+        from Assets import dico_board
+        list_possible_moves_enpassant = []
         right_tile = (self.tile[0], self.tile[1] + 1)
         try:
             if type(dico_board[right_tile][0]) == type(self) and dico_board[right_tile][0].just_moved: # If the tile to the right is occupied by an opponent pawn and the pawn just moved of two tiles (his first move)
-                list_possible_moves.append((self.tile[0] - self.color, self.tile[1] + 1)) # Add the tile to the possible moves
+                list_possible_moves_enpassant.append((self.tile[0] - self.color, self.tile[1] + 1)) # Add the tile to the possible moves
         except:
             pass # Deal with the out of range error (By example, if the pawn is on the last column and the player want to move it to the diagonal RIGHT, the program will raise an error)
 
         left_tile = (self.tile[0], self.tile[1] - 1)
         try:
             if type(dico_board[left_tile][0]) == type(self) and dico_board[left_tile][0].just_moved: # If the tile to the left is occupied by an opponent pawn and the pawn just moved of two tiles (his first move)
-                list_possible_moves.append((self.tile[0] - self.color, self.tile[1] - 1)) # Add the tile to the possible moves
+                list_possible_moves_enpassant.append((self.tile[0] - self.color, self.tile[1] - 1)) # Add the tile to the possible moves
         except:
             pass # Deal with the out of range error (By example, if the pawn is on the last column and the player want to move it to the diagonal RIGHT, the program will raise an error)
 
-        return list_possible_moves
+        if list_possible_moves_enpassant == []:
+            return False, None
+        else:
+            return True, list_possible_moves_enpassant
 
 class King:
 
@@ -253,6 +261,7 @@ class Queen:
         self.tile = tile
         self.color = color
         self.first_move = first_move
+        self.promoted = False  # Special variable for the promotion
 
     def update_possible_moves(self):
         from Assets import dico_board
