@@ -230,20 +230,34 @@ class Pieces:
             if type(piece) == type(self.king_white): # If the piece is the king
                 self.UpdateKingMoves_inCheck(piece_that_check) # Update the possible moves of the king BEING in check!
             else: # If the piece is not the king
-                # See if the piece can move to PROTECT the king
-                for move_tile in all_possible_moves_piece: # Loop for each possible move of the piece
-                    if move_tile != piece_that_check.tile:
-                        # Check with a simulation if the piece can protect the king by moving => If not, remove the move_tile !
-                        save_color_tile = dico_board[move_tile][2]
-                        dico_board[move_tile][2] = - piece_that_check.color # Simulate that the piece move to see if the piece protect the king (being there) or not
-                        new_list_possible_moves_piece = piece_that_check.update_possible_moves() # Update possible moves of the piece who put the king in check
-                        if king_chess.tile in new_list_possible_moves_piece: # If the piece doesn't protect the king
-                            l_to_remove_move_tile.append(move_tile) # Add to the list to remove all the move that doesn't protect the king
-                        dico_board[move_tile][2] = save_color_tile # Reset the color of the tile
+                # See if the piece move, if another opponent piece put the king in check
+                enter = True
+                for opponent_piece in self.dico_list_pieces[piece_that_check.color]:
+                    if opponent_piece != piece_that_check: # If the piece is not the piece that check the king
+                        dico_board[piece.tile][2] = 0 # Simulate that the piece isn't there to see if another opponent piece put the king in check
+                        new_all_possible_moves = opponent_piece.update_possible_moves() # Update possible moves of the piece
+                        if king_chess.tile in new_all_possible_moves: # If the king is in check here
+                            dico_board[piece.tile][3] = [] # Reset the possible moves of the piece
+                            enter = False
+                            dico_board[piece.tile][2] = piece.color # Reset the color of the tile
+                            break
+                dico_board[piece.tile][2] = piece.color  # Reset the color of the tile
 
-                # Remove the move_tile from the list of possible move of the piece
-                for move_tile in l_to_remove_move_tile:
-                    dico_board[piece.tile][3].remove(move_tile)
+                if enter:
+                    # See if the piece can move to PROTECT the king
+                    for move_tile in all_possible_moves_piece: # Loop for each possible move of the piece
+                        if move_tile != piece_that_check.tile:
+                            # Check with a simulation if the piece can protect the king by moving => If not, remove the move_tile !
+                            save_color_tile = dico_board[move_tile][2]
+                            dico_board[move_tile][2] = - piece_that_check.color # Simulate that the piece move to see if the piece protect the king (being there) or not
+                            new_list_possible_moves_piece = piece_that_check.update_possible_moves() # Update possible moves of the piece who put the king in check
+                            if king_chess.tile in new_list_possible_moves_piece: # If the piece doesn't protect the king
+                                l_to_remove_move_tile.append(move_tile) # Add to the list to remove all the move that doesn't protect the king
+                            dico_board[move_tile][2] = save_color_tile # Reset the color of the tile
+
+                    # Remove the move_tile from the list of possible move of the piece
+                    for move_tile in l_to_remove_move_tile:
+                        dico_board[piece.tile][3].remove(move_tile)
 
     def Check_Checkmate(self, piece_moved):
         """Check if the king is in checkmate."""
