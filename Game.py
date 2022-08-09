@@ -1,3 +1,4 @@
+import math
 import time
 
 from Assets import dico_board, pygame, queen_white, move_sound, capture_sound, castling_sound, stalemate_sound,\
@@ -32,7 +33,8 @@ class Game:
         self.last_time_update_screen = False
         self.sound_on = True
 
-        self.IA = False # Boolean to know if the player is playing against the IA or not (True = against IA, False = against player)
+        self.stop_IA = False
+        self.IA = True # Boolean to know if the player is playing against the IA or not (True = against IA, False = against player)
 
     def update_necessary_variables(self, tile_clicked):
         """Update some necessary variables"""
@@ -88,17 +90,18 @@ class Game:
                                     if dico_board[tile_clicked][0].color == 1:  # If the tile clicked is a white piece
                                         self.update_necessary_variables(tile_clicked)  # Update the necessary variables
 
-                            if self.dico_turn["turn_black"]:  # If the turn is for the black (black player)
+                            if self.dico_turn["turn_black"] and math.sqrt((initial_pos_mouse[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) > SQUARE / 4:  # If the turn is for the black (black player)
                                 if dico_board[tile_clicked][0] != None:  # If the tile clicked isn't empty
                                     if dico_board[tile_clicked][0].color == -1:  # If the tile clicked is a white piece
                                         self.update_necessary_variables(tile_clicked)  # Update the necessary variables
 
                             # Deal with the sound and his variable
-                            if button_sound_rect.collidepoint(initial_pos_mouse):
-                                if self.sound_on:
-                                    self.sound_on = False
-                                else:
-                                    self.sound_on = True
+                            if math.sqrt((initial_pos_mouse[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) <= SQUARE / 4:
+                                if button_sound_rect.collidepoint(initial_pos_mouse):
+                                    if self.sound_on:
+                                        self.sound_on = False
+                                    else:
+                                        self.sound_on = True
 
 
                 # Update the elements of the game (board, pieces, ...)
@@ -117,7 +120,7 @@ class Game:
 
                     # Deal with the button of the sound
                     mouse_pos = pygame.mouse.get_pos()  # Update the mouse position
-                    if button_sound_rect.collidepoint(mouse_pos):  # If the mouse is on the button of the sound
+                    if math.sqrt((mouse_pos[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (mouse_pos[1] - (2 + button_sound_on.get_width() / 2)) ** 2) <= SQUARE / 4:  # If the mouse is on the circle of the button
                         if self.sound_on:
                             pygame.draw.circle(self.screen, (255,255,255), (2 + button_sound_on.get_width() / 2, 2 + button_sound_on.get_width() / 2), SQUARE / 4)
                             self.screen.blit(button_sound_on, button_sound_rect)  # Draw the button of the sound pressed
@@ -226,6 +229,13 @@ class Game:
                             if dico_board[tile_clicked][0].color == 1:  # If the tile clicked is a white piece
                                 self.update_necessary_variables(tile_clicked)  # Update the necessary variables
 
+                        # Deal with the sound and his variable
+                        if math.sqrt((initial_pos_mouse[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) <= SQUARE / 4:
+                            if self.sound_on:
+                                self.sound_on = False
+                            else:
+                                self.sound_on = True
+
                 # Update the elements of the game (board, pieces, ...)
                 self.mouse_pressed = pygame.mouse.get_pressed()[0]  # Update the mouse_pressed variable
                 # Draw all the tile on the board
@@ -237,6 +247,16 @@ class Game:
                 self.board.draw_possible_moves(self.player_tile_clicked)
                 # Display the pieces on the board (Done at the end of the loop to be sure that the pieces aren't hide by the tiles's color)
                 self.board.draw_pieces()
+
+                # Deal with the button of the sound
+                mouse_pos = pygame.mouse.get_pos()  # Update the mouse position
+                if math.sqrt((mouse_pos[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (mouse_pos[1] - (2 + button_sound_on.get_width() / 2)) ** 2) <= SQUARE / 4:  # If the mouse is on the circle of the button
+                    if self.sound_on:
+                        pygame.draw.circle(self.screen, (255, 255, 255), (2 + button_sound_on.get_width() / 2, 2 + button_sound_on.get_width() / 2), SQUARE / 4)
+                        self.screen.blit(button_sound_on, button_sound_rect)  # Draw the button of the sound pressed
+                    if not self.sound_on:
+                        pygame.draw.circle(self.screen, (255, 255, 255), (2 + button_sound_on.get_width() / 2, 2 + button_sound_on.get_width() / 2), SQUARE / 4)
+                        self.screen.blit(button_sound_off, button_sound_rect)
 
                 # Section use during one of the player plays and keep the mouse pressed to choose a tile to move
                 if self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is pressed and the enter_mouse_pressed is open (= True)
@@ -253,7 +273,7 @@ class Game:
                     self.player_tile_moved = (
                         final_pos_mouse[1] // SQUARE, final_pos_mouse[0] // SQUARE)  # Tile moved
                     if self.player_tile_moved in dico_board[self.player_tile_clicked][3]:  # If the tile moved is in the list of possible moves of the tile clicked
-                        self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked, self.player_tile_moved)  # Move the piece and update the dico_board and all the necessary variables
+                        mod_of_move = self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked, self.player_tile_moved)  # Move the piece and update the dico_board and all the necessary variables
                         self.piece_moved = dico_board[self.player_tile_moved][0]  # Get the piece moved
                         if isinstance(self.piece_moved, type(queen_white)) and self.piece_moved.promoted:  # If the piece moved is a queen and had been promoted
                             self.piece_moved.promoted = False  # Set the promoted variable to False
@@ -268,16 +288,24 @@ class Game:
                         self.pieces.basics_possible_moves(self.piece_moved)  # Update the movement of the pieces on which there are changes about their possibilities of moves + the specvials moves ("En Passant" and "Castling")
                         enter, piece_that_check = self.pieces.CheckOpponent(self.piece_moved, self.player_tile_clicked)  # Check if the player has check the opponent
                         if enter:  # If the piece put the opponent king in check
+                            mod_of_move = "check"  # Set the mod_of_move variable to "check"
                             print("Check")
                             self.pieces.CheckMod_reupdate_possibles_move(piece_that_check)  # ReUpdate correctly the possibility of the pieces to move and protect the king
                             if self.pieces.Check_Checkmate(piece_that_check):  # Check if the opponent player can play at least one piece
+                                mod_of_move = "checkmate"  # Set the mod of move to "checkmate"
+                                self.stop_IA = True
                                 print("CHECKMATE")
                                 print("END GAME")  # End the game
                         else:
                             if self.pieces.Check_Checkmate(self.piece_moved):  # Check if the opponent player can play at least one piece
+                                mod_of_move = "stalemate"  # Set the mod of move to "stalemate"
+                                self.stop_IA = True
                                 print("DRAW")
                                 print("END GAME")
                             self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
+
+                        if self.sound_on:
+                            self.play_music(mod_of_move)
 
                         # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
                         if self.enter_to_reset_EnPassant:
@@ -307,28 +335,29 @@ class Game:
                         self.board.draw_pieces()
                         pygame.display.update()
 
-                        # IA TURN to play
-                        self.piece_moved = self.pieces.move_IA()
+                        if not self.stop_IA:
+                            # IA TURN to play
+                            self.piece_moved = self.pieces.move_IA()
 
-                        # UPDATE POSSIBLE MOVES OF THE PLAYER
-                        
-                        # Deal with the big update of all piece !
-                        self.pieces.basics_possible_moves(self.piece_moved)  # Update the movement of the pieces on which there are changes about their possibilities of moves + the specvials moves ("En Passant" and "Castling")
-                        enter, piece_that_check = self.pieces.CheckOpponent(self.piece_moved, self.player_tile_clicked)  # Check if the player has check the opponent
-                        if enter:  # If the piece put the opponent king in check
-                            print("Check")
-                            self.pieces.CheckMod_reupdate_possibles_move(
-                                piece_that_check)  # ReUpdate correctly the possibility of the pieces to move and protect the king
-                            if self.pieces.Check_Checkmate(
-                                    piece_that_check):  # Check if the opponent player can play at least one piece
-                                print("CHECKMATE")
-                                print("END GAME")  # End the game
-                        else:
-                            if self.pieces.Check_Checkmate(
-                                    self.piece_moved):  # Check if the opponent player can play at least one piece
-                                print("DRAW")
-                                print("END GAME")
-                            self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
+                            # UPDATE POSSIBLE MOVES OF THE PLAYER
+
+                            # Deal with the big update of all piece !
+                            self.pieces.basics_possible_moves(self.piece_moved)  # Update the movement of the pieces on which there are changes about their possibilities of moves + the specvials moves ("En Passant" and "Castling")
+                            enter, piece_that_check = self.pieces.CheckOpponent(self.piece_moved, self.player_tile_clicked)  # Check if the player has check the opponent
+                            if enter:  # If the piece put the opponent king in check
+                                print("Check")
+                                self.pieces.CheckMod_reupdate_possibles_move(
+                                    piece_that_check)  # ReUpdate correctly the possibility of the pieces to move and protect the king
+                                if self.pieces.Check_Checkmate(
+                                        piece_that_check):  # Check if the opponent player can play at least one piece
+                                    print("CHECKMATE")
+                                    print("END GAME")  # End the game
+                            else:
+                                if self.pieces.Check_Checkmate(
+                                        self.piece_moved):  # Check if the opponent player can play at least one piece
+                                    print("DRAW")
+                                    print("END GAME")
+                                self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
 
 
                     else:  # If the tile moved is not in the list of possible moves of the tile clicked

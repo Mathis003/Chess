@@ -433,7 +433,7 @@ class Pieces:
         return dico
 
     def move_IA(self):
-        time.sleep(0.2)
+        time.sleep(0.8)
         #dico = self.generate_big_dico() # Piece : [Move, points]
         #self.minimax(all_moves, 3, - math.inf, math.inf, True)
 
