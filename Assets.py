@@ -32,6 +32,16 @@ white_bishop_image = Asset("Pieces_image/wB.png", (SQUARE, SQUARE)).load_image()
 white_knight_image = Asset("Pieces_image/wKN.png", (SQUARE, SQUARE)).load_image()
 white_pawn_image = Asset("Pieces_image/wP.png", (SQUARE, SQUARE)).load_image()
 
+# Musics
+pygame.mixer.init()
+move_sound = pygame.mixer.Sound("Music/Move sound.mp3")
+capture_sound = pygame.mixer.Sound("Music/Capture sound.mp3")
+castling_sound = pygame.mixer.Sound("Music/Castling sound.mp3")
+check_sound = pygame.mixer.Sound("Music/Check sound.mp3")
+game_start_sound = pygame.mixer.Sound("Music/Game-Start sound.mp3")
+checkmate_sound = pygame.mixer.Sound("Music/Checkmate sound.mp3")
+stalemate_sound = pygame.mixer.Sound("Music/Stalemate sound.mp3")
+
 # Create the window
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
