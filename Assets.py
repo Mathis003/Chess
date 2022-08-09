@@ -42,6 +42,11 @@ game_start_sound = pygame.mixer.Sound("Music/Game-Start sound.mp3")
 checkmate_sound = pygame.mixer.Sound("Music/Checkmate sound.mp3")
 stalemate_sound = pygame.mixer.Sound("Music/Stalemate sound.mp3")
 
+# Button Sound On/Off
+button_sound_on = Asset("Sound_button/button_sound.png", (SQUARE / 2, SQUARE / 2)).load_image()
+button_sound_off = Asset("Sound_button/button_sound_off_final.png", (SQUARE/ 2, SQUARE / 2)).load_image()
+button_sound_rect = button_sound_on.get_rect(topleft=(2,2))
+
 # Create the window
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")

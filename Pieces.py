@@ -247,15 +247,14 @@ class Pieces:
 
     def play_music(self, new_tile):
         if dico_board[new_tile][2] != 0:
-            capture_sound.play()
+            return "capture"
         else:
-            move_sound.play()
+            return "move"
 
     def move_pawn(self, pawn_piece, current_tile, new_tile):
         # Promotion if the pawn can be promoted
         if new_tile[0] in [0, 7]:
-
-            self.play_music(new_tile)
+            mod_of_move = self.play_music(new_tile)
             if pawn_piece.color == 1:  # Check if the pawn is white
                 list_piece, image_queen = LIST_WHITE_PIECES, white_queen_image
             else:
@@ -280,6 +279,9 @@ class Pieces:
                     self.dico_list_pieces[- pawn_piece.color].remove(piece_eaten)
                     # Update dico_board
                     dico_board[tile_piece_eaten] = [None, None, 0, []]
+                    mod_of_move =  "capture"
+                else:
+                    mod_of_move = "move"
 
                 self.update_dico_board_basic_stroke(pawn_piece, current_tile, new_tile)
 
@@ -290,9 +292,10 @@ class Pieces:
                 else:  # If the pawn is not on his first move anymore
                     pawn_piece.just_moved = False
             else:
-                capture_sound.play()
+                mod_of_move =  "capture"
                 self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
                 self.update_dico_board_basic_stroke(pawn_piece, current_tile, new_tile)
+            return mod_of_move
 
     def move_king(self, king_piece, current_tile, new_tile):
         if king_piece.first_move:  # If the king is on his first move
@@ -305,6 +308,7 @@ class Pieces:
                 rook_piece = dico_board[(7, 5)][0]
                 rook_piece.tile = (7, 5)  # Update the rook's tile
                 rook_piece.first_move = False  # The rook has moved
+                mod_of_move = "castling"
 
             elif new_tile == (7, 2):  # Left Castling
                 # Update dico_board for the special stroke "Left Castling"
@@ -315,6 +319,7 @@ class Pieces:
                 rook_piece = dico_board[(7, 3)][0]
                 rook_piece.tile = (7, 3)  # Update the rook's tile
                 rook_piece.first_move = False  # The rook has moved
+                mod_of_move = "castling"
 
             elif new_tile == (0, 6):  # Right Castling
                 # Update dico_board for the special stroke "Right Castling"
@@ -325,6 +330,7 @@ class Pieces:
                 rook_piece = dico_board[(0, 5)][0]
                 rook_piece.tile = (0, 5)  # Update the rook's tile
                 rook_piece.first_move = False  # The rook has moved
+                mod_of_move = "castling"
 
             elif new_tile == (0, 2):  # Left Castling
                 # Update dico_board for the special stroke "Left Castling"
@@ -335,31 +341,35 @@ class Pieces:
                 rook_piece = dico_board[(0, 3)][0]
                 rook_piece.tile = (0, 3)  # Update the rook's tile
                 rook_piece.first_move = False  # The rook has moved
+                mod_of_move = "castling"
             else:
+                mod_of_move = self.play_music(new_tile)
                 self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
                 self.update_dico_board_basic_stroke(king_piece, current_tile, new_tile)
-            castling_sound.play()
 
         else:
-            self.play_music(new_tile)
+            mod_of_move = self.play_music(new_tile)
             self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
             self.update_dico_board_basic_stroke(king_piece, current_tile, new_tile)
+        return mod_of_move
 
     def move_other_pieces(self, moved_piece, current_tile, new_tile):
+        mod_of_move = self.play_music(new_tile)
         self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
         self.update_dico_board_basic_stroke(moved_piece, current_tile, new_tile)
+        return mod_of_move
 
     def move_piece(self, piece, current_tile, new_tile):
         """Move the piece to the new tile and update all the necessary elements."""
 
         if isinstance(piece, type(Pawn((6, 0), 1, True))):
-            self.move_pawn(piece, current_tile, new_tile)
+            mod_of_move = self.move_pawn(piece, current_tile, new_tile)
 
         elif isinstance(piece, type(self.king_white)): # If the piece is the king
-            self.move_king(piece, current_tile, new_tile)
+            mod_of_move = self.move_king(piece, current_tile, new_tile)
 
         else: # If the piece is not a pawn or a king
-            self.move_other_pieces(piece, current_tile, new_tile)
+            mod_of_move = self.move_other_pieces(piece, current_tile, new_tile)
 
         # Update position of the moved piece on the board => piece.tile = new_tile
         piece.tile = new_tile
@@ -367,6 +377,8 @@ class Pieces:
         # Update the first move of the piece
         if piece.first_move: # If the piece is on its first move
             piece.first_move = False # The pawn is not on its first move anymore
+
+        return mod_of_move
 
     def JustMovedPawn(self, piece):
         """Check if the pawn just moved => If yes, return True."""
