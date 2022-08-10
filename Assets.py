@@ -63,6 +63,19 @@ button_sound_on = Asset("Sound_button/button_sound.png", (SQUARE / 2, SQUARE / 2
 button_sound_off = Asset("Sound_button/button_sound_off_final.png", (SQUARE/ 2, SQUARE / 2)).load_image()
 button_sound_rect = button_sound_on.get_rect(topleft=(2,2))
 
+# Players
+player_1 = Asset("Players/first_player.png", (3 * SQUARE, 3 * SQUARE)).load_image()
+player_2 = Asset("Players/second_player-removebg-preview.png", (3 * SQUARE, 3 * SQUARE)).load_image()
+player_1_rect_1 = player_1.get_rect(topleft=(3 * SQUARE + SQUARE / 3, (5/2) * SQUARE))
+player_2_rect = player_2.get_rect(topleft=(SQUARE / 8, (5/2) * SQUARE))
+player_1_rect_2 = player_1.get_rect(topleft=((9/2) * SQUARE + SQUARE / 3, (5/2) * SQUARE))
+
+# Button play
+button_play = Asset("Players/button_play.png", ((2/3) * SQUARE, (2/3) * SQUARE)).load_image()
+button_play_rect_1 = button_play.get_rect(topleft=(6.8 * SQUARE + SQUARE / 3, (7/2) * SQUARE - button_play.get_height() / 2))
+button_play_rect_2 = button_play.get_rect(topleft=(2.2 * SQUARE + SQUARE / 3, (7/2) * SQUARE - button_play.get_height() / 2))
+
+
 # Create the window
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
