@@ -6,7 +6,13 @@ from Assets import dico_board, LIST_BLACK_PIECES, LIST_WHITE_PIECES, white_queen
     matrix_points_pawn_white, matrix_points_pawn_black, matrix_points_bishop_white, matrix_points_bishop_black,\
     matrix_points_knight_white, matrix_points_knight_black, matrix_points_rook_white, matrix_points_rook_black,\
     matrix_points_queen_white, matrix_points_queen_black, matrix_points_king_white, matrix_points_king_black,\
-    castling_sound, move_sound, capture_sound
+    black_bishop_image_2, white_bishop_image_2, black_knight_image_2, white_knight_image_2, black_rook_image_2,\
+    white_rook_image_2, black_queen_image_2, white_queen_image_2, black_king_image_2, white_king_image_2,\
+    black_pawn_image_2, white_pawn_image_2, white_pawn_image, black_pawn_image, white_rook_image, black_rook_image,\
+    white_bishop_image, black_bishop_image, white_knight_image, black_knight_image, white_queen_image, black_queen_image,\
+    white_king_image, black_king_image, white_pawn_image, black_pawn_image
+
+
 from all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
 
 class Pieces:
@@ -28,6 +34,64 @@ class Pieces:
                                          type(Bishop((7, 4), 1, True)): matrix_points_bishop_black,
                                          type(Knight((7, 4), 1, True)): matrix_points_knight_black,
                                          type(Rook((7, 4), 1, True)): matrix_points_rook_black}
+
+    def change_image_into_2(self):
+        """Change the image of the pieces."""
+        for piece in self.dico_list_pieces[1]:
+            if isinstance(piece, type(Pawn((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_pawn_image_2
+            elif isinstance(piece, type(Queen((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_queen_image_2
+            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
+                dico_board[piece.tile][1] = white_king_image_2
+            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_bishop_image_2
+            elif isinstance(piece, type(Knight((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_knight_image_2
+            elif isinstance(piece, type(Rook((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_rook_image_2
+        for piece in self.dico_list_pieces[-1]:
+            if isinstance(piece, type(Pawn((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_pawn_image_2
+            elif isinstance(piece, type(Queen((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_queen_image_2
+            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
+                dico_board[piece.tile][1] = black_king_image_2
+            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_bishop_image_2
+            elif isinstance(piece, type(Knight((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_knight_image_2
+            elif isinstance(piece, type(Rook((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_rook_image_2
+
+    def change_image_into_1(self):
+        """Change the image of the pieces."""
+        for piece in self.dico_list_pieces[1]:
+            if isinstance(piece, type(Pawn((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_pawn_image
+            elif isinstance(piece, type(Queen((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_queen_image
+            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
+                dico_board[piece.tile][1] = white_king_image
+            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_bishop_image
+            elif isinstance(piece, type(Knight((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_knight_image
+            elif isinstance(piece, type(Rook((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_rook_image
+        for piece in self.dico_list_pieces[-1]:
+            if isinstance(piece, type(Pawn((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_pawn_image
+            elif isinstance(piece, type(Queen((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_queen_image
+            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
+                dico_board[piece.tile][1] = black_king_image
+            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_bishop_image
+            elif isinstance(piece, type(Knight((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_knight_image
+            elif isinstance(piece, type(Rook((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_rook_image
 
     def TileBetweenEmpty(self, list_tile):
         """Check if the tiles in the "list_tile" are all empty => return True, False otherwise."""
@@ -213,6 +277,7 @@ class Pieces:
         """Check if the king is in checkmate."""
         for piece in self.dico_list_pieces[- piece_moved.color]:
             if dico_board[piece.tile][3] != []:
+                print(dico_board[piece.tile])
                 return False
         return True
 
@@ -253,6 +318,7 @@ class Pieces:
 
     def move_pawn(self, pawn_piece, current_tile, new_tile):
         # Promotion if the pawn can be promoted
+        print(new_tile)
         if new_tile[0] in [0, 7]:
             mod_of_move = self.play_music(new_tile)
             if pawn_piece.color == 1:  # Check if the pawn is white
@@ -433,14 +499,12 @@ class Pieces:
         return dico
 
     def move_IA(self):
-        time.sleep(0.8)
+        time.sleep(0.7)
         #dico = self.generate_big_dico() # Piece : [Move, points]
         #self.minimax(all_moves, 3, - math.inf, math.inf, True)
-
-
         random_piece, random_move, current_tile = self.generate_random_moves()
-        self.move_piece(random_piece, current_tile, random_move)
-        return random_piece
+        mod_of_move = self.move_piece(random_piece, current_tile, random_move)
+        return random_piece, current_tile, random_move, mod_of_move
 
     def minimax(self, parent_position, depth, alpha, beta, maximizingPlayer):
         #if depth == 0 or game over in position:

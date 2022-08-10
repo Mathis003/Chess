@@ -16,7 +16,7 @@ class Asset:
 
 # Load all the assets
 
-# Black pieces
+# Black pieces 1
 black_king_image = Asset("Pieces_image/bK.png", (SQUARE, SQUARE)).load_image()
 black_queen_image = Asset("Pieces_image/bQ.png", (SQUARE, SQUARE)).load_image()
 black_rook_image = Asset("Pieces_image/bR.png", (SQUARE, SQUARE)).load_image()
@@ -24,13 +24,29 @@ black_bishop_image = Asset("Pieces_image/bB.png", (SQUARE, SQUARE)).load_image()
 black_knight_image = Asset("Pieces_image/bKN.png", (SQUARE, SQUARE)).load_image()
 black_pawn_image = Asset("Pieces_image/bP.png", (SQUARE, SQUARE)).load_image()
 
-# White pieces
+# White pieces 1
 white_king_image = Asset("Pieces_image/wK.png", (SQUARE, SQUARE)).load_image()
 white_queen_image = Asset("Pieces_image/wQ.png", (SQUARE, SQUARE)).load_image()
 white_rook_image = Asset("Pieces_image/wR.png", (SQUARE, SQUARE)).load_image()
 white_bishop_image = Asset("Pieces_image/wB.png", (SQUARE, SQUARE)).load_image()
 white_knight_image = Asset("Pieces_image/wKN.png", (SQUARE, SQUARE)).load_image()
 white_pawn_image = Asset("Pieces_image/wP.png", (SQUARE, SQUARE)).load_image()
+
+# Black pieces 2
+black_king_image_2 = Asset("Pieces_image/king_black_2.png", (SQUARE, SQUARE)).load_image()
+black_queen_image_2 = Asset("Pieces_image/queen_black_2.png", (SQUARE, SQUARE)).load_image()
+black_rook_image_2 = Asset("Pieces_image/rook_black_2.png", (SQUARE, SQUARE)).load_image()
+black_bishop_image_2 = Asset("Pieces_image/bishop_black_2.png", (SQUARE, SQUARE)).load_image()
+black_knight_image_2 = Asset("Pieces_image/knight_black_2.png", (SQUARE, SQUARE)).load_image()
+black_pawn_image_2 = Asset("Pieces_image/pawn_black_2.png", (SQUARE, SQUARE)).load_image()
+
+# White pieces 2
+white_king_image_2 = Asset("Pieces_image/king_white_2.png", (SQUARE, SQUARE)).load_image()
+white_queen_image_2 = Asset("Pieces_image/queen_white_2.png", (SQUARE, SQUARE)).load_image()
+white_rook_image_2 = Asset("Pieces_image/rook_white_2.png", (SQUARE, SQUARE)).load_image()
+white_bishop_image_2 = Asset("Pieces_image/bishop_white_2.png", (SQUARE, SQUARE)).load_image()
+white_knight_image_2 = Asset("Pieces_image/knight_white_2.png", (SQUARE, SQUARE)).load_image()
+white_pawn_image_2 = Asset("Pieces_image/pawn_white_2.png", (SQUARE, SQUARE)).load_image()
 
 # Musics
 pygame.mixer.init()
@@ -51,6 +67,10 @@ button_sound_rect = button_sound_on.get_rect(topleft=(2,2))
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
 pygame.display.set_icon(black_king_image)
+
+#Button to change the color of the board
+button_changes_boardcolor = Asset("Sound_button/button_change_mod.png", (SQUARE / 2, SQUARE / 2)).load_image()
+button_changes_boardcolor_rect = button_changes_boardcolor.get_rect(topleft=(screen.get_width() - SQUARE / 2 - 2, 2))
 
 def create_pieces():
     """ Create all the pieces objects"""
