@@ -8,7 +8,6 @@ class Asset:
     def __init__(self,link_image, dimension):
         self.link_image = link_image
         self.dimension = dimension
-
     def load_image(self):
         image = pygame.image.load(self.link_image)
         image = pygame.transform.scale(image, self.dimension)

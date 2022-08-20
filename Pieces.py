@@ -318,7 +318,6 @@ class Pieces:
 
     def move_pawn(self, pawn_piece, current_tile, new_tile):
         # Promotion if the pawn can be promoted
-        print(new_tile)
         if new_tile[0] in [0, 7]:
             mod_of_move = self.play_music(new_tile)
             if pawn_piece.color == 1:  # Check if the pawn is white
@@ -361,7 +360,7 @@ class Pieces:
                 mod_of_move =  "capture"
                 self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
                 self.update_dico_board_basic_stroke(pawn_piece, current_tile, new_tile)
-            return mod_of_move
+        return mod_of_move
 
     def move_king(self, king_piece, current_tile, new_tile):
         if king_piece.first_move:  # If the king is on his first move

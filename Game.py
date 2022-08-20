@@ -1,5 +1,4 @@
 import math
-import time
 
 from Assets import dico_board, pygame, queen_white, move_sound, capture_sound, castling_sound, stalemate_sound,\
     game_start_sound, check_sound, checkmate_sound, button_sound_on, button_sound_off, button_sound_rect,\
@@ -12,11 +11,12 @@ pygame.init() # Initialize the pygame module
 class Game:
     """Game class represent the Game himself with the method Run() that launch the game."""
 
-    def __init__(self, screen, board, pieces):
+    def __init__(self, screen, board, pieces, button):
         # All classes
         self.screen = screen
         self.board = board
         self.pieces = pieces
+        self.button = button
 
         # All variables (configs)
         self.running = True  # Boolean to know if the game is running or not (True = running, False = not running)
@@ -34,7 +34,6 @@ class Game:
         self.end_menu = False
         self.begin_menu = True
         self.last_time_update_screen = False
-        self.sound_on = True
         self.mod_board = "blue_mod"
         self.image_piece_selected = "first_type"
 
@@ -58,6 +57,17 @@ class Game:
             self.dico_turn["turn_white"] = True
             self.dico_turn["turn_black"] = False
 
+    def setMod(self, initial_pos_mouse):
+        # Deal with the mod of the board and his variable
+        if math.sqrt((initial_pos_mouse[0] - (self.screen.get_width() - button_changes_boardcolor.get_width() / 2 - 2))
+                     ** 2 + (initial_pos_mouse[1] - 2) ** 2) <= SQUARE / 4:  # If the mouse is on the circle of the button
+            if self.mod_board == "brown_mod":
+                self.mod_board = "blue_mod"
+            elif self.mod_board == "blue_mod":
+                self.mod_board = "green_mod"
+            elif self.mod_board == "green_mod":
+                self.mod_board = "brown_mod"
+
     def play_music(self, mod_of_move):
         if mod_of_move == "move":
             move_sound.play()
@@ -73,6 +83,7 @@ class Game:
             stalemate_sound.play()
 
     def run(self):
+
         while self.running:  # Main loop
 
             if self.begin_menu: # Id the player is in the menu
@@ -89,9 +100,11 @@ class Game:
                             if button_play_rect_1.collidepoint(mouse_pos):
                                 self.IA = False
                                 self.begin_menu = False
+                                game_start_sound.play()
                             elif button_play_rect_2.collidepoint(mouse_pos):
                                 self.IA = True
                                 self.begin_menu = False
+                                game_start_sound.play()
 
                 # Draw all the tile on the board
                 self.board.draw_board(self.mod_board)
@@ -144,22 +157,8 @@ class Game:
                                             if dico_board[tile_clicked][0].color == -1:  # If the tile clicked is a white piece
                                                 self.update_necessary_variables(tile_clicked)  # Update the necessary variables
 
-                                    # Deal with the sound and his variable
-                                    if math.sqrt((initial_pos_mouse[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) <= SQUARE / 4:
-                                        if button_sound_rect.collidepoint(initial_pos_mouse):
-                                            if self.sound_on:
-                                                self.sound_on = False
-                                            else:
-                                                self.sound_on = True
-
-                                    # Deal with the mod of the board and his variable
-                                    if math.sqrt((initial_pos_mouse[0] - (self.screen.get_width() - button_changes_boardcolor.get_width() / 2 - 2)) ** 2 + (initial_pos_mouse[1] - 2) ** 2) <= SQUARE / 4:  # If the mouse is on the circle of the button
-                                        if self.mod_board == "brown_mod":
-                                            self.mod_board = "blue_mod"
-                                        elif self.mod_board == "blue_mod":
-                                            self.mod_board = "green_mod"
-                                        elif self.mod_board == "green_mod":
-                                            self.mod_board = "brown_mod"
+                                    self.button.setSound(initial_pos_mouse)
+                                    self.setMod(initial_pos_mouse)
 
                     # Update the elements of the game (board, pieces, ...)
                     if not self.end_menu or self.last_time_update_screen:
@@ -175,20 +174,9 @@ class Game:
                         self.board.draw_pieces()
                         self.last_time_update_screen = False
 
-                        # Deal with the button of the sound
                         mouse_pos = pygame.mouse.get_pos()  # Update the mouse position
-                        if math.sqrt((mouse_pos[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (mouse_pos[1] - (2 + button_sound_on.get_width() / 2)) ** 2) <= SQUARE / 4 and not pygame.mouse.get_pressed()[0]:  # If the mouse is on the circle of the button
-                            if self.sound_on:
-                                pygame.draw.circle(self.screen, (255,255,255), (2 + button_sound_on.get_width() / 2, 2 + button_sound_on.get_width() / 2), SQUARE / 4)
-                                self.screen.blit(button_sound_on, button_sound_rect)  # Draw the button of the sound pressed
-                            if not self.sound_on:
-                                pygame.draw.circle(self.screen, (255,255,255), (2 + button_sound_on.get_width() / 2, 2 + button_sound_on.get_width() / 2), SQUARE / 4)
-                                self.screen.blit(button_sound_off, button_sound_rect)
-
-                        # Deal with the button to change board's colors
-                        if math.sqrt((mouse_pos[0] - (self.screen.get_width() - button_changes_boardcolor.get_width() / 2 - 2)) ** 2 + (mouse_pos[1] - 2) ** 2) <= SQUARE / 4 and not pygame.mouse.get_pressed()[0]:  # If the mouse is on the circle of the button
-                            pygame.draw.circle(self.screen, (255, 255, 255), (self.screen.get_width() - 2 - button_changes_boardcolor.get_width() / 2, 2 + button_changes_boardcolor.get_height() / 2), SQUARE / 4)
-                            self.screen.blit(button_changes_boardcolor, button_changes_boardcolor_rect)  # Draw the button of the sound pressed
+                        self.button.activateSoundButton(mouse_pos)
+                        self.button.activateChangeColorButton(mouse_pos)
 
 
                     if not self.end_menu:
@@ -241,7 +229,7 @@ class Game:
                                         self.end_menu = True
                                         self.last_time_update_screen = True
 
-                                if self.sound_on:
+                                if self.button.sound_on:
                                     self.play_music(mod_of_move)
 
                                 if not self.end_menu:
@@ -301,21 +289,8 @@ class Game:
                                     if dico_board[tile_clicked][0].color == 1:  # If the tile clicked is a white piece
                                         self.update_necessary_variables(tile_clicked)  # Update the necessary variables
 
-                                # Deal with the sound and his variable
-                                if math.sqrt((initial_pos_mouse[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) <= SQUARE / 4:
-                                    if self.sound_on:
-                                        self.sound_on = False
-                                    else:
-                                        self.sound_on = True
-
-                                # Deal with the mod of the board and his variable
-                                if math.sqrt((initial_pos_mouse[0] - (self.screen.get_width() - button_changes_boardcolor.get_width() / 2 - 2)) ** 2 + (initial_pos_mouse[1] - 2) ** 2) <= SQUARE / 4:  # If the mouse is on the circle of the button
-                                    if self.mod_board == "brown_mod":
-                                        self.mod_board = "blue_mod"
-                                    elif self.mod_board == "blue_mod":
-                                        self.mod_board = "green_mod"
-                                    elif self.mod_board == "green_mod":
-                                        self.mod_board = "brown_mod"
+                                self.button.setSound(initial_pos_mouse)
+                                self.setMod(initial_pos_mouse)
 
                     # Update the elements of the game (board, pieces, ...)
                     self.mouse_pressed = pygame.mouse.get_pressed()[0]  # Update the mouse_pressed variable
@@ -329,20 +304,10 @@ class Game:
                     # Display the pieces on the board (Done at the end of the loop to be sure that the pieces aren't hide by the tiles's color)
                     self.board.draw_pieces()
 
-                    # Deal with the button of the sound
                     mouse_pos = pygame.mouse.get_pos()  # Update the mouse position
-                    if math.sqrt((mouse_pos[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (mouse_pos[1] - (2 + button_sound_on.get_width() / 2)) ** 2) <= SQUARE / 4:  # If the mouse is on the circle of the button
-                        if self.sound_on:
-                            pygame.draw.circle(self.screen, (255, 255, 255), (2 + button_sound_on.get_width() / 2, 2 + button_sound_on.get_width() / 2), SQUARE / 4)
-                            self.screen.blit(button_sound_on, button_sound_rect)  # Draw the button of the sound pressed
-                        if not self.sound_on:
-                            pygame.draw.circle(self.screen, (255, 255, 255), (2 + button_sound_on.get_width() / 2, 2 + button_sound_on.get_width() / 2), SQUARE / 4)
-                            self.screen.blit(button_sound_off, button_sound_rect)
+                    self.button.activateSoundButton(mouse_pos)
+                    self.button.activateChangeColorButton(mouse_pos)
 
-                    # Deal with the button to change board's colors
-                    if math.sqrt((mouse_pos[0] - (self.screen.get_width() - button_changes_boardcolor.get_width() / 2 - 2)) ** 2 + (mouse_pos[1] - 2) ** 2) <= SQUARE / 4 and not pygame.mouse.get_pressed()[0]:  # If the mouse is on the circle of the button
-                        pygame.draw.circle(self.screen, (255, 255, 255), (self.screen.get_width() - 2 - button_changes_boardcolor.get_width() / 2, 2 + button_changes_boardcolor.get_height() / 2), SQUARE / 4)
-                        self.screen.blit(button_changes_boardcolor, button_changes_boardcolor_rect)  # Draw the button of the sound pressed
 
                     # Section use during one of the player plays and keep the mouse pressed to choose a tile to move
                     if self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is pressed and the enter_mouse_pressed is open (= True)
@@ -390,7 +355,7 @@ class Game:
                                     print("DRAW")
                                     print("END GAME")
 
-                            if self.sound_on:
+                            if self.button.sound_on:
                                 self.play_music(mod_of_move)
 
                             # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
@@ -451,7 +416,7 @@ class Game:
                                     self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
 
                                 #Play the music
-                                if self.sound_on:
+                                if self.button.sound_on:
                                     self.play_music(mod_of_move)
 
                                 # Update tile clicked

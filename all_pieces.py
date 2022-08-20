@@ -7,7 +7,9 @@ These class represent the object of a single piece that have some characteristic
 - A variable for the first move of the piece (True or False) => True if the piece hasn't played yet, False otherwise
 
 => The main method are:
-- update_possible_moves(): Update the list of possible basics moves of the piece (Doesn't take into account if the king is in Chess or not, if the move is legal,... => Other methods are called to reupdate the list of possible moves in the class Pieces)
+- update_possible_moves(): Update the list of possible basics moves of the piece (Doesn't take into account if the king
+  is in Chess or not, if the move is legal,...
+  => Other methods are called to reupdate the list of possible moves in the class Pieces)
 """
 class Pawn:
     def __init__(self, tile, color, first_move):
@@ -15,7 +17,6 @@ class Pawn:
         self.color = color
         self.first_move = first_move
         self.just_moved = False # Special variable for the special stroke "En Passant"
-
     def update_possible_moves(self):
         from Assets import dico_board
         list_possible_moves = []
@@ -37,7 +38,6 @@ class Pawn:
                 pass # Deal with the out of range error (By example, if the pawn is on the last column and the player want to move it to the diagonal RIGHT, the program will raise an error)
 
         return list_possible_moves
-
     def EnPassantMove(self):
         # Special Stroke ! ("En Passant")
         from Assets import dico_board
@@ -62,14 +62,12 @@ class Pawn:
             return True, list_possible_moves_enpassant
 
 class King:
-
     def __init__(self, tile, color, first_move, rook_1, rook_2):
         self.tile = tile
         self.color = color
         self.first_move = first_move
         self.rook_1 = rook_1 # Rook left of the king
         self.rook_2 = rook_2 # Rook right of the king
-
     def update_possible_moves(self):
         from Assets import dico_board
         list_possible_moves = []
@@ -84,13 +82,11 @@ class King:
                     pass # Deal with the out of range error
 
         return list_possible_moves
-
     def Rook_LeftStroke(self):
         """Return True if the king is on its first move and the rook left is on its first move."""
         if self.first_move and self.rook_1.first_move: # If the king is on its first move and the rook left is on its first move
             return True
         return False
-
     def Rook_RightStroke(self):
         """Return True if the king is on its first move and the rook right is on its first move."""
         if self.first_move and self.rook_2.first_move: # If the king is on its first move and the rook right is on its first move
@@ -98,12 +94,10 @@ class King:
         return False
 
 class Knight:
-
     def __init__(self, tile, color, first_move):
         self.tile = tile
         self.color = color
         self.first_move = first_move
-
     def update_possible_moves(self):
         from Assets import dico_board
         list_possible_moves = []
@@ -124,12 +118,10 @@ class Knight:
         return list_possible_moves
 
 class Rook:
-
     def __init__(self, tile, color, first_move):
         self.tile = tile
         self.color = color
         self.first_move = first_move
-
     def update_possible_moves(self):
         from Assets import dico_board
         list_possible_moves = []
@@ -184,15 +176,11 @@ class Rook:
 
         return list_possible_moves
 
-
-
 class Bishop:
-
     def __init__(self, tile, color, first_move):
         self.tile = tile
         self.color = color
         self.first_move = first_move
-
     def update_possible_moves(self):
         from Assets import dico_board
         list_possible_moves = []
@@ -254,15 +242,12 @@ class Bishop:
 
         return list_possible_moves
 
-
 class Queen:
-
     def __init__(self, tile, color, first_move):
         self.tile = tile
         self.color = color
         self.first_move = first_move
         self.promoted = False  # Special variable for the promotion
-
     def update_possible_moves(self):
         from Assets import dico_board
         # Bishop move
