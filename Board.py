@@ -71,8 +71,6 @@ class Board:
 
     def draw_possible_moves(self, tile_piece):
         """Draw the new color of the square of all possible moves of a piece."""
-        try:
+        if tile_piece != (-1, -1):
             for move_tile in dico_board[tile_piece][3]: # Loop for each possible move
                 self.draw_tile_on_board(move_tile[0], move_tile[1], COLOR_POSSIBLE_MOVES_LIGHT, COLOR_POSSIBLE_MOVES_DARK)
-        except KeyError:
-            pass # Deal with the error of the piece not being on the board ( at the beginning of the game, initialize on purpose the tile on (-1, -1))

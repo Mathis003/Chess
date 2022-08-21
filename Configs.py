@@ -12,8 +12,8 @@ WIDTH, HEIGHT = SQUARE * COL, SQUARE * ROW
 # Basic board colors (brown)
 DARK_COLOR_BROWN = "#A87965" # Color of the dark square (to draw the board)
 LIGHT_COLOR_BROWN = "#F0D8C0" # Color of the light square (to draw the board)
-COLOR_PLAYER_BEFORE_MOVE_BROWN = (190, 152, 53, 0.8) # Color of the square before the move when the player click on it
-COLOR_PLAYER_AFTER_MOVE_BROWN = (245, 225, 99, 0.8) # Color of the square where the player moved
+COLOR_PLAYER_BEFORE_MOVE_BROWN = (190, 152, 53) # Color of the square before the move when the player click on it
+COLOR_PLAYER_AFTER_MOVE_BROWN = (245, 225, 99) # Color of the square where the player moved
 # Basic board colors (green)
 DARK_COLOR_GREEN = (118,150,85)
 LIGHT_COLOR_GREEN = (238,238,212)

@@ -1,12 +1,11 @@
 import math
-
+from Configs import *
+from all_pieces import Pawn
 from Assets import dico_board, pygame, queen_white,\
     game_start_sound, button_sound_on,\
     button_changes_boardcolor, player_1, player_1_rect_1, player_1_rect_2, player_2,\
     player_2_rect, button_play, button_play_rect_1, button_play_rect_2, move_sound, capture_sound, castling_sound,\
     stalemate_sound, check_sound, checkmate_sound
-from Configs import *
-from all_pieces import Pawn
 
 pygame.init() # Initialize the pygame module
 
@@ -18,7 +17,8 @@ class Game:
         self.screen = screen
         self.board = board
         self.pieces = pieces
-        self.sound_button, self.board_color_button = sound_button, board_color_button
+        self.sound_button = sound_button
+        self.board_color_button = board_color_button
 
         # All variables (configs)
         self.running = True  # Boolean to know if the game is running or not (True = running, False = not running)
@@ -41,6 +41,7 @@ class Game:
         self.stop_IA = False
         self.IA = True # Boolean to know if the player is playing against the IA or not (True = against IA, False = against player)
 
+### MUSIC FUNCTIONS ###
     def launch_music(self, mod_of_move):
         if mod_of_move == "move":
             move_sound.play()
@@ -59,6 +60,10 @@ class Game:
         if self.sound_button.sound_on:
             self.launch_music(mod_of_move)
 
+#########################
+
+### BUTTON FUNCTIONS ###
+
     def ButtonUpdateClick(self, initial_pos_mouse):
         if self.sound_button.checkCollision(initial_pos_mouse):
             self.sound_button.changeButton()
@@ -70,6 +75,10 @@ class Game:
             self.sound_button.displayButton()
         if self.board_color_button.checkCollision(pos_mouse) and not pygame.mouse.get_pressed()[0]:
             self.board_color_button.displayButton()
+
+#########################
+
+### EVENTS FUNCTIONS ###
 
     def EventsBeforeRunningGame(self):
         for event in pygame.event.get():  # Loop for each event
@@ -155,6 +164,10 @@ class Game:
 
                     self.ButtonUpdateClick(initial_pos_mouse)
 
+#########################
+
+### UPDATE FUNCTIONS ###
+
     def UpdateGameBeforeeRunning(self):
         # Draw all the tile on the board
         self.board.draw_board(self.board_color_button.mod_board)
@@ -209,37 +222,32 @@ class Game:
         self.player_tile_clicked = (-1, -1)
         self.list_color_case[0] = (-1, -1)
 
+#########################
 
     def run(self):
 
         while self.running:  # Main loop
-
             if self.begin_menu: # Id the player is in the menu
-
                 self.EventsBeforeRunningGame()
                 self.UpdateGameBeforeeRunning()
 
             if not self.begin_menu: # If the player is in the game
                 if not self.IA:
-
                     # Events
                     self.EventsDuringRunningGame_WithoutIA()
-
                     # Update the elements of the game (board, pieces, ...)
                     if not self.end_menu or self.last_time_update_screen:
                         self.UpdateGame()
                         self.last_time_update_screen = False
-
                     if not self.end_menu:
                         # Section use during one of the player plays and keep the mouse pressed to choose a tile to move
-
                         if self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is pressed and the enter_mouse_pressed is open (= True)
                             if self.player_tile_clicked != (-1, -1):  # If the player_tile_clicked isn't (-1, -1) => Different of the initialisation
                                 pos_mouse = pygame.mouse.get_pos()  # Get the current mouse position (x, y) (usefull to update the rect's position of the piece)
-                                self.screen.blit(self.save_image_tile_clicked, pygame.Rect(pos_mouse[0] - SQUARE / 2, pos_mouse[1] - SQUARE / 2, SQUARE, SQUARE))  # Update the image of the piece clicked
+                                if self.save_image_tile_clicked != None:
+                                    self.screen.blit(self.save_image_tile_clicked, (pos_mouse[0] - SQUARE / 2, pos_mouse[1] - SQUARE / 2))  # Update the image of the piece clicked
 
                         # Section use during one of the player has finished to play and release the mouse to choose a tile to move (until the player press the mouse again)
-
                         if not self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is not pressed anymore and the enter_mouse_pressed is open (= True)
                             self.enter_mouse_pressed = False  # Close the enter_mouse_pressed variable to pass this section just ONCE
                             final_pos_mouse = pygame.mouse.get_pos()  # Get the final mouse position of the click (x, y)
@@ -253,11 +261,9 @@ class Game:
                                     dico_board[self.player_tile_moved][1] = self.save_image_tile_clicked  # Update the image of the tile moved with the image of the tile clicked
                                 # Update dico_turn to change the turn because the player has played
                                 self.change_turn()
-
                                 # Update the variables to make the colors of the special tiles (clicked_tile, moved_tile)
                                 self.list_color_case[1] = self.player_tile_moved
                                 self.color_case_waiting = self.player_tile_clicked
-
                                 # Deal with the big update of all piece !
                                 self.pieces.basics_possible_moves(self.piece_moved)  # Update the movement of the pieces on which there are changes about their possibilities of moves + the specvials moves ("En Passant" and "Castling")
                                 enter, piece_that_check = self.pieces.CheckOpponent(self.piece_moved, self.player_tile_clicked) # Check if the player has check the opponent
@@ -279,7 +285,6 @@ class Game:
                                         print("END GAME")
                                         self.end_menu = True
                                         self.last_time_update_screen = True
-
                                 self.play_music(mod_of_move)
 
                                 if not self.end_menu:
@@ -292,14 +297,11 @@ class Game:
                                         if self.piece_moved.just_moved:
                                             self.enter_to_reset_EnPassant = True
                                             self.save_pawn_first_move = self.piece_moved
-
                                     # Update tile clicked
                                     self.player_tile_clicked = (-1, -1)  # Reset the player_tile_clicked variable
 
-
                             else:  # If the tile moved is not in the list of possible moves of the tile clicked
                                 self.ResetBcMoveNotAllowed()
-
 
                     # If the game is over (DRAW or CHECKMATE)
                     if self.end_menu:
@@ -309,7 +311,6 @@ class Game:
                     pygame.display.update()
 
                 if self.IA:
-
                     # Events
                     self.EventsDuringRunningGame_WithIA()
                     self.UpdateGame()
@@ -318,10 +319,10 @@ class Game:
                     if self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is pressed and the enter_mouse_pressed is open (= True)
                         if self.player_tile_clicked != (-1, -1):  # If the player_tile_clicked isn't (-1, -1) => Different of the initialisation
                             pos_mouse = pygame.mouse.get_pos()  # Get the current mouse position (x, y) (usefull to update the rect's position of the piece)
-                            self.screen.blit(self.save_image_tile_clicked, pygame.Rect(pos_mouse[0] - SQUARE / 2, pos_mouse[1] - SQUARE / 2, SQUARE, SQUARE))  # Update the image of the piece clicked
+                            if self.save_image_tile_clicked != None:
+                                self.screen.blit(self.save_image_tile_clicked, (pos_mouse[0] - SQUARE / 2, pos_mouse[1] - SQUARE / 2))  # Update the image of the piece clicked
 
                     # Section use during one of the player has finished to play and release the mouse to choose a tile to move (until the player press the mouse again)
-
                     if not self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is not pressed anymore and the enter_mouse_pressed is open (= True)
                         self.enter_mouse_pressed = False  # Close the enter_mouse_pressed variable to pass this section just ONCE
                         final_pos_mouse = pygame.mouse.get_pos()  # Get the final mouse position of the click (x, y)
@@ -334,11 +335,9 @@ class Game:
                                 self.piece_moved.promoted = False  # Set the promoted variable to False
                             else:
                                 dico_board[self.player_tile_moved][1] = self.save_image_tile_clicked  # Update the image of the tile moved with the image of the tile clicked
-
                             # Update the variables to make the colors of the special tiles (clicked_tile, moved_tile)
                             self.list_color_case[1] = self.player_tile_moved
                             self.color_case_waiting = self.player_tile_clicked
-
                             # Deal with the big update of all piece !
                             self.pieces.basics_possible_moves(self.piece_moved)  # Update the movement of the pieces on which there are changes about their possibilities of moves + the specvials moves ("En Passant" and "Castling")
                             enter, piece_that_check = self.pieces.CheckOpponent(self.piece_moved, self.player_tile_clicked)  # Check if the player has check the opponent
@@ -360,7 +359,6 @@ class Game:
                                     print("END GAME")
 
                             self.play_music(mod_of_move)
-
                             # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
                             if self.enter_to_reset_EnPassant:
                                 # Reset the old Pawn's object and the enter
@@ -370,7 +368,6 @@ class Game:
                                 if self.piece_moved.just_moved:
                                     self.enter_to_reset_EnPassant = True
                                     self.save_pawn_first_move = self.piece_moved
-
                             # Update tile clicked
                             self.player_tile_clicked = (-1, -1)  # Reset the player_tile_clicked variable
 
@@ -393,7 +390,6 @@ class Game:
                             if not self.stop_IA:
                                 # IA TURN to play
                                 self.piece_moved, current_tile, new_tile, mod_of_move = self.pieces.move_IA()
-
                                 # Update the variables to make the colors of the special tiles (clicked_tile, moved_tile)
                                 self.list_color_case[1] = new_tile
                                 self.list_color_case[0] = current_tile
@@ -418,16 +414,11 @@ class Game:
                                         print("DRAW")
                                         print("END GAME")
                                     self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
-
                                 #Play the music
                                 self.play_music(mod_of_move)
-
                                 # Update tile clicked
                                 self.player_tile_clicked = (-1, -1)  # Reset the player_tile_clicked variable
-
-
                         else:  # If the tile moved is not in the list of possible moves of the tile clicked
                             self.ResetBcMoveNotAllowed()
-
                     # Update the screen
                     pygame.display.update()
