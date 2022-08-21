@@ -227,6 +227,7 @@ class Game:
     def run(self):
 
         while self.running:  # Main loop
+
             if self.begin_menu: # Id the player is in the menu
                 self.EventsBeforeRunningGame()
                 self.UpdateGameBeforeeRunning()

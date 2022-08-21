@@ -26,5 +26,5 @@ COLOR_PLAYER_BEFORE_MOVE_BLUE = (38,140,204)
 COLOR_PLAYER_AFTER_MOVE_BLUE = (117,199,232)
 
 # Other colors
-COLOR_POSSIBLE_MOVES_LIGHT = (219, 59, 87, 0.8) # Light color of the square (to draw the possible moves on light square only)
-COLOR_POSSIBLE_MOVES_DARK = (182, 33, 60, 0.8) # Dark color of the square (to draw the possible moves on dark square only)
+COLOR_POSSIBLE_MOVES_LIGHT = (219, 59, 87) # Light color of the square (to draw the possible moves on light square only)
+COLOR_POSSIBLE_MOVES_DARK = (182, 33, 60) # Dark color of the square (to draw the possible moves on dark square only)
