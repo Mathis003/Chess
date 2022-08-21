@@ -184,7 +184,6 @@ class Game:
 
     def UpdateGame(self):
         # Update the elements of the game (board, pieces, ...)
-        self.mouse_pressed = pygame.mouse.get_pressed()[0]  # Update the mouse_pressed variable
         # Draw all the tile on the board
         self.board.draw_board(self.board_color_button.mod_board)
         # Display the colors of the possible moves / the tile clicked
@@ -195,9 +194,6 @@ class Game:
         # Display the pieces on the board (Done at the end of the loop to be sure that the pieces aren't hide by the tiles's color)
         self.board.draw_pieces()
 
-        mouse_pos = pygame.mouse.get_pos()  # Update the mouse position
-        self.ActivateFunctionButton(mouse_pos)
-
     def update_necessary_variables(self, tile_clicked):
         """Update some necessary variables"""
         self.player_tile_clicked = tile_clicked  # Update the player_tile_clicked
@@ -205,6 +201,17 @@ class Game:
         self.save_image_tile_clicked = dico_board[self.player_tile_clicked][1]  # Save the image of the tile clicked
         self.enter_mouse_pressed = True
         dico_board[self.player_tile_clicked][1] = None  # Update the image of the piece and replace it by None
+
+    def UpdateEnPassantMove(self):
+        # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
+        if self.enter_to_reset_EnPassant:
+            # Reset the old Pawn's object and the enter
+            self.save_pawn_first_move.just_moved = None
+            self.enter_to_reset_EnPassant = False
+        if isinstance(self.piece_moved, type(Pawn((6, 0), 1, True))):
+            if self.piece_moved.just_moved:
+                self.enter_to_reset_EnPassant = True
+                self.save_pawn_first_move = self.piece_moved
 
     def change_turn(self):
         """Change the player's turn"""
@@ -238,7 +245,10 @@ class Game:
                     self.EventsDuringRunningGame_WithoutIA()
                     # Update the elements of the game (board, pieces, ...)
                     if not self.end_menu or self.last_time_update_screen:
+                        self.mouse_pressed = pygame.mouse.get_pressed()[0]  # Update the mouse_pressed variable
                         self.UpdateGame()
+                        mouse_pos = pygame.mouse.get_pos()  # Update the mouse position
+                        self.ActivateFunctionButton(mouse_pos)
                         self.last_time_update_screen = False
                     if not self.end_menu:
                         # Section use during one of the player plays and keep the mouse pressed to choose a tile to move
@@ -289,15 +299,7 @@ class Game:
                                 self.play_music(mod_of_move)
 
                                 if not self.end_menu:
-                                    # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
-                                    if self.enter_to_reset_EnPassant:
-                                        # Reset the old Pawn's object and the enter
-                                        self.save_pawn_first_move.just_moved = None
-                                        self.enter_to_reset_EnPassant = False
-                                    if isinstance(self.piece_moved, type(Pawn((6, 0), 1, True))):
-                                        if self.piece_moved.just_moved:
-                                            self.enter_to_reset_EnPassant = True
-                                            self.save_pawn_first_move = self.piece_moved
+                                    self.UpdateEnPassantMove()
                                     # Update tile clicked
                                     self.player_tile_clicked = (-1, -1)  # Reset the player_tile_clicked variable
 
@@ -314,7 +316,10 @@ class Game:
                 if self.IA:
                     # Events
                     self.EventsDuringRunningGame_WithIA()
+                    self.mouse_pressed = pygame.mouse.get_pressed()[0]  # Update the mouse_pressed variable
                     self.UpdateGame()
+                    mouse_pos = pygame.mouse.get_pos()  # Update the mouse position
+                    self.ActivateFunctionButton(mouse_pos)
 
                     # Section use during one of the player plays and keep the mouse pressed to choose a tile to move
                     if self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is pressed and the enter_mouse_pressed is open (= True)
@@ -327,8 +332,7 @@ class Game:
                     if not self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is not pressed anymore and the enter_mouse_pressed is open (= True)
                         self.enter_mouse_pressed = False  # Close the enter_mouse_pressed variable to pass this section just ONCE
                         final_pos_mouse = pygame.mouse.get_pos()  # Get the final mouse position of the click (x, y)
-                        self.player_tile_moved = (
-                            final_pos_mouse[1] // SQUARE, final_pos_mouse[0] // SQUARE)  # Tile moved
+                        self.player_tile_moved = (final_pos_mouse[1] // SQUARE, final_pos_mouse[0] // SQUARE)  # Tile moved
                         if self.player_tile_moved in dico_board[self.player_tile_clicked][3]:  # If the tile moved is in the list of possible moves of the tile clicked
                             mod_of_move = self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked, self.player_tile_moved)  # Move the piece and update the dico_board and all the necessary variables
                             self.piece_moved = dico_board[self.player_tile_moved][0]  # Get the piece moved
@@ -360,15 +364,7 @@ class Game:
                                     print("END GAME")
 
                             self.play_music(mod_of_move)
-                            # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
-                            if self.enter_to_reset_EnPassant:
-                                # Reset the old Pawn's object and the enter
-                                self.save_pawn_first_move.just_moved = None
-                                self.enter_to_reset_EnPassant = False
-                            if isinstance(self.piece_moved, type(Pawn((6, 0), 1, True))):
-                                if self.piece_moved.just_moved:
-                                    self.enter_to_reset_EnPassant = True
-                                    self.save_pawn_first_move = self.piece_moved
+                            self.UpdateEnPassantMove()
                             # Update tile clicked
                             self.player_tile_clicked = (-1, -1)  # Reset the player_tile_clicked variable
 
@@ -377,15 +373,7 @@ class Game:
 
                             # UPDATE THE TURN OF THE PLAYER
 
-                            # Draw all the tile on the board
-                            self.board.draw_board(self.board_color_button.mod_board)
-                            # Display the colors of the possible moves / the tile clicked
-                            self.board.draw_tile(self.list_color_case[0], self.board_color_button.mod_board, "dark")  # Draw the tile clicked by the player
-                            self.board.draw_tile(self.list_color_case[1],  self.board_color_button.mod_board, "light")  # Draw the tile played by the player
-                            self.board.draw_tile(self.color_case_waiting, self.board_color_button.mod_board, "dark")  # Draw the tile played by the player
-                            self.board.draw_possible_moves(self.player_tile_clicked)
-                            # Display the pieces on the board (Done at the end of the loop to be sure that the pieces aren't hide by the tiles's color)
-                            self.board.draw_pieces()
+                            self.UpdateGame()
                             pygame.display.update()
 
                             if not self.stop_IA:

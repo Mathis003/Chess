@@ -133,6 +133,7 @@ class Pieces:
 #####################################
 
 ### Function very usefull for the paragraph just below ###
+
     def King_with_his_Tile(self, piece_moved):
         """Return the king piece and his tile (opponent to the piece moved)."""
         king, tile_king = None, None

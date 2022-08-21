@@ -197,6 +197,7 @@ dico_board = create_dico_board()
 
 # List of all the pieces objects => allow to access to all the pieces objects without testing all the board's tile.
 # => will be update if the board is updated. (piece eaten, promotion, ...)
+
 LIST_BLACK_PIECES = [rook_black_1, rook_black_2, bishop_black_1, bishop_black_2, queen_black,
                      king_black, knight_black_1, knight_black_2, pawn_black_1, pawn_black_2, pawn_black_3,
                      pawn_black_4, pawn_black_5, pawn_black_6, pawn_black_7, pawn_black_8]
