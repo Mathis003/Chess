@@ -1,6 +1,7 @@
 import sys
 sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
 from Variables import dico_board
+from all_pieces import *
 import time
 import math
 import random
@@ -94,6 +95,20 @@ class IA_Player:
         self.dico_list_pieces = None
         self.dico_points_pieces_black = None
         self.dico_points_pieces_white = None
+
+        self.dico_points_pieces_white = {type(Pawn((7, 4), 1, True)): matrix_points_pawn_white,
+                                         type(Queen((7, 4), 1, True)): matrix_points_queen_white,
+                                         type(King((7, 4), 1, True, 0, 0)): matrix_points_king_white,
+                                         type(Bishop((7, 4), 1, True)): matrix_points_bishop_white,
+                                         type(Knight((7, 4), 1, True)): matrix_points_knight_white,
+                                         type(Rook((7, 4), 1, True)): matrix_points_rook_white}
+
+        self.dico_points_pieces_black = {type(Pawn((7, 4), 1, True)): matrix_points_pawn_black,
+                                         type(Queen((7, 4), 1, True)): matrix_points_queen_black,
+                                         type(King((7, 4), 1, True, 0, 0)): matrix_points_king_black,
+                                         type(Bishop((7, 4), 1, True)): matrix_points_bishop_black,
+                                         type(Knight((7, 4), 1, True)): matrix_points_knight_black,
+                                         type(Rook((7, 4), 1, True)): matrix_points_rook_black}
 
     def get_all_possible_moves(self):
         dico_all_possible_moves_on_board = {}

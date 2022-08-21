@@ -120,3 +120,5 @@ LIST_BLACK_PIECES = [rook_black_1, rook_black_2, bishop_black_1, bishop_black_2,
 LIST_WHITE_PIECES = [rook_white_1, rook_white_2, bishop_white_1, bishop_white_2, king_white,
                      queen_white, knight_white_1, knight_white_2, pawn_white_1, pawn_white_2, pawn_white_3,
                      pawn_white_4, pawn_white_5, pawn_white_6, pawn_white_7, pawn_white_8]
+
+dico_list_pieces = {1 : LIST_WHITE_PIECES, -1 : LIST_BLACK_PIECES}

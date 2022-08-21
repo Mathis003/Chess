@@ -2,7 +2,6 @@ import sys
 sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
 from IA import *
 from Variables import *
-
 from all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
 
 class Pieces:
@@ -10,26 +9,12 @@ class Pieces:
     def __init__(self, king_white, king_black):
         self.king_white = king_white
         self.king_black = king_black
-        self.dico_list_pieces = {1 : LIST_WHITE_PIECES, -1 : LIST_BLACK_PIECES}
-        self.dico_points_pieces_white = {type(Pawn((7, 4), 1, True)) : matrix_points_pawn_white,
-                                         type(Queen((7, 4), 1, True)) : matrix_points_queen_white,
-                                         type(King((7, 4), 1, True, 0, 0)) : matrix_points_king_white,
-                                         type(Bishop((7, 4), 1, True)) : matrix_points_bishop_white,
-                                         type(Knight((7, 4), 1, True)) : matrix_points_knight_white,
-                                         type(Rook((7, 4), 1, True)) : matrix_points_rook_white}
-
-        self.dico_points_pieces_black = {type(Pawn((7, 4), 1, True)): matrix_points_pawn_black,
-                                         type(Queen((7, 4), 1, True)): matrix_points_queen_black,
-                                         type(King((7, 4), 1, True, 0, 0)): matrix_points_king_black,
-                                         type(Bishop((7, 4), 1, True)): matrix_points_bishop_black,
-                                         type(Knight((7, 4), 1, True)): matrix_points_knight_black,
-                                         type(Rook((7, 4), 1, True)): matrix_points_rook_black}
 
 ### Functions to change the images of all the pawn ###
 
     def change_image_into_2(self):
         """Change the image of the pieces."""
-        for piece in self.dico_list_pieces[1]:
+        for piece in dico_list_pieces[1]:
             if isinstance(piece, type(Pawn((7, 4), 1, True))):
                 dico_board[piece.tile][1] = white_pawn_image_2
             elif isinstance(piece, type(Queen((7, 4), 1, True))):
@@ -42,7 +27,7 @@ class Pieces:
                 dico_board[piece.tile][1] = white_knight_image_2
             elif isinstance(piece, type(Rook((7, 4), 1, True))):
                 dico_board[piece.tile][1] = white_rook_image_2
-        for piece in self.dico_list_pieces[-1]:
+        for piece in dico_list_pieces[-1]:
             if isinstance(piece, type(Pawn((7, 4), 1, True))):
                 dico_board[piece.tile][1] = black_pawn_image_2
             elif isinstance(piece, type(Queen((7, 4), 1, True))):
@@ -58,7 +43,7 @@ class Pieces:
 
     def change_image_into_1(self):
         """Change the image of the pieces."""
-        for piece in self.dico_list_pieces[1]:
+        for piece in dico_list_pieces[1]:
             if isinstance(piece, type(Pawn((7, 4), 1, True))):
                 dico_board[piece.tile][1] = white_pawn_image
             elif isinstance(piece, type(Queen((7, 4), 1, True))):
@@ -71,7 +56,7 @@ class Pieces:
                 dico_board[piece.tile][1] = white_knight_image
             elif isinstance(piece, type(Rook((7, 4), 1, True))):
                 dico_board[piece.tile][1] = white_rook_image
-        for piece in self.dico_list_pieces[-1]:
+        for piece in dico_list_pieces[-1]:
             if isinstance(piece, type(Pawn((7, 4), 1, True))):
                 dico_board[piece.tile][1] = black_pawn_image
             elif isinstance(piece, type(Queen((7, 4), 1, True))):
@@ -99,7 +84,7 @@ class Pieces:
     def ChessTileBetween(self, list_tile, king_piece):
         """Check if the tiles in the "list_tile" are all not in Check => return True, False otherwise."""
         list_tile.append((7, 4))
-        for piece in self.dico_list_pieces[- king_piece.color]:
+        for piece in dico_list_pieces[- king_piece.color]:
             list_possible_moves = piece.update_possible_moves()
             for tile in list_tile:
                 if tile in list_possible_moves:
@@ -146,7 +131,7 @@ class Pieces:
     ### IMPORTANT FUNCTION !!! ###
     def basics_possible_moves(self, moved_piece):
         """Update the basics possible moves of the pieces + specials moves."""
-        for piece in self.dico_list_pieces[- moved_piece.color]: # Loop for each piece of the good color
+        for piece in dico_list_pieces[- moved_piece.color]: # Loop for each piece of the good color
             dico_board[piece.tile][3] = piece.update_possible_moves()  # Update possible moves of the piece
 
             if isinstance(piece, type(King((7, 4), 1, True, 0, 0))): # If the piece is the king
@@ -162,7 +147,7 @@ class Pieces:
     def PieceTouchPieceMoved(self, current_tile, color_piece_to_analyse):
         """Return the list of pieces (the same color than the piece moved one) that are touching the piece moved if she moves."""
         list_pieces = []
-        for piece in self.dico_list_pieces[color_piece_to_analyse]:
+        for piece in dico_list_pieces[color_piece_to_analyse]:
             new_possible_moves = piece.update_possible_moves()
             if current_tile in new_possible_moves:
                 list_pieces.append(piece)
@@ -185,7 +170,7 @@ class Pieces:
     ### IMPORTANT FUNCTION !!! ###
     def Check_NoMoveAvailable(self, piece_moved):
         """Check if the king is in checkmate."""
-        for piece in self.dico_list_pieces[- piece_moved.color]:
+        for piece in dico_list_pieces[- piece_moved.color]:
             if dico_board[piece.tile][3] != []:
                 print(dico_board[piece.tile])
                 return False
@@ -193,7 +178,7 @@ class Pieces:
 
     ### IMPORTANT FUNCTION !!! ###
     def ReUpdate_ToNot_OwnChess(self, piece_moved):
-        for piece in self.dico_list_pieces[- piece_moved.color]: # Loop for each piece of the good color
+        for piece in dico_list_pieces[- piece_moved.color]: # Loop for each piece of the good color
             if isinstance(piece, type(King([7, 4], 1, True, 0, 0))): # If the piece is the king
                 self.UpdateKingMoves_ToNotBeInCheck(piece_moved)
             else: # If the piece is not the king
@@ -207,7 +192,7 @@ class Pieces:
             dico_board[king_chess.tile][2] = 0 # Simulate that the king isn't there
             save_color_tile = dico_board[move_tile][2] # Save the color of the tile's moved
             dico_board[move_tile][2] = king_chess.color # Simulate that the king is there
-            for piece in self.dico_list_pieces[piece_moved.color]: # Loop for each piece of the opponent color
+            for piece in dico_list_pieces[piece_moved.color]: # Loop for each piece of the opponent color
                 new_all_possible_moves = piece.update_possible_moves() # Update possible moves of the piece
                 if move_tile in new_all_possible_moves: # If the king is also in Check here
                     l_to_remove_move_tile.append(move_tile) # Add the move tile to the list of move tile to remove
@@ -247,7 +232,7 @@ class Pieces:
     def CheckMod_reupdate_possibles_move(self, piece_that_check):
         """Update all the possible move if the king is in Chess."""
         king_chess = self.King_with_his_Tile(piece_that_check)[0] # Get the king's piece (opponent to the piece moved)
-        for piece in self.dico_list_pieces[king_chess.color]: # Loop for each piece of the king's color
+        for piece in dico_list_pieces[king_chess.color]: # Loop for each piece of the king's color
             if isinstance(piece, type(self.king_white)): # If the piece is the king
                 self.UpdateKingMoves_ToNotBeInCheck(piece_that_check) # Update the possible moves of the king BEING in check!
             else: # If the piece is not the king
@@ -274,7 +259,7 @@ class Pieces:
 
     def IfPieceMove_CheckAgain(self, piece_that_check, piece, king_chess):
         enter = True
-        for opponent_piece in self.dico_list_pieces[piece_that_check.color]:
+        for opponent_piece in dico_list_pieces[piece_that_check.color]:
             if opponent_piece != piece_that_check:  # If the piece is not the piece that check the king
                 dico_board[piece.tile][2] = 0  # Simulate that the piece isn't there to see if another opponent piece put the king in check
                 new_all_possible_moves = opponent_piece.update_possible_moves()  # Update possible moves of the piece
@@ -295,10 +280,10 @@ class Pieces:
         if dico_board[tile][0] != None: # If the tile contain a piece (= isn't empty)
             if dico_board[tile][2] == 1: # If the piece is white
                 LIST_WHITE_PIECES.remove(dico_board[tile][0]) # Remove the white piece from the list of pieces
-                self.dico_list_pieces[1] = LIST_WHITE_PIECES # Update the list of pieces
+                dico_list_pieces[1] = LIST_WHITE_PIECES # Update the list of pieces
             elif dico_board[tile][2] == -1: # If the piece is black
                 LIST_BLACK_PIECES.remove(dico_board[tile][0]) # Remove the black piece from the list of pieces
-                self.dico_list_pieces[-1] = LIST_BLACK_PIECES  # Update the list of pieces
+                dico_list_pieces[-1] = LIST_BLACK_PIECES  # Update the list of pieces
 
             if isinstance(dico_board[tile][0], type(Queen((5,5), 1, True))): # If the piece is a queen
                 if dico_board[tile][2] == 1: # If the piece is white
@@ -309,10 +294,10 @@ class Pieces:
     def add_from_list_piece(self, piece):
         if piece.color == 1:
             LIST_WHITE_PIECES.append(piece)
-            self.dico_list_pieces[1] = LIST_WHITE_PIECES
+            dico_list_pieces[1] = LIST_WHITE_PIECES
         elif piece.color == -1:
             LIST_BLACK_PIECES.append(piece)
-            self.dico_list_pieces[-1] = LIST_BLACK_PIECES
+            dico_list_pieces[-1] = LIST_BLACK_PIECES
 
 ##########################################################################################
 
@@ -358,7 +343,7 @@ class Pieces:
                     tile_piece_eaten = (current_tile[0], new_tile[1])
                     piece_eaten = dico_board[tile_piece_eaten][0]
                     # Update the list of pieces (remove the piece eaten)
-                    self.dico_list_pieces[- pawn_piece.color].remove(piece_eaten)
+                    dico_list_pieces[- pawn_piece.color].remove(piece_eaten)
                     # Update dico_board
                     dico_board[tile_piece_eaten] = [None, None, 0, []]
                     mod_of_move =  "capture"
