@@ -1,5 +1,6 @@
 # Ignore the directory '.idea' (IDE specific file)
 .idea/
+.idea/*
 .venv/
 
 # Ignore file
