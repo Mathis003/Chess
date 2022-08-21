@@ -3,20 +3,22 @@ import math
 from Assets import dico_board, pygame, queen_white,\
     game_start_sound, button_sound_on,\
     button_changes_boardcolor, player_1, player_1_rect_1, player_1_rect_2, player_2,\
-    player_2_rect, button_play, button_play_rect_1, button_play_rect_2
+    player_2_rect, button_play, button_play_rect_1, button_play_rect_2, move_sound, capture_sound, castling_sound,\
+    stalemate_sound, check_sound, checkmate_sound
 from Configs import *
+from all_pieces import Pawn
 
 pygame.init() # Initialize the pygame module
 
 class Game:
     """Game class represent the Game himself with the method Run() that launch the game."""
 
-    def __init__(self, screen, board, pieces, button):
+    def __init__(self, screen, board, pieces, sound_button, board_color_button):
         # All classes
         self.screen = screen
         self.board = board
         self.pieces = pieces
-        self.button = button
+        self.sound_button, self.board_color_button = sound_button, board_color_button
 
         # All variables (configs)
         self.running = True  # Boolean to know if the game is running or not (True = running, False = not running)
@@ -38,6 +40,36 @@ class Game:
 
         self.stop_IA = False
         self.IA = True # Boolean to know if the player is playing against the IA or not (True = against IA, False = against player)
+
+    def launch_music(self, mod_of_move):
+        if mod_of_move == "move":
+            move_sound.play()
+        elif mod_of_move == "capture":
+            capture_sound.play()
+        elif mod_of_move == "check":
+            check_sound.play()
+        elif mod_of_move == "castling":
+            castling_sound.play()
+        elif mod_of_move == "checkmate":
+            checkmate_sound.play()
+        elif mod_of_move == "stalemate":
+            stalemate_sound.play()
+
+    def play_music(self, mod_of_move):
+        if self.sound_button.sound_on:
+            self.launch_music(mod_of_move)
+
+    def ButtonUpdateClick(self, initial_pos_mouse):
+        if self.sound_button.checkCollision(initial_pos_mouse):
+            self.sound_button.changeButton()
+        if self.board_color_button.checkCollision(initial_pos_mouse):
+            self.board_color_button.changeColorBoard()
+
+    def ActivateFunctionButton(self, pos_mouse):
+        if self.sound_button.checkCollision(pos_mouse) and not pygame.mouse.get_pressed()[0]:
+            self.sound_button.displayButton()
+        if self.board_color_button.checkCollision(pos_mouse) and not pygame.mouse.get_pressed()[0]:
+            self.board_color_button.displayButton()
 
     def EventsBeforeRunningGame(self):
         for event in pygame.event.get():  # Loop for each event
@@ -94,8 +126,7 @@ class Game:
                                 if dico_board[tile_clicked][0].color == -1:  # If the tile clicked is a white piece
                                     self.update_necessary_variables(tile_clicked)  # Update the necessary variables
 
-                        self.button.setSound(initial_pos_mouse)
-                        self.button.setMod(initial_pos_mouse)
+                        self.ButtonUpdateClick(initial_pos_mouse)
 
     def EventsDuringRunningGame_WithIA(self):
         for event in pygame.event.get():  # Loop for each event
@@ -122,12 +153,11 @@ class Game:
                         if dico_board[tile_clicked][0].color == 1:  # If the tile clicked is a white piece
                             self.update_necessary_variables(tile_clicked)  # Update the necessary variables
 
-                    self.button.setSound(initial_pos_mouse)
-                    self.button.setMod(initial_pos_mouse)
+                    self.ButtonUpdateClick(initial_pos_mouse)
 
     def UpdateGameBeforeeRunning(self):
         # Draw all the tile on the board
-        self.board.draw_board(self.button.mod_board)
+        self.board.draw_board(self.board_color_button.mod_board)
         # Display the pieces on the board (Done at the end of the loop to be sure that the pieces aren't hide by the tiles's color)
         self.board.draw_pieces()
         # Display the player
@@ -143,18 +173,17 @@ class Game:
         # Update the elements of the game (board, pieces, ...)
         self.mouse_pressed = pygame.mouse.get_pressed()[0]  # Update the mouse_pressed variable
         # Draw all the tile on the board
-        self.board.draw_board(self.button.mod_board)
+        self.board.draw_board(self.board_color_button.mod_board)
         # Display the colors of the possible moves / the tile clicked
-        self.board.draw_tile(self.list_color_case[0], self.button.mod_board, "dark")  # Draw the tile clicked by the player
-        self.board.draw_tile(self.list_color_case[1], self.button.mod_board, "light")  # Draw the tile played by the player
-        self.board.draw_tile(self.color_case_waiting, self.button.mod_board, "dark")  # Draw the tile played by the player
+        self.board.draw_tile(self.list_color_case[0], self.board_color_button.mod_board, "dark")  # Draw the tile clicked by the player
+        self.board.draw_tile(self.list_color_case[1], self.board_color_button.mod_board, "light")  # Draw the tile played by the player
+        self.board.draw_tile(self.color_case_waiting, self.board_color_button.mod_board, "dark")  # Draw the tile played by the player
         self.board.draw_possible_moves(self.player_tile_clicked)
         # Display the pieces on the board (Done at the end of the loop to be sure that the pieces aren't hide by the tiles's color)
         self.board.draw_pieces()
 
         mouse_pos = pygame.mouse.get_pos()  # Update the mouse position
-        self.button.activateSoundButton(mouse_pos)
-        self.button.activateChangeColorButton(mouse_pos)
+        self.ActivateFunctionButton(mouse_pos)
 
     def update_necessary_variables(self, tile_clicked):
         """Update some necessary variables"""
@@ -172,6 +201,13 @@ class Game:
         else:
             self.dico_turn["turn_white"] = True
             self.dico_turn["turn_black"] = False
+
+    def ResetBcMoveNotAllowed(self):
+        # Reset the image of the tile clicked to the initial one
+        dico_board[self.player_tile_clicked][1] = self.save_image_tile_clicked
+        # Rinitialize the color of the tile clicked
+        self.player_tile_clicked = (-1, -1)
+        self.list_color_case[0] = (-1, -1)
 
 
     def run(self):
@@ -229,7 +265,7 @@ class Game:
                                     print("Check")
                                     mod_of_move = "check"
                                     self.pieces.CheckMod_reupdate_possibles_move(piece_that_check)  # ReUpdate correctly the possibility of the pieces to move and protect the king
-                                    if self.pieces.Check_Checkmate(piece_that_check): # Check if the opponent player can play at least one piece
+                                    if self.pieces.Check_NoMoveAvailable(piece_that_check): # Check if the opponent player can play at least one piece
                                         mod_of_move = "checkmate"
                                         print("CHECKMATE")
                                         print("END GAME")  # End the game
@@ -237,14 +273,14 @@ class Game:
                                         self.last_time_update_screen = True
                                 else:
                                     self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
-                                    if self.pieces.Check_Checkmate(self.piece_moved): # Check if the opponent player can play at least one piece
+                                    if self.pieces.Check_NoMoveAvailable(self.piece_moved): # Check if the opponent player can play at least one piece
                                         mod_of_move = "stalemate"
                                         print("DRAW")
                                         print("END GAME")
                                         self.end_menu = True
                                         self.last_time_update_screen = True
 
-                                self.button.play_music(mod_of_move)
+                                self.play_music(mod_of_move)
 
                                 if not self.end_menu:
                                     # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
@@ -252,20 +288,17 @@ class Game:
                                         # Reset the old Pawn's object and the enter
                                         self.save_pawn_first_move.just_moved = None
                                         self.enter_to_reset_EnPassant = False
-                                    if self.pieces.JustMovedPawn(self.piece_moved):
-                                        self.enter_to_reset_EnPassant = True
-                                        self.save_pawn_first_move = self.piece_moved
+                                    if isinstance(self.piece_moved, type(Pawn((6, 0), 1, True))):
+                                        if self.piece_moved.just_moved:
+                                            self.enter_to_reset_EnPassant = True
+                                            self.save_pawn_first_move = self.piece_moved
 
                                     # Update tile clicked
                                     self.player_tile_clicked = (-1, -1)  # Reset the player_tile_clicked variable
 
 
                             else:  # If the tile moved is not in the list of possible moves of the tile clicked
-                                # Reset the image of the tile clicked to the initial one
-                                dico_board[self.player_tile_clicked][1] = self.save_image_tile_clicked
-                                # Rinitialize the color of the tile clicked
-                                self.player_tile_clicked = (-1, -1)
-                                self.list_color_case[0] = (-1, -1)
+                                self.ResetBcMoveNotAllowed()
 
 
                     # If the game is over (DRAW or CHECKMATE)
@@ -283,7 +316,6 @@ class Game:
 
                     # Section use during one of the player plays and keep the mouse pressed to choose a tile to move
                     if self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is pressed and the enter_mouse_pressed is open (= True)
-                        print("ok")
                         if self.player_tile_clicked != (-1, -1):  # If the player_tile_clicked isn't (-1, -1) => Different of the initialisation
                             pos_mouse = pygame.mouse.get_pos()  # Get the current mouse position (x, y) (usefull to update the rect's position of the piece)
                             self.screen.blit(self.save_image_tile_clicked, pygame.Rect(pos_mouse[0] - SQUARE / 2, pos_mouse[1] - SQUARE / 2, SQUARE, SQUARE))  # Update the image of the piece clicked
@@ -314,29 +346,30 @@ class Game:
                                 mod_of_move = "check"  # Set the mod_of_move variable to "check"
                                 print("Check")
                                 self.pieces.CheckMod_reupdate_possibles_move(piece_that_check)  # ReUpdate correctly the possibility of the pieces to move and protect the king
-                                if self.pieces.Check_Checkmate(piece_that_check):  # Check if the opponent player can play at least one piece
+                                if self.pieces.Check_NoMoveAvailable(piece_that_check):  # Check if the opponent player can play at least one piece
                                     mod_of_move = "checkmate"  # Set the mod of move to "checkmate"
                                     self.stop_IA = True
                                     print("CHECKMATE")
                                     print("END GAME")  # End the game
                             else:
                                 self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
-                                if self.pieces.Check_Checkmate(self.piece_moved):  # Check if the opponent player can play at least one piece
+                                if self.pieces.Check_NoMoveAvailable(self.piece_moved):  # Check if the opponent player can play at least one piece
                                     mod_of_move = "stalemate"  # Set the mod of move to "stalemate"
                                     self.stop_IA = True
                                     print("DRAW")
                                     print("END GAME")
 
-                            self.button.play_music(mod_of_move)
+                            self.play_music(mod_of_move)
 
                             # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
                             if self.enter_to_reset_EnPassant:
                                 # Reset the old Pawn's object and the enter
                                 self.save_pawn_first_move.just_moved = None
                                 self.enter_to_reset_EnPassant = False
-                            if self.pieces.JustMovedPawn(self.piece_moved):
-                                self.enter_to_reset_EnPassant = True
-                                self.save_pawn_first_move = self.piece_moved
+                            if isinstance(self.piece_moved, type(Pawn((6, 0), 1, True))):
+                                if self.piece_moved.just_moved:
+                                    self.enter_to_reset_EnPassant = True
+                                    self.save_pawn_first_move = self.piece_moved
 
                             # Update tile clicked
                             self.player_tile_clicked = (-1, -1)  # Reset the player_tile_clicked variable
@@ -347,11 +380,11 @@ class Game:
                             # UPDATE THE TURN OF THE PLAYER
 
                             # Draw all the tile on the board
-                            self.board.draw_board(self.button.mod_board)
+                            self.board.draw_board(self.board_color_button.mod_board)
                             # Display the colors of the possible moves / the tile clicked
-                            self.board.draw_tile(self.list_color_case[0], self.button.mod_board, "dark")  # Draw the tile clicked by the player
-                            self.board.draw_tile(self.list_color_case[1],  self.button.mod_board, "light")  # Draw the tile played by the player
-                            self.board.draw_tile(self.color_case_waiting, self.button.mod_board, "dark")  # Draw the tile played by the player
+                            self.board.draw_tile(self.list_color_case[0], self.board_color_button.mod_board, "dark")  # Draw the tile clicked by the player
+                            self.board.draw_tile(self.list_color_case[1],  self.board_color_button.mod_board, "light")  # Draw the tile played by the player
+                            self.board.draw_tile(self.color_case_waiting, self.board_color_button.mod_board, "dark")  # Draw the tile played by the player
                             self.board.draw_possible_moves(self.player_tile_clicked)
                             # Display the pieces on the board (Done at the end of the loop to be sure that the pieces aren't hide by the tiles's color)
                             self.board.draw_pieces()
@@ -387,18 +420,14 @@ class Game:
                                     self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
 
                                 #Play the music
-                                self.button.play_music(mod_of_move)
+                                self.play_music(mod_of_move)
 
                                 # Update tile clicked
                                 self.player_tile_clicked = (-1, -1)  # Reset the player_tile_clicked variable
 
 
                         else:  # If the tile moved is not in the list of possible moves of the tile clicked
-                            # Reset the image of the tile clicked to the initial one
-                            dico_board[self.player_tile_clicked][1] = self.save_image_tile_clicked
-                            # Rinitialize the color of the tile clicked
-                            self.player_tile_clicked = (-1, -1)
-                            self.list_color_case[0] = (-1, -1)
+                            self.ResetBcMoveNotAllowed()
 
                     # Update the screen
                     pygame.display.update()

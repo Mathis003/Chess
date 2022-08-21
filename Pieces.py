@@ -1,17 +1,12 @@
-import math
-import random
-import time
-
-from Assets import dico_board, LIST_BLACK_PIECES, LIST_WHITE_PIECES, white_queen_image, black_queen_image,\
+from Assets import dico_board, LIST_BLACK_PIECES, LIST_WHITE_PIECES,\
     matrix_points_pawn_white, matrix_points_pawn_black, matrix_points_bishop_white, matrix_points_bishop_black,\
     matrix_points_knight_white, matrix_points_knight_black, matrix_points_rook_white, matrix_points_rook_black,\
     matrix_points_queen_white, matrix_points_queen_black, matrix_points_king_white, matrix_points_king_black,\
     black_bishop_image_2, white_bishop_image_2, black_knight_image_2, white_knight_image_2, black_rook_image_2,\
     white_rook_image_2, black_queen_image_2, white_queen_image_2, black_king_image_2, white_king_image_2,\
-    black_pawn_image_2, white_pawn_image_2, white_pawn_image, black_pawn_image, white_rook_image, black_rook_image,\
+    black_pawn_image_2, white_pawn_image_2, white_rook_image, black_rook_image,\
     white_bishop_image, black_bishop_image, white_knight_image, black_knight_image, white_queen_image, black_queen_image,\
     white_king_image, black_king_image, white_pawn_image, black_pawn_image
-
 
 from all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
 
@@ -34,6 +29,8 @@ class Pieces:
                                          type(Bishop((7, 4), 1, True)): matrix_points_bishop_black,
                                          type(Knight((7, 4), 1, True)): matrix_points_knight_black,
                                          type(Rook((7, 4), 1, True)): matrix_points_rook_black}
+
+### Functions to change the images of all the pawn ###
 
     def change_image_into_2(self):
         """Change the image of the pieces."""
@@ -93,6 +90,10 @@ class Pieces:
             elif isinstance(piece, type(Rook((7, 4), 1, True))):
                 dico_board[piece.tile][1] = black_rook_image
 
+#####################################################
+
+### Functions for 'CASTLING' move ###
+
     def TileBetweenEmpty(self, list_tile):
         """Check if the tiles in the "list_tile" are all empty => return True, False otherwise."""
         for tile in list_tile:
@@ -129,6 +130,23 @@ class Pieces:
             if self.TileBetweenEmpty(list_tile_rightstroke) and not self.ChessTileBetween(list_tile_rightstroke, king_piece): # If the tiles between the king and the right rook are empty and not in check
                 dico_board[king_piece.tile][3].append(tile_to_append_right) # Add the tile to the list of possible moves of the king
 
+#####################################
+
+### Function very usefull for the paragraph just below ###
+    def King_with_his_Tile(self, piece_moved):
+        """Return the king piece and his tile (opponent to the piece moved)."""
+        king, tile_king = None, None
+        if piece_moved.color == 1:
+            king, tile_king = self.king_black, self.king_black.tile
+        if piece_moved.color == -1:
+            king, tile_king = self.king_white, self.king_white.tile
+        return king, tile_king
+
+###########################################################
+
+
+### Function to have all the possibles moves with all the possible case => prevent Check,... ###
+
     def basics_possible_moves(self, moved_piece):
         """Update the basics possible moves of the pieces + specials moves."""
         for piece in self.dico_list_pieces[- moved_piece.color]: # Loop for each piece of the good color
@@ -144,14 +162,6 @@ class Pieces:
                     for move_tile in possible_move:
                         dico_board[piece.tile][3].append(move_tile)
 
-    def King_with_his_Tile(self, piece_moved):
-        """Return the king piece and his tile (opponent to the piece moved)."""
-        if piece_moved.color == 1:
-            king, tile_king = self.king_black, self.king_black.tile
-        if piece_moved.color == -1:
-            king, tile_king = self.king_white, self.king_white.tile
-        return king, tile_king
-
     def PieceTouchPieceMoved(self, current_tile, color_piece_to_analyse):
         """Return the list of pieces (the same color than the piece moved one) that are touching the piece moved if she moves."""
         list_pieces = []
@@ -164,7 +174,7 @@ class Pieces:
     def CheckOpponent(self, piece_moved, current_tile):
         """Check if the opponent is in check => return True, False otherwise."""
         tile_king = self.King_with_his_Tile(piece_moved)[1]
-        list_pieces_to_test = self.PieceTouchPieceMoved(current_tile, - piece_moved.color) # Get the list of pieces that are touching the piece moved
+        list_pieces_to_test = self.PieceTouchPieceMoved(current_tile, piece_moved.color) # Get the list of pieces that are touching the piece moved
         if piece_moved not in list_pieces_to_test:
             list_pieces_to_test.append(piece_moved) # Add the piece moved to the list of pieces to test
 
@@ -173,6 +183,14 @@ class Pieces:
             if tile_king in new_list_possible_moves:
                 return True, piece
         return False, None
+
+    def Check_NoMoveAvailable(self, piece_moved):
+        """Check if the king is in checkmate."""
+        for piece in self.dico_list_pieces[- piece_moved.color]:
+            if dico_board[piece.tile][3] != []:
+                print(dico_board[piece.tile])
+                return False
+        return True
 
     def ReUpdate_ToNot_OwnChess(self, piece_moved):
         for piece in self.dico_list_pieces[- piece_moved.color]: # Loop for each piece of the good color
@@ -188,8 +206,6 @@ class Pieces:
         if list_possible_moves != []:
             list_piece = self.PieceTouchPieceMoved(piece.tile, piece_moved.color)
             dico_board[piece.tile][2] = 0  # Simulate that the piece isn't there to see if the piece protect the king (being there) or not
-            if piece == dico_board[(3, 3)][0]:
-                print(list_piece)
             for piece_touch in list_piece:
                 new_list_possible_moves = piece_touch.update_possible_moves()
                 if tile_king in new_list_possible_moves:
@@ -231,8 +247,7 @@ class Pieces:
         enter = True
         for opponent_piece in self.dico_list_pieces[piece_that_check.color]:
             if opponent_piece != piece_that_check:  # If the piece is not the piece that check the king
-                dico_board[piece.tile][
-                    2] = 0  # Simulate that the piece isn't there to see if another opponent piece put the king in check
+                dico_board[piece.tile][2] = 0  # Simulate that the piece isn't there to see if another opponent piece put the king in check
                 new_all_possible_moves = opponent_piece.update_possible_moves()  # Update possible moves of the piece
                 if king_chess.tile in new_all_possible_moves:  # If the king is in check here
                     dico_board[piece.tile][3] = []  # Reset the possible moves of the piece
@@ -251,12 +266,10 @@ class Pieces:
                 if move_tile != piece_that_check.tile:
                     # Check with a simulation if the piece can protect the king by moving => If not, remove the move_tile !
                     save_color_tile = dico_board[move_tile][2]
-                    dico_board[move_tile][
-                        2] = - piece_that_check.color  # Simulate that the piece move to see if the piece protect the king (being there) or not
+                    dico_board[move_tile][2] = - piece_that_check.color  # Simulate that the piece move to see if the piece protect the king (being there) or not
                     new_list_possible_moves_piece = piece_that_check.update_possible_moves()  # Update possible moves of the piece who put the king in check
                     if king_chess.tile in new_list_possible_moves_piece:  # If the piece doesn't protect the king
-                        l_to_remove_move_tile.append(
-                            move_tile)  # Add to the list to remove all the move that doesn't protect the king
+                        l_to_remove_move_tile.append(move_tile)  # Add to the list to remove all the move that doesn't protect the king
                     dico_board[move_tile][2] = save_color_tile  # Reset the color of the tile
 
             # Remove the move_tile from the list of possible move of the piece
@@ -265,7 +278,6 @@ class Pieces:
 
     def CheckMod_reupdate_possibles_move(self, piece_that_check):
         """Update all the possible move if the king is in Chess."""
-
         king_chess = self.King_with_his_Tile(piece_that_check)[0] # Get the king's piece (opponent to the piece moved)
         for piece in self.dico_list_pieces[king_chess.color]: # Loop for each piece of the king's color
             if isinstance(piece, type(self.king_white)): # If the piece is the king
@@ -273,13 +285,9 @@ class Pieces:
             else: # If the piece is not the king
                 self.ReupdatePossibleMoves_ToProtectKing(piece_that_check, piece, king_chess)
 
-    def Check_Checkmate(self, piece_moved):
-        """Check if the king is in checkmate."""
-        for piece in self.dico_list_pieces[- piece_moved.color]:
-            if dico_board[piece.tile][3] != []:
-                print(dico_board[piece.tile])
-                return False
-        return True
+##################################################################################
+
+### Functions that allows to add / remove a piece from the list of board's pieces ###
 
     def remove_from_list_piece_eaten(self, tile):
         # Remove the object (in the pieces list) from the old tile
@@ -305,21 +313,29 @@ class Pieces:
             LIST_BLACK_PIECES.append(piece)
             self.dico_list_pieces[-1] = LIST_BLACK_PIECES
 
+##########################################################################################
+
+### Functions very usefull for the paragraph just below ###
+
     def update_dico_board_basic_stroke(self, piece, current_tile, new_tile):
         # Update dico_board
         dico_board[new_tile] = [piece, dico_board[current_tile][1], dico_board[current_tile][2], []]
         dico_board[current_tile] = [None, None, 0, []]
 
-    def play_music(self, new_tile):
+    def play_basic_music(self, new_tile):
         if dico_board[new_tile][2] != 0:
             return "capture"
         else:
             return "move"
 
+##############################################################
+
+### Functions that allows to move the pieces on the board ###
+
     def move_pawn(self, pawn_piece, current_tile, new_tile):
         # Promotion if the pawn can be promoted
         if new_tile[0] in [0, 7]:
-            mod_of_move = self.play_music(new_tile)
+            mod_of_move = self.play_basic_music(new_tile)
             if pawn_piece.color == 1:  # Check if the pawn is white
                 list_piece, image_queen = LIST_WHITE_PIECES, white_queen_image
             else:
@@ -408,18 +424,18 @@ class Pieces:
                 rook_piece.first_move = False  # The rook has moved
                 mod_of_move = "castling"
             else:
-                mod_of_move = self.play_music(new_tile)
+                mod_of_move = self.play_basic_music(new_tile)
                 self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
                 self.update_dico_board_basic_stroke(king_piece, current_tile, new_tile)
 
         else:
-            mod_of_move = self.play_music(new_tile)
+            mod_of_move = self.play_basic_music(new_tile)
             self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
             self.update_dico_board_basic_stroke(king_piece, current_tile, new_tile)
         return mod_of_move
 
     def move_other_pieces(self, moved_piece, current_tile, new_tile):
-        mod_of_move = self.play_music(new_tile)
+        mod_of_move = self.play_basic_music(new_tile)
         self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
         self.update_dico_board_basic_stroke(moved_piece, current_tile, new_tile)
         return mod_of_move
@@ -445,85 +461,4 @@ class Pieces:
 
         return mod_of_move
 
-    def JustMovedPawn(self, piece):
-        """Check if the pawn just moved => If yes, return True."""
-        if isinstance(piece, type(Pawn((6, 0), 1, True))):
-            if piece.just_moved:
-                return True
-        return False
-
-    # IA
-
-    def get_all_possible_moves(self):
-        dico_all_possible_moves_on_board = {}
-        for piece in self.dico_list_pieces[-1]:
-            if dico_board[piece.tile][3] != []:
-                for move in dico_board[piece.tile][3]:
-                    dico_all_possible_moves_on_board[piece] = [move, piece.tile]
-        return dico_all_possible_moves_on_board
-
-    def generate_random_moves(self):
-        all_moves = self.get_all_possible_moves()
-        random_piece = random.choice(list(all_moves.keys()))
-        random_move, current_tile = all_moves[random_piece][0], all_moves[random_piece][1]
-        return random_piece, random_move, current_tile
-
-    def EvalPoints(self):
-        total_point_black = 0
-        for piece in self.dico_list_pieces[-1]:
-            total_point_black += self.dico_points_pieces_black[type(dico_board[piece.tile][0])][piece.tile[0]][piece.tile[1]]
-
-        total_point_white = 0
-        for piece in self.dico_list_pieces[1]:
-            total_point_white += self.dico_points_pieces_white[type(dico_board[piece.tile][0])][piece.tile[0]][piece.tile[1]]
-
-        return total_point_white - total_point_black
-
-    def generate_big_dico(self):
-        dico = {}
-        dico_all_moves = self.get_all_possible_moves()
-        for piece in self.dico_list_pieces[-1]:
-            dico[piece] = []
-            for move in dico_all_moves[piece]:
-                dico[piece].append(move)
-                # SIMULATION
-                save_color_tile = dico_board[move][2]
-                dico_board[move][2] = - 1
-                dico_board[piece.tile][2] = 0
-                point_board = self.EvalPoints()
-                dico[piece].append(point_board)
-                # Reset simulation
-                dico_board[move][2] = save_color_tile
-                dico_board[piece.tile][2] = piece.color
-        return dico
-
-    def move_IA(self):
-        time.sleep(0.7)
-        #dico = self.generate_big_dico() # Piece : [Move, points]
-        #self.minimax(all_moves, 3, - math.inf, math.inf, True)
-        random_piece, random_move, current_tile = self.generate_random_moves()
-        mod_of_move = self.move_piece(random_piece, current_tile, random_move)
-        return random_piece, current_tile, random_move, mod_of_move
-
-    def minimax(self, parent_position, depth, alpha, beta, maximizingPlayer):
-        #if depth == 0 or game over in position:
-            #return static evaluation of position
-
-        if maximizingPlayer: # Simulate that the turn is to the White player
-            maxEval = - math.inf
-            for child in parent_position:
-                #eval = minimax(child, depth - 1, alpha, beta, False)
-                maxEval = max(maxEval, eval)
-                alpha = max(alpha, eval)
-                if beta <= alpha:
-                    break
-            return maxEval
-        else: # Simulate that the turn is to the Black player (= IA player)
-            minEval = + math.inf
-            for child in parent_position:
-                #eval = minimax(child, depth - 1, alpha, beta, True)
-                minEval = min(minEval, eval)
-                beta = min(beta, eval)
-                if beta <= alpha:
-                    break
-            return minEval
+#################################################################

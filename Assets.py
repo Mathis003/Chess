@@ -74,7 +74,6 @@ button_play = Asset("Players/button_play.png", ((2/3) * SQUARE, (2/3) * SQUARE))
 button_play_rect_1 = button_play.get_rect(topleft=(6.8 * SQUARE + SQUARE / 3, (7/2) * SQUARE - button_play.get_height() / 2))
 button_play_rect_2 = button_play.get_rect(topleft=(2.2 * SQUARE + SQUARE / 3, (7/2) * SQUARE - button_play.get_height() / 2))
 
-
 # Create the window
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
