@@ -76,7 +76,7 @@ player_2_rect = player_2.get_rect(topleft=(SQUARE / 8, (5/2) * SQUARE))
 player_1_rect_2 = player_1.get_rect(topleft=((9/2) * SQUARE + SQUARE / 3, (5/2) * SQUARE))
 
 # Button play
-button_play = Asset("All_Assets/Players/button_play.png", ((2/3) * SQUARE, (2/3) * SQUARE)).load_image()
+button_play = Asset("All_Assets/Button/button_play.png", ((2/3) * SQUARE, (2/3) * SQUARE)).load_image()
 button_play_rect_1 = button_play.get_rect(topleft=(6.8 * SQUARE + SQUARE / 3, (7/2) * SQUARE - button_play.get_height() / 2))
 button_play_rect_2 = button_play.get_rect(topleft=(2.2 * SQUARE + SQUARE / 3, (7/2) * SQUARE - button_play.get_height() / 2))
 
