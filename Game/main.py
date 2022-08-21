@@ -1,8 +1,9 @@
+import sys
+sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
 from Pieces import Pieces
 from Board import Board
 from Button import SoundButton, BoardColorButton
-from Assets import screen, king_white, king_black, button_sound_on, button_sound_off, button_sound_rect,\
-                   button_changes_boardcolor, button_changes_boardcolor_rect
+from Variables import *
 from Game import Game
 
 # Initialize classes

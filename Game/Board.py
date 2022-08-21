@@ -1,4 +1,6 @@
-from Assets import dico_board, LIST_BLACK_PIECES, LIST_WHITE_PIECES, pygame
+import sys
+sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
+from Variables import *
 from Configs import *
 
 class Board:

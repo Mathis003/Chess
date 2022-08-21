@@ -1,11 +1,9 @@
+import sys
+sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
 import math
 from Configs import *
 from all_pieces import Pawn
-from Assets import dico_board, pygame, queen_white,\
-    game_start_sound, button_sound_on,\
-    button_changes_boardcolor, player_1, player_1_rect_1, player_1_rect_2, player_2,\
-    player_2_rect, button_play, button_play_rect_1, button_play_rect_2, move_sound, capture_sound, castling_sound,\
-    stalemate_sound, check_sound, checkmate_sound
+from Variables import *
 
 pygame.init() # Initialize the pygame module
 

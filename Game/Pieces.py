@@ -1,12 +1,7 @@
-from Assets import dico_board, LIST_BLACK_PIECES, LIST_WHITE_PIECES,\
-    matrix_points_pawn_white, matrix_points_pawn_black, matrix_points_bishop_white, matrix_points_bishop_black,\
-    matrix_points_knight_white, matrix_points_knight_black, matrix_points_rook_white, matrix_points_rook_black,\
-    matrix_points_queen_white, matrix_points_queen_black, matrix_points_king_white, matrix_points_king_black,\
-    black_bishop_image_2, white_bishop_image_2, black_knight_image_2, white_knight_image_2, black_rook_image_2,\
-    white_rook_image_2, black_queen_image_2, white_queen_image_2, black_king_image_2, white_king_image_2,\
-    black_pawn_image_2, white_pawn_image_2, white_rook_image, black_rook_image,\
-    white_bishop_image, black_bishop_image, white_knight_image, black_knight_image, white_queen_image, black_queen_image,\
-    white_king_image, black_king_image, white_pawn_image, black_pawn_image
+import sys
+sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
+from IA import *
+from Variables import *
 
 from all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
 
