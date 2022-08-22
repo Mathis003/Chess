@@ -1,8 +1,0 @@
-# Ignore the directory '.idea' (IDE specific file)
-.idea/
-.idea/*
-.venv/
-
-# Ignore file
-.__pycache__
-.DS_Store
