@@ -7,12 +7,16 @@ from all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
 class Pieces:
 
     def __init__(self, king_white, king_black):
+        # king's instance object of the both side
         self.king_white = king_white
         self.king_black = king_black
 
-### Functions to change the images of all the pawn ###
+### Functions to change all the pawn's images ###
 
     def change_image_into_2(self):
+        """
+        Change the pieces's images (1 into 2).
+        """
         """Change the image of the pieces."""
         for piece in dico_list_pieces[1]:
             if isinstance(piece, type(Pawn((7, 4), 1, True))):
@@ -42,7 +46,9 @@ class Pieces:
                 dico_board[piece.tile][1] = black_rook_image_2
 
     def change_image_into_1(self):
-        """Change the image of the pieces."""
+        """
+        Change the pieces's images (2 into 1).
+        """
         for piece in dico_list_pieces[1]:
             if isinstance(piece, type(Pawn((7, 4), 1, True))):
                 dico_board[piece.tile][1] = white_pawn_image
@@ -75,14 +81,25 @@ class Pieces:
 ### Functions for 'CASTLING' move ###
 
     def TileBetweenEmpty(self, list_tile):
-        """Check if the tiles in the "list_tile" are all empty => return True, False otherwise."""
+        """
+        Check if the tiles in the "list_tile" are all empty => in this case, boolean =  True.
+        Otherwise, boolean = False.
+        :param list_tile: list of tiles
+        :return: boolean
+        """
         for tile in list_tile:
             if dico_board[tile][2] != 0:
                 return False
         return True
 
     def ChessTileBetween(self, list_tile, king_piece):
-        """Check if the tiles in the "list_tile" are all not in Check => return True, False otherwise."""
+        """
+        Check if the tiles in the "list_tile" are all not in Check => in this case, boolean = True.
+        Otherwise, boolean = False.
+        :param list_tile: list of tiles
+        :param king_piece: the king piece
+        :return: boolean
+        """
         list_tile.append((7, 4))
         for piece in dico_list_pieces[- king_piece.color]:
             list_possible_moves = piece.update_possible_moves()
@@ -92,11 +109,16 @@ class Pieces:
         return False
 
     def CastlingStroke(self, king_piece):
+        """
+        Update dico_board with the "Castling" move if the king can do it.
+        :param king_piece: the king piece
+        """
         if king_piece.color == 1: # If the king is white
             list_tile_leftstroke = [(7, 5), (7, 6)]
             list_tile_rightstroke = [(7, 3), (7, 2), (7, 1)]
             tile_to_append_left = (7, 6)
             tile_to_append_right = (7, 2)
+
         else: # If the king is black
             list_tile_leftstroke = [(0, 5), (0, 6)]
             list_tile_rightstroke = [(0, 3), (0, 2), (0, 1)]
@@ -106,6 +128,7 @@ class Pieces:
         if king_piece.Rook_LeftStroke(): # If the king and the left rook haven't played yet
             if self.TileBetweenEmpty(list_tile_leftstroke) and not self.ChessTileBetween(list_tile_leftstroke, king_piece): # If the tiles between the king and the left rook are empty and not in check
                 dico_board[king_piece.tile][3].append(tile_to_append_left) # Add the tile to the list of possible moves of the king
+
         if king_piece.Rook_RightStroke(): # If the king and the right rook haven't played yet
             if self.TileBetweenEmpty(list_tile_rightstroke) and not self.ChessTileBetween(list_tile_rightstroke, king_piece): # If the tiles between the king and the right rook are empty and not in check
                 dico_board[king_piece.tile][3].append(tile_to_append_right) # Add the tile to the list of possible moves of the king
@@ -115,6 +138,10 @@ class Pieces:
 ### Function very usefull for the paragraph just below ###
 
     def King_with_his_Tile(self, piece_moved):
+        """
+        :param piece_moved: piece that just moved
+        :return: a tuple : the opponent king piece ('opponent' compared to piece_moved), tile of this king
+        """
         """Return the king piece and his tile (opponent to the piece moved)."""
         king, tile_king = None, None
         if piece_moved.color == 1:
@@ -129,8 +156,12 @@ class Pieces:
 ### Function to have all the possibles moves with all the possible case => prevent Check,... ###
 
     ### IMPORTANT FUNCTION !!! ###
+
     def basics_possible_moves(self, moved_piece):
-        """Update the basics possible moves of the pieces + specials moves."""
+        """
+        Update the dico_board with the basics possible moves of the pieces + specials moves of pawn and king.
+        :param moved_piece: piece that just moved
+        """
         for piece in dico_list_pieces[- moved_piece.color]: # Loop for each piece of the good color
             dico_board[piece.tile][3] = piece.update_possible_moves()  # Update possible moves of the piece
 
@@ -145,7 +176,12 @@ class Pieces:
                         dico_board[piece.tile][3].append(move_tile)
 
     def PieceTouchPieceMoved(self, current_tile, color_piece_to_analyse):
-        """Return the list of pieces (the same color than the piece moved one) that are touching the piece moved if she moves."""
+        """
+        :param current_tile: tile of the piece_moved before her move
+        :param color_piece_to_analyse: color of piece_moved
+        :return: list of pieces that can hit the current_tile if the piece_moved move (pieces must have the same color
+                 than the piece_moved's color)
+        """
         list_pieces = []
         for piece in dico_list_pieces[color_piece_to_analyse]:
             new_possible_moves = piece.update_possible_moves()
@@ -154,7 +190,15 @@ class Pieces:
         return list_pieces
 
     ### IMPORTANT FUNCTION !!! ###
+
     def CheckOpponent(self, piece_moved, current_tile):
+        """
+        Check if the opponent is in check => in this case, boolean = True, piece = piece that put the king in check.
+        Otherwise, boolean = False and piece = None.
+        :param piece_moved: piece that just moved
+        :param current_tile: tile of the piece_moved before her move
+        :return: boolean, piece
+        """
         """Check if the opponent is in check => return True, False otherwise."""
         tile_king = self.King_with_his_Tile(piece_moved)[1]
         list_pieces_to_test = self.PieceTouchPieceMoved(current_tile, piece_moved.color) # Get the list of pieces that are touching the piece moved
@@ -168,7 +212,14 @@ class Pieces:
         return False, None
 
     ### IMPORTANT FUNCTION !!! ###
+
     def Check_NoMoveAvailable(self, piece_moved):
+        """
+        Check if the opponent has no possible move at all => in this case, boolean = True.
+        Otherwise, boolean = False.
+        :param piece_moved: piece that just moved
+        :return: boolean
+        """
         """Check if the king is in checkmate."""
         for piece in dico_list_pieces[- piece_moved.color]:
             if dico_board[piece.tile][3] != []:
@@ -177,7 +228,13 @@ class Pieces:
         return True
 
     ### IMPORTANT FUNCTION !!! ###
+
     def ReUpdate_ToNot_OwnChess(self, piece_moved):
+        """
+        Update the dico_board with the possible moves for the opponent => To not put the king himself in check (or checkmate)
+        or to not play an other piece that put the king in check (or checkmate).
+        :param piece_moved: piece that just moved
+        """
         for piece in dico_list_pieces[- piece_moved.color]: # Loop for each piece of the good color
             if isinstance(piece, type(King([7, 4], 1, True, 0, 0))): # If the piece is the king
                 self.UpdateKingMoves_ToNotBeInCheck(piece_moved)
@@ -185,7 +242,10 @@ class Pieces:
                 self.UpdatePiecesMoves_ToNotPutKingInCheck(piece, piece_moved)
 
     def UpdateKingMoves_ToNotBeInCheck(self, piece_moved):
-        """Update the possible moves of the king if he is in check."""
+        """
+        Update the dico_board with the possible moves of the king so he can't put himself in check (or checkmate).
+        :param piece_moved: piece that just moved
+        """
         king_chess = self.King_with_his_Tile(piece_moved)[0]  # Get the king's piece (opponent to the piece moved)
         l_to_remove_move_tile = []
         for move_tile in dico_board[king_chess.tile][3]: # Loop for each possible move of the king
@@ -206,6 +266,11 @@ class Pieces:
             dico_board[king_chess.tile][3].remove(move_tile) # Remove the move tile from the list of possible moves of the king
 
     def UpdatePiecesMoves_ToNotPutKingInCheck(self, piece, piece_moved):
+        """
+        Update the dico_board with the possible moves of the piece so she can't put the king in check (or checkmate).
+        :param piece: piece to analyse and potentially update his possible moves
+        :param piece_moved: piece that just moved
+        """
         l_to_remove_from_the_list = []
         list_possible_moves = piece.update_possible_moves()  # Update possible moves of the piece
         tile_king = self.King_with_his_Tile(piece_moved)[1]
@@ -229,19 +294,30 @@ class Pieces:
                 dico_board[piece.tile][3].remove(move_tile_to_remove)
 
     ### IMPORTANT FUNCTION !!! ###
+
     def CheckMod_reupdate_possibles_move(self, piece_that_check):
-        """Update all the possible move if the king is in Chess."""
-        king_chess = self.King_with_his_Tile(piece_that_check)[0] # Get the king's piece (opponent to the piece moved)
-        for piece in dico_list_pieces[king_chess.color]: # Loop for each piece of the king's color
+        """
+        ReUpdate all the possible move if the king is in Chess => Only the pieces which can protect the king could
+        play at these tiles ! and the king himself if he can escappe without putting himself AGAIN in check (or checkmate).
+        :param piece_that_check: piece that put the opponent king in check
+        """
+        king_check = self.King_with_his_Tile(piece_that_check)[0] # Get the king's piece (opponent to the piece moved)
+        for piece in dico_list_pieces[king_check.color]: # Loop for each piece of the king's color
             if isinstance(piece, type(self.king_white)): # If the piece is the king
                 self.UpdateKingMoves_ToNotBeInCheck(piece_that_check) # Update the possible moves of the king BEING in check!
             else: # If the piece is not the king
-                self.ReupdatePossibleMoves_ToProtectKing(piece_that_check, piece, king_chess)
+                self.ReupdatePossibleMoves_ToProtectKing(piece_that_check, piece, king_check)
 
-    def ReupdatePossibleMoves_ToProtectKing(self, piece_that_check, piece, king_chess):
+    def ReupdatePossibleMoves_ToProtectKing(self, piece_that_check, piece, king_check):
+        """
+        ReUpdate the possible moves of the 'piece' => Keep only the tile where the piece can protect the king.
+        :param piece_that_check: piece that put the opponent king in check
+        :param piece: piece to analyse his possible moves
+        :param king_check: king which is in check
+        """
         all_possible_moves_piece = dico_board[piece.tile][3]  # Get the possible moves of the piece
         l_to_remove_move_tile = []
-        if self.IfPieceMove_CheckAgain(piece_that_check, piece, king_chess):
+        if not self.IfPieceMove_CheckAgain(piece_that_check, piece, king_check):
             # See if the piece can move to PROTECT the king
             for move_tile in all_possible_moves_piece:  # Loop for each possible move of the piece
                 if move_tile != piece_that_check.tile:
@@ -249,7 +325,7 @@ class Pieces:
                     save_color_tile = dico_board[move_tile][2]
                     dico_board[move_tile][2] = - piece_that_check.color  # Simulate that the piece move to see if the piece protect the king (being there) or not
                     new_list_possible_moves_piece = piece_that_check.update_possible_moves()  # Update possible moves of the piece who put the king in check
-                    if king_chess.tile in new_list_possible_moves_piece:  # If the piece doesn't protect the king
+                    if king_check.tile in new_list_possible_moves_piece:  # If the piece doesn't protect the king
                         l_to_remove_move_tile.append(move_tile)  # Add to the list to remove all the move that doesn't protect the king
                     dico_board[move_tile][2] = save_color_tile  # Reset the color of the tile
 
@@ -257,17 +333,26 @@ class Pieces:
             for move_tile in l_to_remove_move_tile:
                 dico_board[piece.tile][3].remove(move_tile)
 
-    def IfPieceMove_CheckAgain(self, piece_that_check, piece, king_chess):
-        enter = True
+    def IfPieceMove_CheckAgain(self, piece_that_check, piece, king_check):
+        """
+        Simulate and test if when the 'piece' move, the king is check by another piece than 'piece_that_check'.
+        If the king always checked => boolean enter = True.
+        Otherwise, boolean enter = False.
+        :param piece_that_check: piece that put the opponent king in check
+        :param piece to analyse his possible moves
+        :param king_check: king which is in check
+        :return: boolean for an enter
+        """
+        enter = False
+        dico_board[piece.tile][2] = 0  # Simulate that the piece isn't there to see if another opponent piece put the king in check
         for opponent_piece in dico_list_pieces[piece_that_check.color]:
             if opponent_piece != piece_that_check:  # If the piece is not the piece that check the king
-                dico_board[piece.tile][2] = 0  # Simulate that the piece isn't there to see if another opponent piece put the king in check
                 new_all_possible_moves = opponent_piece.update_possible_moves()  # Update possible moves of the piece
-                if king_chess.tile in new_all_possible_moves:  # If the king is in check here
+                if king_check.tile in new_all_possible_moves:  # If the king is in check here
                     dico_board[piece.tile][3] = []  # Reset the possible moves of the piece
-                    enter = False
-                    dico_board[piece.tile][2] = piece.color  # Reset the color of the tile
+                    enter = True
                     break
+
         dico_board[piece.tile][2] = piece.color  # Reset the color of the tile
         return enter
 
@@ -276,7 +361,10 @@ class Pieces:
 ### Functions that allows to add / remove a piece from the list of board's pieces ###
 
     def remove_from_list_piece_eaten(self, tile):
-        # Remove the object (in the pieces list) from the old tile
+        """
+        Remove the instance object (in the pieces's list) from the 'tile'
+        :param tile: tile where the piece must be removed
+        """
         if dico_board[tile][0] != None: # If the tile contain a piece (= isn't empty)
             if dico_board[tile][2] == 1: # If the piece is white
                 LIST_WHITE_PIECES.remove(dico_board[tile][0]) # Remove the white piece from the list of pieces
@@ -292,6 +380,10 @@ class Pieces:
                     pass
 
     def add_from_list_piece(self, piece):
+        """
+        Add 'piece' to the right list of pieces (BLACK or WHITE).
+        :param piece: piece that must be add to the list of pieces
+        """
         if piece.color == 1:
             LIST_WHITE_PIECES.append(piece)
             dico_list_pieces[1] = LIST_WHITE_PIECES
@@ -304,11 +396,25 @@ class Pieces:
 ### Functions very usefull for the paragraph just below ###
 
     def update_dico_board_basic_stroke(self, piece, current_tile, new_tile):
+        """
+        Update dico_board with the tile, the images,... to make a simple stroke.
+        Return the mod of the move.
+        :param piece: piece that moved
+        :param current_tile: piece's tile before the move
+        :param new_tile: piece's tile after the move
+        :return: mod_of_move = mod of the last move
+        """
         # Update dico_board
         dico_board[new_tile] = [piece, dico_board[current_tile][1], dico_board[current_tile][2], []]
         dico_board[current_tile] = [None, None, 0, []]
 
     def play_basic_music(self, new_tile):
+        """
+        Return the basic sound (the mod of the move => "Capture" or "Normal Move") depending on whether the 'new_tile'
+        is empty or occuped by an opponent piece.
+        :param new_tile: piece's tile after the move
+        :return: mod_of_move = mod of the last move
+        """
         if dico_board[new_tile][2] != 0:
             return "capture"
         else:
@@ -319,11 +425,23 @@ class Pieces:
 ### Functions that allows to move the pieces on the board ###
 
     def move_pawn(self, pawn_piece, current_tile, new_tile):
-        # Promotion if the pawn can be promoted
+        """
+        Deal with the move of a pawn.
+        => Promotion / "EnPassant" move / Basic move
+        Update dico_board and mod_of_move and return it.
+        :param pawn_piece: pawn piece instance
+        :param current_tile: piece's tile before the move
+        :param new_tile: piece's tile after the move
+        :return: mod_of_move = mod of the last move
+        """
+        ### Promotion if the pawn can be promoted ###
+
         if new_tile[0] in [0, 7]:
             mod_of_move = self.play_basic_music(new_tile)
+
             if pawn_piece.color == 1:  # Check if the pawn is white
                 list_piece, image_queen = LIST_WHITE_PIECES, white_queen_image
+
             else:
                 list_piece, image_queen = LIST_BLACK_PIECES, black_queen_image
 
@@ -336,8 +454,10 @@ class Pieces:
             dico_board[new_tile] = [new_queen, image_queen, new_queen.color, []]  # Add the queen to the dico_board
             # Update the variables promoted
             new_queen.promoted = True
+
         else:
-            # Stroke "En Passant"
+            ### Stroke "En Passant" ###
+
             if dico_board[new_tile][2] == 0:  # If the piece is a pawn that move to an empty tile
                 if new_tile == (current_tile[0] - pawn_piece.color, current_tile[1] + 1) or new_tile == (current_tile[0] - pawn_piece.color, current_tile[1] - 1):  # If the pawn move to an empty tile to eat an opponent piece ("En Passant")
                     tile_piece_eaten = (current_tile[0], new_tile[1])
@@ -347,6 +467,7 @@ class Pieces:
                     # Update dico_board
                     dico_board[tile_piece_eaten] = [None, None, 0, []]
                     mod_of_move =  "capture"
+
                 else:
                     mod_of_move = "move"
 
@@ -356,16 +477,32 @@ class Pieces:
                 if pawn_piece.first_move:  # If the pawn is on his first move, it can move 2 tiles
                     if abs(current_tile[0] - new_tile[0]) == 2:  # If the pawn has moved 2 tiles
                         pawn_piece.just_moved = True
+
                 else:  # If the pawn is not on his first move anymore
                     pawn_piece.just_moved = False
+
             else:
+                ### Basic Move ###
                 mod_of_move =  "capture"
                 self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
                 self.update_dico_board_basic_stroke(pawn_piece, current_tile, new_tile)
+
         return mod_of_move
 
     def move_king(self, king_piece, current_tile, new_tile):
+        """
+        Deal with the move of a pawn.
+        => Castling Move / Basic move
+        Update dico_board and mod_of_move and return it.
+        :param king_piece: king piece instance
+        :param current_tile: piece's tile before the move
+        :param new_tile: piece's tile after the move
+        :return: mod_of_move = mod of the last move
+        """
         if king_piece.first_move:  # If the king is on his first move
+
+            ### Castling Move ###
+
             if new_tile == (7, 6):  # Right Castling
                 # Update dico_board for the special stroke "Right Castling"
                 dico_board[(7, 6)] = [dico_board[(7, 4)][0], dico_board[(7, 4)][1], dico_board[(7, 4)][2], []]
@@ -409,26 +546,48 @@ class Pieces:
                 rook_piece.tile = (0, 3)  # Update the rook's tile
                 rook_piece.first_move = False  # The rook has moved
                 mod_of_move = "castling"
+
             else:
+
+                ### Basic Move ###
                 mod_of_move = self.play_basic_music(new_tile)
                 self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
                 self.update_dico_board_basic_stroke(king_piece, current_tile, new_tile)
 
         else:
+
+            ### Basic Move ###
             mod_of_move = self.play_basic_music(new_tile)
             self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
             self.update_dico_board_basic_stroke(king_piece, current_tile, new_tile)
+
         return mod_of_move
 
     def move_other_pieces(self, moved_piece, current_tile, new_tile):
+        """
+        Deal with the move of piece (different of Pawn or King).
+        No special move => Basic Move ONLY!
+        Update dico_board and mod_of_move and return it.
+        :param moved_piece: piece that just moved
+        :param current_tile: piece's tile before the move
+        :param new_tile: piece's tile after the move
+        :return: mod_of_move = mod of the last move
+        """
         mod_of_move = self.play_basic_music(new_tile)
         self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
         self.update_dico_board_basic_stroke(moved_piece, current_tile, new_tile)
+
         return mod_of_move
 
     def move_piece(self, piece, current_tile, new_tile):
-        """Move the piece to the new tile and update all the necessary elements."""
-
+        """
+        Move the piece to the new tile.
+        Update dico_board and mod_of_move and return it.
+        :param piece: piece that just moved
+        :param current_tile: piece's tile before the move
+        :param new_tile: piece's tile after the move
+        :return: mod_of_move = mod of the last move
+        """
         if isinstance(piece, type(Pawn((6, 0), 1, True))):
             mod_of_move = self.move_pawn(piece, current_tile, new_tile)
 

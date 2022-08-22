@@ -7,6 +7,8 @@ import math
 import random
 import numpy
 
+### Create matrix of pieces's points in function of their position on the board ###
+
 matrix_points_pawn_white = [
         [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
         [5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0],
@@ -88,6 +90,24 @@ matrix_points_king_black = list(numpy.array(matrix_points_king_white)[::-1]) # R
 # INUTILE POUR LE MOMENT => CLASSE NON APPELE
 # PLEINS DE BUGS , TOUT REFAIRE => J'AI LAISSER POUR AVOIR UN SQUELETTE SI NECESSAIRE
 
+# Variables
+
+dico_points_pieces_white = {type(Pawn((7, 4), 1, True)): matrix_points_pawn_white,
+                            type(Queen((7, 4), 1, True)): matrix_points_queen_white,
+                            type(King((7, 4), 1, True, 0, 0)): matrix_points_king_white,
+                            type(Bishop((7, 4), 1, True)): matrix_points_bishop_white,
+                            type(Knight((7, 4), 1, True)): matrix_points_knight_white,
+                            type(Rook((7, 4), 1, True)): matrix_points_rook_white}
+
+dico_points_pieces_black = {type(Pawn((7, 4), 1, True)): matrix_points_pawn_black,
+                            type(Queen((7, 4), 1, True)): matrix_points_queen_black,
+                            type(King((7, 4), 1, True, 0, 0)): matrix_points_king_black,
+                            type(Bishop((7, 4), 1, True)): matrix_points_bishop_black,
+                            type(Knight((7, 4), 1, True)): matrix_points_knight_black,
+                            type(Rook((7, 4), 1, True)): matrix_points_rook_black}
+
+### Class IA_Player ###
+
 class IA_Player:
 
     def __init__(self):
@@ -95,20 +115,6 @@ class IA_Player:
         self.dico_list_pieces = None
         self.dico_points_pieces_black = None
         self.dico_points_pieces_white = None
-
-        self.dico_points_pieces_white = {type(Pawn((7, 4), 1, True)): matrix_points_pawn_white,
-                                         type(Queen((7, 4), 1, True)): matrix_points_queen_white,
-                                         type(King((7, 4), 1, True, 0, 0)): matrix_points_king_white,
-                                         type(Bishop((7, 4), 1, True)): matrix_points_bishop_white,
-                                         type(Knight((7, 4), 1, True)): matrix_points_knight_white,
-                                         type(Rook((7, 4), 1, True)): matrix_points_rook_white}
-
-        self.dico_points_pieces_black = {type(Pawn((7, 4), 1, True)): matrix_points_pawn_black,
-                                         type(Queen((7, 4), 1, True)): matrix_points_queen_black,
-                                         type(King((7, 4), 1, True, 0, 0)): matrix_points_king_black,
-                                         type(Bishop((7, 4), 1, True)): matrix_points_bishop_black,
-                                         type(Knight((7, 4), 1, True)): matrix_points_knight_black,
-                                         type(Rook((7, 4), 1, True)): matrix_points_rook_black}
 
     def get_all_possible_moves(self):
         dico_all_possible_moves_on_board = {}

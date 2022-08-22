@@ -14,13 +14,20 @@ These class represent the object of a single piece that have some characteristic
   is in Chess or not, if the move is legal,...
   => Other methods are called to reupdate the list of possible moves in the class Pieces)
 """
+
 class Pawn:
     def __init__(self, tile, color, first_move):
         self.tile = tile
         self.color = color
         self.first_move = first_move
         self.just_moved = False # Special variable for the special stroke "En Passant"
+
     def update_possible_moves(self):
+        """
+        Update the basic possible moves (without check,...)
+        :return: list_possible_moves = list of all the basic possibles moves
+                 Example : list_possible_moves = [(5,3), (5,4), (7,3)]
+        """
         from Variables import dico_board
         list_possible_moves = []
         # Normal move
@@ -41,7 +48,14 @@ class Pawn:
                 pass # Deal with the out of range error (By example, if the pawn is on the last column and the player want to move it to the diagonal RIGHT, the program will raise an error)
 
         return list_possible_moves
+
     def EnPassantMove(self):
+        """
+        Update a list with the possible "EnPassant" move (max 2 possibility).
+        if there is no possible "EnPassant" move => boolean = False.
+        Otherwise boolean = True => Will be add to the basic moves in the file Pieces.py.
+        :return: boolean, list_possible_moves_enpassant
+        """
         # Special Stroke ! ("En Passant")
         from Variables import dico_board
         list_possible_moves_enpassant = []
@@ -71,7 +85,13 @@ class King:
         self.first_move = first_move
         self.rook_1 = rook_1 # Rook left of the king
         self.rook_2 = rook_2 # Rook right of the king
+
     def update_possible_moves(self):
+        """
+        Update the basic possible moves (without check,...)
+        :return: list_possible_moves = list of all the basic possibles moves
+                 Example : list_possible_moves = [(5,3), (5,4), (7,3)]
+        """
         from Variables import dico_board
         list_possible_moves = []
         # All moves of the king (four diagonal, two sense in horizontal direction and two sense in vertical direction => 8 possibility if no tile is out of range)
@@ -85,13 +105,23 @@ class King:
                     pass # Deal with the out of range error
 
         return list_possible_moves
+
     def Rook_LeftStroke(self):
-        """Return True if the king is on its first move and the rook left is on its first move."""
+        """
+        boolean = True if the king and the left rook are on their first move.
+        Otherwise, boolean = False
+        :return: boolean
+        """
         if self.first_move and self.rook_1.first_move: # If the king is on its first move and the rook left is on its first move
             return True
         return False
+
     def Rook_RightStroke(self):
-        """Return True if the king is on its first move and the rook right is on its first move."""
+        """
+        boolean = True if the king and the right rook are on their first move.
+        Otherwise, boolean = False
+        :return: boolean
+        """
         if self.first_move and self.rook_2.first_move: # If the king is on its first move and the rook right is on its first move
             return True
         return False
@@ -101,7 +131,13 @@ class Knight:
         self.tile = tile
         self.color = color
         self.first_move = first_move
+
     def update_possible_moves(self):
+        """
+        Update the basic possible moves (without check,...)
+        :return: list_possible_moves = list of all the basic possibles moves
+                 Example : list_possible_moves = [(5,3), (5,4), (7,3)]
+        """
         from Variables import dico_board
         list_possible_moves = []
         for i in range(-2, 3, 4): # i = -2 or 2
@@ -125,7 +161,13 @@ class Rook:
         self.tile = tile
         self.color = color
         self.first_move = first_move
+
     def update_possible_moves(self):
+        """
+        Update the basic possible moves (without check,...)
+        :return: list_possible_moves = list of all the basic possibles moves
+                 Example : list_possible_moves = [(5,3), (5,4), (7,3)]
+        """
         from Variables import dico_board
         list_possible_moves = []
         # Vertical moves (Up)
@@ -184,7 +226,13 @@ class Bishop:
         self.tile = tile
         self.color = color
         self.first_move = first_move
+
     def update_possible_moves(self):
+        """
+        Update the basic possible moves (without check,...)
+        :return: list_possible_moves = list of all the basic possibles moves
+                 Example : list_possible_moves = [(5,3), (5,4), (7,3)]
+        """
         from Variables import dico_board
         list_possible_moves = []
         # All the necessary enters to make the bishop move (the four diagonals)
@@ -251,7 +299,13 @@ class Queen:
         self.color = color
         self.first_move = first_move
         self.promoted = False  # Special variable for the promotion
+
     def update_possible_moves(self):
+        """
+        Update the basic possible moves (without check,...)
+        :return: list_possible_moves = list of all the basic possibles moves
+                 Example : list_possible_moves = [(5,3), (5,4), (7,3)]
+        """
         from Variables import dico_board
         # Bishop move
         list_possible_moves = []

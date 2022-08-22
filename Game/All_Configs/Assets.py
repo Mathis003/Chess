@@ -9,6 +9,10 @@ class Asset:
         self.dimension = dimension
 
     def load_image(self):
+        """
+        Load the image and transform it with the right dimension
+        :return: the image load and transformed
+        """
         image = pygame.image.load(self.link_image).convert_alpha()
         image = pygame.transform.scale(image, self.dimension)
         return image
@@ -47,7 +51,7 @@ white_bishop_image_2 = Asset("All_Assets/Pieces_image/bishop_white_2.png", (SQUA
 white_knight_image_2 = Asset("All_Assets/Pieces_image/knight_white_2.png", (SQUARE, SQUARE)).load_image()
 white_pawn_image_2 = Asset("All_Assets/Pieces_image/pawn_white_2.png", (SQUARE, SQUARE)).load_image()
 
-# Musics
+# Music Sounds
 pygame.mixer.init()
 move_sound = pygame.mixer.Sound("All_Assets/Music/Move sound.mp3")
 capture_sound = pygame.mixer.Sound("All_Assets/Music/Capture sound.mp3")
@@ -57,19 +61,19 @@ game_start_sound = pygame.mixer.Sound("All_Assets/Music/Game-Start sound.mp3")
 checkmate_sound = pygame.mixer.Sound("All_Assets/Music/Checkmate sound.mp3")
 stalemate_sound = pygame.mixer.Sound("All_Assets/Music/Stalemate sound.mp3")
 
-# Button Sound On/Off
+# Button 'Sound On/Off'
 button_sound_on = Asset("All_Assets/Button/button_sound.png", (SQUARE / 2, SQUARE / 2)).load_image()
 button_sound_off = Asset("All_Assets/Button/button_sound_off_final.png", (SQUARE/ 2, SQUARE / 2)).load_image()
 button_sound_rect = button_sound_on.get_rect(topleft=(2,2))
 
-# Players
+# Players images for the begin_menu
 player_1 = Asset("All_Assets/Players/first_player.png", (3 * SQUARE, 3 * SQUARE)).load_image()
 player_2 = Asset("All_Assets/Players/second_player-removebg-preview.png", (3 * SQUARE, 3 * SQUARE)).load_image()
 player_1_rect_1 = player_1.get_rect(topleft=(3 * SQUARE + SQUARE / 3, (5/2) * SQUARE))
 player_2_rect = player_2.get_rect(topleft=(SQUARE / 8, (5/2) * SQUARE))
 player_1_rect_2 = player_1.get_rect(topleft=((9/2) * SQUARE + SQUARE / 3, (5/2) * SQUARE))
 
-# Button play
+# Button 'play'
 button_play = Asset("All_Assets/Button/button_play.png", ((2/3) * SQUARE, (2/3) * SQUARE)).load_image()
 button_play_rect_1 = button_play.get_rect(topleft=(6.8 * SQUARE + SQUARE / 3, (7/2) * SQUARE - button_play.get_height() / 2))
 button_play_rect_2 = button_play.get_rect(topleft=(2.2 * SQUARE + SQUARE / 3, (7/2) * SQUARE - button_play.get_height() / 2))

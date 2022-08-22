@@ -8,9 +8,14 @@ dependencies between severals files !
 """
 
 def create_pieces():
-    """ Create all the pieces objects"""
+    """
+    Create all the pieces instances (= objects)
+    :return: all the pieces initialized
+    """
     from all_pieces import Rook, Bishop, Knight, Queen, King, Pawn # Import all the pieces
-    """Initialize all the pieces objects"""
+
+    ### Initialize all the pieces instances ###
+
     # Rook
     rook_white_1 = Rook((7, 0), 1, True)
     rook_white_2 = Rook((7, 7), 1, True)
@@ -50,7 +55,8 @@ def create_pieces():
     pawn_black_7 = Pawn((1, 6), -1, True)
     pawn_black_8 = Pawn((1, 7), -1, True)
 
-    # Return all the pieces objects
+    ### Return all the pieces instances ###
+
     return rook_white_1, rook_white_2, rook_black_1, rook_black_2,\
            bishop_white_1, bishop_white_2, bishop_black_1, bishop_black_2,\
            queen_white, queen_black, king_white, king_black, knight_white_1,\
@@ -61,7 +67,10 @@ def create_pieces():
 
 
 def create_dico_board():
-    """ Create the board dictionary"""
+    """
+    Create the board's dictionary.
+    :return: the dico_board initialized
+    """
 
     """
     Dictionnary :
@@ -69,6 +78,8 @@ def create_dico_board():
         value : list with : object (piece), image_of_the_piece, number_of_the_piece, list_of_possibile_moves
         => number_of_the_piece : 0 if no piece, 1 if white piece, 2 if white king, -1 if black piece
     """
+
+    ### Initialized the dico_board ###
 
     dico_board = {(0, 0): [rook_black_1, black_rook_image, -1, []],
                   (0, 1): [knight_black_1, black_knight_image, -1, [(2, 0), (2, 2)]],
@@ -98,8 +109,11 @@ def create_dico_board():
                   (7, 4): [king_white, white_king_image, 1, []], (7, 5): [bishop_white_2, white_bishop_image, 1, []],
                   (7, 6): [knight_white_2, white_knight_image, 1, [(5, 5), (5, 7)]], (7, 7): [rook_white_2, white_rook_image, 1, []]}
 
-    # Return the dictionary
+    ### Return the dictionary ###
+
     return dico_board
+
+
 
 # Call the function to create all the pieces objects (need function otherwise a circular import dependencies are made).
 rook_white_1, rook_white_2, rook_black_1, rook_black_2,\

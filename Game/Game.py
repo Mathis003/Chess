@@ -5,8 +5,6 @@ from Configs import *
 from all_pieces import Pawn
 from Variables import *
 
-pygame.init() # Initialize the pygame module
-
 class Game:
     """Game class represent the Game himself with the method Run() that launch the game."""
 
