@@ -2,6 +2,11 @@ import sys
 sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game")
 from Assets import *
 
+"""
+File that contain important variables => Create functions to initialyse them only once to avoid circular import
+dependencies between severals files !
+"""
+
 def create_pieces():
     """ Create all the pieces objects"""
     from all_pieces import Rook, Bishop, Knight, Queen, King, Pawn # Import all the pieces
@@ -62,7 +67,7 @@ def create_dico_board():
     Dictionnary :
         key : tile's coordinates in a tuple (x, y)
         value : list with : object (piece), image_of_the_piece, number_of_the_piece, list_of_possibile_moves
-        => number_of_the_piece : 0 if no piece, 1 if white piece, 2 if white king, -1 if black piece and -2 if black king
+        => number_of_the_piece : 0 if no piece, 1 if white piece, 2 if white king, -1 if black piece
     """
 
     dico_board = {(0, 0): [rook_black_1, black_rook_image, -1, []],
@@ -121,4 +126,5 @@ LIST_WHITE_PIECES = [rook_white_1, rook_white_2, bishop_white_1, bishop_white_2,
                      queen_white, knight_white_1, knight_white_2, pawn_white_1, pawn_white_2, pawn_white_3,
                      pawn_white_4, pawn_white_5, pawn_white_6, pawn_white_7, pawn_white_8]
 
+# Dictionnary usefull to acces to the good list with the color number of a piece
 dico_list_pieces = {1 : LIST_WHITE_PIECES, -1 : LIST_BLACK_PIECES}

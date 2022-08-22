@@ -1,19 +1,13 @@
 import pygame
 from Configs import *
 
-pygame.init()
-
-# Create the window
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Chess")
-
-
 """Asset Class for all images"""
 class Asset:
     """ Represent the image in the game """
     def __init__(self,link_image, dimension):
         self.link_image = link_image
         self.dimension = dimension
+
     def load_image(self):
         image = pygame.image.load(self.link_image).convert_alpha()
         image = pygame.transform.scale(image, self.dimension)
@@ -80,8 +74,6 @@ button_play = Asset("All_Assets/Button/button_play.png", ((2/3) * SQUARE, (2/3) 
 button_play_rect_1 = button_play.get_rect(topleft=(6.8 * SQUARE + SQUARE / 3, (7/2) * SQUARE - button_play.get_height() / 2))
 button_play_rect_2 = button_play.get_rect(topleft=(2.2 * SQUARE + SQUARE / 3, (7/2) * SQUARE - button_play.get_height() / 2))
 
-#Button to change the color of the board
+# Button to change the color of the board
 button_changes_boardcolor = Asset("All_Assets/Button/button_change_mod.png", (SQUARE / 2, SQUARE / 2)).load_image()
-button_changes_boardcolor_rect = button_changes_boardcolor.get_rect(topleft=(screen.get_width() - SQUARE / 2 - 2, 2))
-
-pygame.display.set_icon(black_king_image) # Set the icon of the window
+button_changes_boardcolor_rect = button_changes_boardcolor.get_rect(topleft=(COL * SQUARE - SQUARE / 2 - 2, 2))

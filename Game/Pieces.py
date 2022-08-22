@@ -1,6 +1,6 @@
 import sys
 sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
-from IA import *
+
 from Variables import *
 from all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
 

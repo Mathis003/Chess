@@ -1,3 +1,4 @@
+# Ignore files and directory
 __pycache__
 .DS_Store
 .idea/

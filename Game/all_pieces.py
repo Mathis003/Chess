@@ -1,6 +1,7 @@
 import sys
 sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
-from Configs import *
+from Configs import ROW, COL
+
 """
 These class represent the object of a single piece that have some characteristics and some methods.
 => The common characteristics are:
