@@ -62,6 +62,7 @@ class Pieces:
                 dico_board[piece.tile][1] = white_knight_image
             elif isinstance(piece, type(Rook((7, 4), 1, True))):
                 dico_board[piece.tile][1] = white_rook_image
+
         for piece in dico_list_pieces[-1]:
             if isinstance(piece, type(Pawn((7, 4), 1, True))):
                 dico_board[piece.tile][1] = black_pawn_image
@@ -223,7 +224,6 @@ class Pieces:
         """Check if the king is in checkmate."""
         for piece in dico_list_pieces[- piece_moved.color]:
             if dico_board[piece.tile][3] != []:
-                print(dico_board[piece.tile])
                 return False
         return True
 
