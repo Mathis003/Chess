@@ -4,11 +4,8 @@ from src.all_pieces import Pawn
 from src.all_configs.variables import *
 
 class Game:
-    """Game class represent the Game himself with the method Run() that launch the game."""
 
     def __init__(self, screen, board, pieces, sound_button, board_color_button, IA_Player):
-
-        ### All classes ###
 
         self.screen = screen
         self.board = board
@@ -17,13 +14,10 @@ class Game:
         self.board_color_button = board_color_button
         self.IA_Player = IA_Player
 
-        ### All variables ###
-
         self.dico_turn = {"turn_white": True, "turn_black": False}  # Dictionary to know which player is playing
         self.enter_mouse_pressed = False  # Allow to not click after drop the mouse's pression on a random tile and move the Rect on the image of the piece just before (If True = pressed mouse and Rect's moving, if False = no pressing mouse and Rect's not moving)
         self.mouse_pressed = False  # Boolean to know if the mouse is pressed or not (True = pressed, False = not pressed)
 
-        # Enter for indentation
         self.running = True  # True if the game is runnin, False otherwise
         self.begin_menu = True # If we are in the begin menu (game not started)
         self.end_menu = False # If we are in the end menu (game finished)
@@ -81,7 +75,10 @@ class Game:
         tile_mouse = (pos_mouse[1] // SQUARE, pos_mouse[0] // SQUARE)  # Tile clicked
         return pos_mouse, tile_mouse
 
-### MUSIC FUNCTIONS ###
+
+    #######################
+    ### MUSIC FUNCTIONS ###
+    #######################
 
     def launch_music(self, mod_of_move):
         """
@@ -109,9 +106,10 @@ class Game:
         if self.sound_button.sound_on:
             self.launch_music(mod_of_move)
 
-#########################
 
-### BUTTON FUNCTIONS ###
+    ########################
+    ### BUTTON FUNCTIONS ###
+    ########################
 
     def ButtonUpdateClick(self, initial_pos_mouse):
         """
@@ -135,9 +133,10 @@ class Game:
         if self.board_color_button.checkCollision(pos_mouse) and not pygame.mouse.get_pressed()[0]:
             self.board_color_button.displayButton()
 
-#########################
 
-### EVENTS FUNCTIONS ###
+    ########################
+    ### EVENTS FUNCTIONS ###
+    ########################
 
     def ChangeTypePieces(self):
         """
@@ -228,9 +227,10 @@ class Game:
 
                     self.ButtonUpdateClick(initial_pos_mouse)
 
-#########################
 
-### UPDATE FUNCTIONS ###
+    ########################
+    ### UPDATE FUNCTIONS ###
+    ########################
 
     def DisplayBeginMenu(self):
         """
@@ -311,7 +311,6 @@ class Game:
         self.player_tile_clicked = (-1, -1)
         self.list_color_case[0] = (-1, -1)
 
-#########################
 
     def run_mainloop(self):
         """

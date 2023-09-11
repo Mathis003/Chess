@@ -5,6 +5,12 @@ import math
 import random
 import numpy
 
+
+#############################################################
+############### DOESN'T WORK FOR THE MOMENT ! ###############
+#############################################################
+
+
 ### Create matrix of pieces's points in function of their position on the board ###
 
 matrix_points_pawn_white = [

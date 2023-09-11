@@ -1,12 +1,11 @@
 """ALL THE CONSTANT CONFIGS"""
 
-# Size of a tile in pixels
 SQUARE = 100
-# Number of rows and columns on the board
 ROW = 8
 COL = 8
-# Size of the screen
-WIDTH, HEIGHT = SQUARE * COL, SQUARE * ROW
+
+WIDTH = SQUARE * COL
+HEIGHT = SQUARE * ROW
 
 ### Colors ###
 

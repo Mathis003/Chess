@@ -7,17 +7,14 @@ def CreateWindow():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Chess")
 
-    from src.all_configs.assets import black_king_image  # Assets file need the screen initialized to load all the images !
-
-    # Set the icon of the window (the black piece's image)
+    from src.all_configs.assets import black_king_image
     pygame.display.set_icon(black_king_image)
 
     return screen
 
-# Initialize the window
+
 screen = CreateWindow()
 
-# Import all the necessary file
 from src.pieces import Pieces # All the functions associated to the movements of the pieces
 from src.board import Board # Represent the board (Draw all tiles correctly with the good color)
 from src.button import SoundButton, BoardColorButton # Represent the two buttons of the Game to put the sound on/off
@@ -25,18 +22,18 @@ from src.button import SoundButton, BoardColorButton # Represent the two buttons
 from src.IA import IA_Player # All the functions associated with the IA Player
 from src.game import Game # The game himself with the mainloop function
 from src.all_configs.variables import king_white, king_black, button_sound_on, button_sound_off, button_sound_rect,\
-                      button_changes_boardcolor, button_changes_boardcolor_rect # Import the necessary 'tools' to
-                                                                                # initialyze correctly the classes
+                                      button_changes_boardcolor, button_changes_boardcolor_rect # Import the necessary 'tools' to
+                                                                                                # initialize correctly the classes
 
-# Initialize classes
+
 board = Board(screen)
 pieces = Pieces(king_white, king_black)
 sound_button = SoundButton(screen, button_sound_on, button_sound_off, button_sound_rect)
 board_color_button = BoardColorButton(screen, button_changes_boardcolor, button_changes_boardcolor_rect)
 IA_Player = IA_Player()
 
-### PROGRAM ###
-if __name__ == '__main__': # If the program is run directly, not imported
+
+if __name__ == '__main__':
     pygame.init()
-    game = Game(screen, board, pieces, sound_button, board_color_button, IA_Player) # Create a new game
-    game.run_mainloop() # Run the game
+    game = Game(screen, board, pieces, sound_button, board_color_button, IA_Player)
+    game.run_mainloop()
