@@ -1,8 +1,5 @@
-import sys
-sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
-
-from Variables import *
-from all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
+from src.all_configs.variables import *
+from src.all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
 
 class Pieces:
 

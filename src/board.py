@@ -1,8 +1,6 @@
-import sys
-sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
 import pygame
-from Variables import LIST_BLACK_PIECES, LIST_WHITE_PIECES, dico_board
-from Configs import *
+from src.all_configs.variables import LIST_BLACK_PIECES, LIST_WHITE_PIECES, dico_board
+from src.all_configs.configs import *
 
 class Board:
     """ Represent the board on the screen"""

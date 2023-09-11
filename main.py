@@ -1,15 +1,13 @@
-import sys
 import pygame
-sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
 
 def CreateWindow():
-    from Configs import WIDTH, HEIGHT
+    from src.all_configs.configs import WIDTH, HEIGHT
 
     # Create the window
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Chess")
 
-    from Assets import black_king_image  # Assets file need the screen initialized to load all the images !
+    from src.all_configs.assets import black_king_image  # Assets file need the screen initialized to load all the images !
 
     # Set the icon of the window (the black piece's image)
     pygame.display.set_icon(black_king_image)
@@ -20,13 +18,13 @@ def CreateWindow():
 screen = CreateWindow()
 
 # Import all the necessary file
-from Pieces import Pieces # All the functions associated to the movements of the pieces
-from Board import Board # Represent the board (Draw all tiles correctly with the good color)
-from Button import SoundButton, BoardColorButton # Represent the two buttons of the Game to put the sound on/off
+from src.pieces import Pieces # All the functions associated to the movements of the pieces
+from src.board import Board # Represent the board (Draw all tiles correctly with the good color)
+from src.button import SoundButton, BoardColorButton # Represent the two buttons of the Game to put the sound on/off
                                                  # and to change the board's colors
-from IA import IA_Player # All the functions associated with the IA Player
-from Game import Game # The game himself with the mainloop function
-from Variables import king_white, king_black, button_sound_on, button_sound_off, button_sound_rect,\
+from src.IA import IA_Player # All the functions associated with the IA Player
+from src.game import Game # The game himself with the mainloop function
+from src.all_configs.variables import king_white, king_black, button_sound_on, button_sound_off, button_sound_rect,\
                       button_changes_boardcolor, button_changes_boardcolor_rect # Import the necessary 'tools' to
                                                                                 # initialyze correctly the classes
 

@@ -1,6 +1,4 @@
-import sys
-sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
-from Configs import ROW, COL
+from src.all_configs.configs import ROW, COL
 
 """
 These class represent the object of a single piece that have some characteristics and some methods.
@@ -28,7 +26,7 @@ class Pawn:
         :return: list_possible_moves = list of all the basic possibles moves
                  Example : list_possible_moves = [(5,3), (5,4), (7,3)]
         """
-        from Variables import dico_board
+        from src.all_configs.variables import dico_board
         list_possible_moves = []
         # Normal move
         if dico_board[(self.tile[0] - self.color, self.tile[1])][2] == 0: # If the tile above the pawn is empty
@@ -57,7 +55,7 @@ class Pawn:
         :return: boolean, list_possible_moves_enpassant
         """
         # Special Stroke ! ("En Passant")
-        from Variables import dico_board
+        from src.all_configs.variables import dico_board
         list_possible_moves_enpassant = []
         right_tile = (self.tile[0], self.tile[1] + 1)
         try:
@@ -92,7 +90,7 @@ class King:
         :return: list_possible_moves = list of all the basic possibles moves
                  Example : list_possible_moves = [(5,3), (5,4), (7,3)]
         """
-        from Variables import dico_board
+        from src.all_configs.variables import dico_board
         list_possible_moves = []
         # All moves of the king (four diagonal, two sense in horizontal direction and two sense in vertical direction => 8 possibility if no tile is out of range)
         for i in range(-1, 2): # i = -1 / 1 or 0
@@ -138,7 +136,7 @@ class Knight:
         :return: list_possible_moves = list of all the basic possibles moves
                  Example : list_possible_moves = [(5,3), (5,4), (7,3)]
         """
-        from Variables import dico_board
+        from src.all_configs.variables import dico_board
         list_possible_moves = []
         for i in range(-2, 3, 4): # i = -2 or 2
             for j in range(-1, 2, 2): # j = -1 or 1
@@ -168,7 +166,7 @@ class Rook:
         :return: list_possible_moves = list of all the basic possibles moves
                  Example : list_possible_moves = [(5,3), (5,4), (7,3)]
         """
-        from Variables import dico_board
+        from src.all_configs.variables import dico_board
         list_possible_moves = []
         # Vertical moves (Up)
         try:
@@ -233,7 +231,7 @@ class Bishop:
         :return: list_possible_moves = list of all the basic possibles moves
                  Example : list_possible_moves = [(5,3), (5,4), (7,3)]
         """
-        from Variables import dico_board
+        from src.all_configs.variables import dico_board
         list_possible_moves = []
         # All the necessary enters to make the bishop move (the four diagonals)
         enter_left_down = True
@@ -306,7 +304,7 @@ class Queen:
         :return: list_possible_moves = list of all the basic possibles moves
                  Example : list_possible_moves = [(5,3), (5,4), (7,3)]
         """
-        from Variables import dico_board
+        from src.all_configs.variables import dico_board
         # Bishop move
         list_possible_moves = []
         # All the necessary enters to make the bishop move (the four diagonals)

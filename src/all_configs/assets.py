@@ -1,5 +1,5 @@
 import pygame
-from Configs import *
+from src.all_configs.configs import *
 
 """Asset Class for all images"""
 class Asset:

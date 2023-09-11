@@ -1,9 +1,7 @@
-import sys
-sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
 import math
-from Configs import *
-from all_pieces import Pawn
-from Variables import *
+from src.all_configs.configs import *
+from src.all_pieces import Pawn
+from src.all_configs.variables import *
 
 class Game:
     """Game class represent the Game himself with the method Run() that launch the game."""

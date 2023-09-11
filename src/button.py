@@ -1,8 +1,6 @@
-import sys
-sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
 import math
 import pygame
-from Configs import *
+from src.all_configs.configs import *
 
 class SoundButton():
 

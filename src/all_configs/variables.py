@@ -1,6 +1,4 @@
-import sys
-sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game")
-from Assets import *
+from src.all_configs.assets import *
 
 """
 File that contain important variables => Create functions to initialyse them only once to avoid circular import
@@ -12,7 +10,7 @@ def create_pieces():
     Create all the pieces instances (= objects)
     :return: all the pieces initialized
     """
-    from all_pieces import Rook, Bishop, Knight, Queen, King, Pawn # Import all the pieces
+    from src.all_pieces import Rook, Bishop, Knight, Queen, King, Pawn # Import all the pieces
 
     ### Initialize all the pieces instances ###
 

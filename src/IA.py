@@ -1,7 +1,5 @@
-import sys
-sys.path.append("/Users/mathisdelsart/PycharmProjects/Chess-Game Project/Chess-Game/Game/All_Configs")
-from Variables import dico_board
-from all_pieces import *
+from src.all_configs.variables import dico_board
+from src.all_pieces import *
 import time
 import math
 import random
