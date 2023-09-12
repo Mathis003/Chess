@@ -21,7 +21,7 @@ class Game:
         self.running = True  # True if the game is runnin, False otherwise
         self.begin_menu = True # If we are in the begin menu (game not started)
         self.end_menu = False # If we are in the end menu (game finished)
-        self.image_piece_selected = "first_type" # Type of pieces selected
+        self.image_piece_selected = 0 # Type of pieces selected
         self.stop_IA = False # Stop the IA_Player
         self.IA = True # Boolean to know if the player is playing against the IA or not (True = against IA, False = against player)
 
@@ -142,12 +142,8 @@ class Game:
         """
         Change the type of the pieces (the type of images)
         """
-        if self.image_piece_selected == "first_type":
-            self.image_piece_selected = "second_type"
-            self.pieces.change_image_into_2()
-        elif self.image_piece_selected == "second_type":
-            self.image_piece_selected = "first_type"
-            self.pieces.change_image_into_1()
+        self.pieces.change_image(self.image_piece_selected)
+        self.image_piece_selected = abs(1 - self.image_piece_selected)
 
     def QuitEvent(self, event):
         """
@@ -348,7 +344,7 @@ class Game:
 
                             if self.player_tile_moved in dico_board[self.player_tile_clicked][3]:  # If the tile moved is in the list of possible moves of the tile clicked
 
-                                mod_of_move = self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked, self.player_tile_moved)  # Move the piece and update the dico_board and all the necessary variables AND save the mod of the move (capture, move)
+                                mod_of_move = self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked, self.player_tile_moved, self.image_piece_selected)  # Move the piece and update the dico_board and all the necessary variables AND save the mod of the move (capture, move)
                                 self.piece_moved = dico_board[self.player_tile_moved][0]  # Get the piece moved
 
                                 if isinstance(self.piece_moved, type(queen_white)) and self.piece_moved.promoted:  # If the piece moved is a queen and had been promoted
@@ -404,7 +400,7 @@ class Game:
                         final_pos_mouse, self.player_tile_moved = self.getPosMouseAndTile()
 
                         if self.player_tile_moved in dico_board[self.player_tile_clicked][3]:  # If the tile moved is in the list of possible moves of the tile clicked
-                            mod_of_move = self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked, self.player_tile_moved)  # Move the piece and update the dico_board and all the necessary variables
+                            mod_of_move = self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked, self.player_tile_moved, self.image_piece_selected)  # Move the piece and update the dico_board and all the necessary variables
                             self.piece_moved = dico_board[self.player_tile_moved][0]  # Get the piece moved
 
                             if isinstance(self.piece_moved, type(queen_white)) and self.piece_moved.promoted:  # If the piece moved is a queen and had been promoted

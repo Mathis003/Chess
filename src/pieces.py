@@ -10,69 +10,39 @@ class Pieces:
 
 ### Functions to change all the pawn's images ###
 
-    def change_image_into_2(self):
+    def change_image(self, idx_image):
         """
         Change the pieces's images (1 into 2).
         """
         """Change the image of the pieces."""
+        new_idx_image = abs(1 - idx_image)
         for piece in dico_list_pieces[1]:
             if isinstance(piece, type(Pawn((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_pawn_image_2
+                dico_board[piece.tile][1] = white_pawn_image[new_idx_image]
             elif isinstance(piece, type(Queen((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_queen_image_2
+                dico_board[piece.tile][1] = white_queen_image[new_idx_image]
             elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
-                dico_board[piece.tile][1] = white_king_image_2
+                dico_board[piece.tile][1] = white_king_image[new_idx_image]
             elif isinstance(piece, type(Bishop((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_bishop_image_2
+                dico_board[piece.tile][1] = white_bishop_image[new_idx_image]
             elif isinstance(piece, type(Knight((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_knight_image_2
+                dico_board[piece.tile][1] = white_knight_image[new_idx_image]
             elif isinstance(piece, type(Rook((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_rook_image_2
+                dico_board[piece.tile][1] = white_rook_image[new_idx_image]
         for piece in dico_list_pieces[-1]:
             if isinstance(piece, type(Pawn((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_pawn_image_2
+                dico_board[piece.tile][1] = black_pawn_image[new_idx_image]
             elif isinstance(piece, type(Queen((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_queen_image_2
+                dico_board[piece.tile][1] = black_queen_image[new_idx_image]
             elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
-                dico_board[piece.tile][1] = black_king_image_2
+                dico_board[piece.tile][1] = black_king_image[new_idx_image]
             elif isinstance(piece, type(Bishop((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_bishop_image_2
+                dico_board[piece.tile][1] = black_bishop_image[new_idx_image]
             elif isinstance(piece, type(Knight((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_knight_image_2
+                dico_board[piece.tile][1] = black_knight_image[new_idx_image]
             elif isinstance(piece, type(Rook((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_rook_image_2
+                dico_board[piece.tile][1] = black_rook_image[new_idx_image]
 
-    def change_image_into_1(self):
-        """
-        Change the pieces's images (2 into 1).
-        """
-        for piece in dico_list_pieces[1]:
-            if isinstance(piece, type(Pawn((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_pawn_image
-            elif isinstance(piece, type(Queen((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_queen_image
-            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
-                dico_board[piece.tile][1] = white_king_image
-            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_bishop_image
-            elif isinstance(piece, type(Knight((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_knight_image
-            elif isinstance(piece, type(Rook((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_rook_image
-
-        for piece in dico_list_pieces[-1]:
-            if isinstance(piece, type(Pawn((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_pawn_image
-            elif isinstance(piece, type(Queen((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_queen_image
-            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
-                dico_board[piece.tile][1] = black_king_image
-            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_bishop_image
-            elif isinstance(piece, type(Knight((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_knight_image
-            elif isinstance(piece, type(Rook((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_rook_image
 
 #####################################################
 
@@ -421,7 +391,7 @@ class Pieces:
 
 ### Functions that allows to move the pieces on the board ###
 
-    def move_pawn(self, pawn_piece, current_tile, new_tile):
+    def move_pawn(self, pawn_piece, current_tile, new_tile, idx_image):
         """
         Deal with the move of a pawn.
         => Promotion / "EnPassant" move / Basic move
@@ -437,10 +407,10 @@ class Pieces:
             mod_of_move = self.play_basic_music(new_tile)
 
             if pawn_piece.color == 1:  # Check if the pawn is white
-                list_piece, image_queen = LIST_WHITE_PIECES, white_queen_image
+                list_piece, image_queen = LIST_WHITE_PIECES, white_queen_image[idx_image]
 
             else:
-                list_piece, image_queen = LIST_BLACK_PIECES, black_queen_image
+                list_piece, image_queen = LIST_BLACK_PIECES, black_queen_image[idx_image]
 
             new_queen = Queen(new_tile, pawn_piece.color, False)
             self.remove_from_list_piece_eaten(new_tile)
@@ -576,7 +546,7 @@ class Pieces:
 
         return mod_of_move
 
-    def move_piece(self, piece, current_tile, new_tile):
+    def move_piece(self, piece, current_tile, new_tile, idx_image):
         """
         Move the piece to the new tile.
         Update dico_board and mod_of_move and return it.
@@ -586,7 +556,7 @@ class Pieces:
         :return: mod_of_move = mod of the last move
         """
         if isinstance(piece, type(Pawn((6, 0), 1, True))):
-            mod_of_move = self.move_pawn(piece, current_tile, new_tile)
+            mod_of_move = self.move_pawn(piece, current_tile, new_tile, idx_image)
 
         elif isinstance(piece, type(self.king_white)): # If the piece is the king
             mod_of_move = self.move_king(piece, current_tile, new_tile)

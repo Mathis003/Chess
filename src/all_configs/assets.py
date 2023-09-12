@@ -19,38 +19,24 @@ class Asset:
 
 
 ### Load all the assets ###
+### 2 differents images for each piece ###
 
-# Black pieces 1
-black_king_image = Asset("images/pieces/bK.png", (SQUARE, SQUARE)).load_image()
-black_queen_image = Asset("images/pieces/bQ.png", (SQUARE, SQUARE)).load_image()
-black_rook_image = Asset("images/pieces/bR.png", (SQUARE, SQUARE)).load_image()
-black_bishop_image = Asset("images/pieces/bB.png", (SQUARE, SQUARE)).load_image()
-black_knight_image = Asset("images/pieces/bKN.png", (SQUARE, SQUARE)).load_image()
-black_pawn_image = Asset("images/pieces/bP.png", (SQUARE, SQUARE)).load_image()
+# Black pieces
+black_king_image = [Asset("images/pieces/bK.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/king_black_2.png", (SQUARE, SQUARE)).load_image()]
+black_queen_image = [Asset("images/pieces/bQ.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/queen_black_2.png", (SQUARE, SQUARE)).load_image()]
+black_rook_image = [Asset("images/pieces/bR.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/rook_black_2.png", (SQUARE, SQUARE)).load_image()]
+black_bishop_image = [Asset("images/pieces/bB.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/bishop_black_2.png", (SQUARE, SQUARE)).load_image()]
+black_knight_image = [Asset("images/pieces/bKN.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/knight_black_2.png", (SQUARE, SQUARE)).load_image()]
+black_pawn_image = [Asset("images/pieces/bP.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/pawn_black_2.png", (SQUARE, SQUARE)).load_image()]
 
-# White pieces 1
-white_king_image = Asset("images/pieces/wK.png", (SQUARE, SQUARE)).load_image()
-white_queen_image = Asset("images/pieces/wQ.png", (SQUARE, SQUARE)).load_image()
-white_rook_image = Asset("images/pieces/wR.png", (SQUARE, SQUARE)).load_image()
-white_bishop_image = Asset("images/pieces/wB.png", (SQUARE, SQUARE)).load_image()
-white_knight_image = Asset("images/pieces/wKN.png", (SQUARE, SQUARE)).load_image()
-white_pawn_image = Asset("images/pieces/wP.png", (SQUARE, SQUARE)).load_image()
+# White pieces
+white_king_image = [Asset("images/pieces/wK.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/king_white_2.png", (SQUARE, SQUARE)).load_image()]
+white_queen_image = [Asset("images/pieces/wQ.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/queen_white_2.png", (SQUARE, SQUARE)).load_image()]
+white_rook_image = [Asset("images/pieces/wR.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/rook_white_2.png", (SQUARE, SQUARE)).load_image()]
+white_bishop_image = [Asset("images/pieces/wB.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/bishop_white_2.png", (SQUARE, SQUARE)).load_image()]
+white_knight_image = [Asset("images/pieces/wKN.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/knight_white_2.png", (SQUARE, SQUARE)).load_image()]
+white_pawn_image = [Asset("images/pieces/wP.png", (SQUARE, SQUARE)).load_image(), Asset("images/pieces/pawn_white_2.png", (SQUARE, SQUARE)).load_image()]
 
-# Black pieces 2
-black_king_image_2 = Asset("images/pieces/king_black_2.png", (SQUARE, SQUARE)).load_image()
-black_queen_image_2 = Asset("images/pieces/queen_black_2.png", (SQUARE, SQUARE)).load_image()
-black_rook_image_2 = Asset("images/pieces/rook_black_2.png", (SQUARE, SQUARE)).load_image()
-black_bishop_image_2 = Asset("images/pieces/bishop_black_2.png", (SQUARE, SQUARE)).load_image()
-black_knight_image_2 = Asset("images/pieces/knight_black_2.png", (SQUARE, SQUARE)).load_image()
-black_pawn_image_2 = Asset("images/pieces/pawn_black_2.png", (SQUARE, SQUARE)).load_image()
-
-# White pieces 2
-white_king_image_2 = Asset("images/pieces/king_white_2.png", (SQUARE, SQUARE)).load_image()
-white_queen_image_2 = Asset("images/pieces/queen_white_2.png", (SQUARE, SQUARE)).load_image()
-white_rook_image_2 = Asset("images/pieces/rook_white_2.png", (SQUARE, SQUARE)).load_image()
-white_bishop_image_2 = Asset("images/pieces/bishop_white_2.png", (SQUARE, SQUARE)).load_image()
-white_knight_image_2 = Asset("images/pieces/knight_white_2.png", (SQUARE, SQUARE)).load_image()
-white_pawn_image_2 = Asset("images/pieces/pawn_white_2.png", (SQUARE, SQUARE)).load_image()
 
 # music Sounds
 pygame.mixer.init()

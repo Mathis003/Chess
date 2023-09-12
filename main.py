@@ -8,7 +8,7 @@ def CreateWindow():
     pygame.display.set_caption("Chess")
 
     from src.all_configs.assets import black_king_image
-    pygame.display.set_icon(black_king_image)
+    pygame.display.set_icon(black_king_image[0])
 
     return screen
 
