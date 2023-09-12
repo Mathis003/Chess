@@ -49,6 +49,11 @@ game_start_sound = pygame.mixer.Sound("images/music/Game-Start sound.mp3")
 checkmate_sound = pygame.mixer.Sound("images/music/Checkmate sound.mp3")
 stalemate_sound = pygame.mixer.Sound("images/music/Stalemate sound.mp3")
 
+MOD_MOVES = {"move" : move_sound, "capture" : capture_sound, "check" : check_sound, "castling" : castling_sound, "checkmate" : checkmate_sound, "stalemate" : stalemate_sound}
+
+
+### Button ###
+
 # button 'Sound On/Off'
 button_sound_on = Asset("images/button/button_sound.png", (SIZE_SQUARE / 2, SIZE_SQUARE / 2)).load_image()
 button_sound_off = Asset("images/button/button_sound_off_final.png", (SIZE_SQUARE/ 2, SIZE_SQUARE / 2)).load_image()

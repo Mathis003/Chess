@@ -4,18 +4,15 @@ from src.all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
 class Pieces:
 
     def __init__(self, king_white, king_black):
-        # king's instance object of the both side
         self.king_white = king_white
         self.king_black = king_black
 
-### Functions to change all the pawn's images ###
-
     def change_image(self, idx_image):
         """
-        Change the pieces's images (1 into 2).
+        Change the pieces's images.
         """
-        """Change the image of the pieces."""
         new_idx_image = abs(1 - idx_image)
+
         for piece in dico_list_pieces[1]:
             if isinstance(piece, type(Pawn((7, 4), 1, True))):
                 dico_board[piece.tile][1] = white_pawn_image[new_idx_image]
@@ -29,6 +26,7 @@ class Pieces:
                 dico_board[piece.tile][1] = white_knight_image[new_idx_image]
             elif isinstance(piece, type(Rook((7, 4), 1, True))):
                 dico_board[piece.tile][1] = white_rook_image[new_idx_image]
+
         for piece in dico_list_pieces[-1]:
             if isinstance(piece, type(Pawn((7, 4), 1, True))):
                 dico_board[piece.tile][1] = black_pawn_image[new_idx_image]
@@ -43,8 +41,6 @@ class Pieces:
             elif isinstance(piece, type(Rook((7, 4), 1, True))):
                 dico_board[piece.tile][1] = black_rook_image[new_idx_image]
 
-
-#####################################################
 
 ### Functions for 'CASTLING' move ###
 
