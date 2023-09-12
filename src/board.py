@@ -3,7 +3,7 @@ from src.all_configs.variables import LIST_BLACK_PIECES, LIST_WHITE_PIECES, dico
 from src.all_configs.configs import *
 
 class Board:
-    """ Represent the board on the screen"""
+    
     def __init__(self, screen):
         self.screen = screen
 

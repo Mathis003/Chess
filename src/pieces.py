@@ -137,8 +137,9 @@ class Pieces:
                 self.CastlingStroke(piece) # Update the possible moves of the king if he can do the "Castling" stroke
 
             if isinstance(piece, type(Pawn((7, 4), 1, True))): # If the piece is the pawn
-                enter, possible_move = piece.EnPassantMove()
-                if enter: # If the pawn can do the "en passant" move
+                possible_move = piece.EnPassantMove()
+                # If the pawn can do the "en passant" move
+                if len(possible_move) != 0:
                     # Update the possible moves of the pawn by adding the move(s) "en passant"
                     for move_tile in possible_move:
                         dico_board[piece.tile][3].append(move_tile)

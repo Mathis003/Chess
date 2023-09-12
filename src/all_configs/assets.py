@@ -38,7 +38,6 @@ white_knight_image = [Asset("images/pieces/wKN.png", (SIZE_SQUARE, SIZE_SQUARE))
 white_pawn_image = [Asset("images/pieces/wP.png", (SIZE_SQUARE, SIZE_SQUARE)).load_image(), Asset("images/pieces/pawn_white_2.png", (SIZE_SQUARE, SIZE_SQUARE)).load_image()]
 
 
-
 ### Music Sounds ###
 
 pygame.mixer.init()
