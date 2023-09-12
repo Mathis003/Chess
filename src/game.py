@@ -106,34 +106,6 @@ class Game:
         if self.sound_button.sound_on:
             self.launch_music(mod_of_move)
 
-
-    ########################
-    ### BUTTON FUNCTIONS ###
-    ########################
-
-    def ButtonUpdateClick(self, initial_pos_mouse):
-        """
-        Detect if a collision with a button is done => in this case,
-        Update the change
-        :param: initial_pos_mouse = position of the mouse (x, y)
-        """
-        if self.sound_button.checkCollision(initial_pos_mouse):
-            self.sound_button.changeButton()
-        if self.board_color_button.checkCollision(initial_pos_mouse):
-            self.board_color_button.changeColorBoard()
-
-    def ActivateFunctionButton(self, pos_mouse):
-        """
-        Detect if the player collide with the buttons without pressing on
-        => in this case, Display the button on the screen
-        :param: pos_mouse = position of the mouse (x, y)
-        """
-        if self.sound_button.checkCollision(pos_mouse) and not pygame.mouse.get_pressed()[0]:
-            self.sound_button.displayButton()
-        if self.board_color_button.checkCollision(pos_mouse) and not pygame.mouse.get_pressed()[0]:
-            self.board_color_button.displayButton()
-
-
     ########################
     ### EVENTS FUNCTIONS ###
     ########################
@@ -200,7 +172,8 @@ class Game:
                                 if dico_board[tile_clicked][0].color == -1:  # If the tile clicked is a white piece
                                     self.update_necessary_variables(tile_clicked)  # Update the necessary variables
 
-                        self.ButtonUpdateClick(initial_pos_mouse)
+                        self.board_color_button.buttonUpdateClick(initial_pos_mouse)
+                        self.sound_button.buttonUpdateClick(initial_pos_mouse)
 
     def EventsDuringRunningGame_WithIA(self):
         """
@@ -221,7 +194,8 @@ class Game:
                         if dico_board[tile_clicked][0].color == 1:  # If the tile clicked is a white piece
                             self.update_necessary_variables(tile_clicked)  # Update the necessary variables
 
-                    self.ButtonUpdateClick(initial_pos_mouse)
+                    self.board_color_button.buttonUpdateClick(initial_pos_mouse)
+                    self.sound_button.buttonUpdateClick(initial_pos_mouse)
 
 
     ########################
@@ -253,9 +227,9 @@ class Game:
         # Draw all the tile on the board
         self.board.draw_board(self.board_color_button.mod_board)
         # Display the colors of the possible moves / the tile clicked
-        self.board.draw_tile(self.list_color_case[0], self.board_color_button.mod_board, "dark")  # Draw the tile clicked by the player
-        self.board.draw_tile(self.list_color_case[1], self.board_color_button.mod_board, "light")  # Draw the tile played by the player
-        self.board.draw_tile(self.color_case_waiting, self.board_color_button.mod_board, "dark")  # Draw the tile played by the player
+        self.board.draw_tile(self.list_color_case[0], COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
+        self.board.draw_tile(self.list_color_case[1], COLORS_MOVES_BOARD[self.board_color_button.mod_board][False])
+        self.board.draw_tile(self.color_case_waiting, COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
         self.board.draw_possible_moves(self.player_tile_clicked)
         # Display the pieces on the board (Done at the end of the loop to be sure that the pieces aren't hide by the tiles's color)
         self.board.draw_pieces()
@@ -327,7 +301,10 @@ class Game:
                         self.UpdateGame()
                         mouse_pos = pygame.mouse.get_pos()  # Update the mouse position
                         self.mouse_pressed = pygame.mouse.get_pressed()[0]  # Update the mouse_pressed variable
-                        self.ActivateFunctionButton(mouse_pos)
+
+                        # Activate button function
+                        self.board_color_button.activateFunctionButton(mouse_pos)
+                        self.sound_button.activateFunctionButton(mouse_pos)
 
                         # Section use during one of the player plays and keep the mouse pressed to choose a tile to move
                         if self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is pressed and the enter_mouse_pressed is open (= True)
@@ -384,7 +361,10 @@ class Game:
 
                     self.mouse_pressed = pygame.mouse.get_pressed()[0]  # Update the mouse_pressed variable
                     mouse_pos = pygame.mouse.get_pos()  # Update the mouse position
-                    self.ActivateFunctionButton(mouse_pos)
+                    
+                    # Activate button function
+                    self.board_color_button.activateFunctionButton(mouse_pos)
+                    self.sound_button.activateFunctionButton(mouse_pos)
 
                     # Section use during one of the player plays and keep the mouse pressed to choose a tile to move
                     if self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is pressed and the enter_mouse_pressed is open (= True)

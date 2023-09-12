@@ -9,7 +9,7 @@ These classes represent the object of a single piece that have some characterist
 
 => The main method are:
 - update_possible_moves(): Update the list of possible basics moves of the piece (Doesn't take into account if the king
-  is in Chess or not, if the move is legal,...
+  is in Chess or not, if the move is legal (don't put the king in Chess),...
   => Other methods are called to reupdate the list of possible moves in the class Pieces).
 """
 

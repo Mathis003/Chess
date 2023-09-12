@@ -30,3 +30,11 @@ COLOR_PLAYER_AFTER_MOVE_BLUE = (117,199,232)
 # Colors of the possibles moves (light RED and dark RED)
 COLOR_POSSIBLE_MOVES_LIGHT = (219, 59, 87) # Light color of the square (to draw the possible moves on light square only)
 COLOR_POSSIBLE_MOVES_DARK = (182, 33, 60) # Dark color of the square (to draw the possible moves on dark square only)
+
+COLORS_BOARD = {"brown_mod" : [LIGHT_COLOR_BROWN, DARK_COLOR_BROWN],
+                "blue_mod" : [LIGHT_COLOR_BLUE, DARK_COLOR_BLUE],
+                "green_mod" : [LIGHT_COLOR_GREEN, DARK_COLOR_GREEN]}
+
+COLORS_MOVES_BOARD = {"brown_mod" : {True : COLOR_PLAYER_AFTER_MOVE_BROWN, False : COLOR_PLAYER_BEFORE_MOVE_BROWN},
+                      "blue_mod" : {True : COLOR_PLAYER_AFTER_MOVE_BLUE, False : COLOR_PLAYER_BEFORE_MOVE_BLUE},
+                      "green_mod" : {True : COLOR_PLAYER_AFTER_MOVE_GREEN, False : COLOR_PLAYER_BEFORE_MOVE_GREEN}}
