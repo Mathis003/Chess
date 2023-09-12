@@ -210,7 +210,7 @@ class Rook(Piece):
                 if dico_board[(self.tile[0], self.tile[1] - i)][2] == 0:
                     list_possible_moves.append((self.tile[0], self.tile[1] - i))
                 # If the tile is occupied by an opponent piece
-                if dico_board[(self.tile[0], self.tile[1] - i)][2] == - self.color:
+                elif dico_board[(self.tile[0], self.tile[1] - i)][2] == - self.color:
                     list_possible_moves.append((self.tile[0], self.tile[1] - i))   
                     break
                 else:
@@ -225,7 +225,7 @@ class Rook(Piece):
                 if dico_board[(self.tile[0], self.tile[1] + i)][2] == 0:
                     list_possible_moves.append((self.tile[0], self.tile[1] + i))
                 # If the tile is occupied by an opponent piece
-                if dico_board[(self.tile[0], self.tile[1] + i)][2] == - self.color:
+                elif dico_board[(self.tile[0], self.tile[1] + i)][2] == - self.color:
                     list_possible_moves.append((self.tile[0], self.tile[1] + i))  
                     break 
                 else:
