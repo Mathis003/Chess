@@ -72,7 +72,7 @@ class Game:
                  tile_mouse = tile associated to the pos_mouse
         """
         pos_mouse = pygame.mouse.get_pos()  # Get the mouse position of the click (x, y)
-        tile_mouse = (pos_mouse[1] // SQUARE, pos_mouse[0] // SQUARE)  # Tile clicked
+        tile_mouse = (pos_mouse[1] // SIZE_SQUARE, pos_mouse[0] // SIZE_SQUARE)  # Tile clicked
         return pos_mouse, tile_mouse
 
 
@@ -193,9 +193,9 @@ class Game:
                                 if dico_board[tile_clicked][0].color == 1:  # If the tile clicked is a white piece
                                     self.update_necessary_variables(tile_clicked)  # Update the necessary variables
                         if self.dico_turn["turn_black"] and math.sqrt((initial_pos_mouse[0] - (2 + button_sound_on.get_width()
-                                                            / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) > SQUARE / 4 and \
+                                                            / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) > SIZE_SQUARE / 4 and \
                                                             math.sqrt((initial_pos_mouse[0] - (self.screen.get_width() - button_changes_boardcolor.get_width()
-                                                            / 2 - 2)) ** 2 + (initial_pos_mouse[1] - 2) ** 2) > SQUARE / 4:
+                                                            / 2 - 2)) ** 2 + (initial_pos_mouse[1] - 2) ** 2) > SIZE_SQUARE / 4:
                             if dico_board[tile_clicked][0] != None:  # If the tile clicked isn't empty
                                 if dico_board[tile_clicked][0].color == -1:  # If the tile clicked is a white piece
                                     self.update_necessary_variables(tile_clicked)  # Update the necessary variables
@@ -334,7 +334,7 @@ class Game:
                             if self.player_tile_clicked != (-1, -1):  # If the player_tile_clicked isn't (-1, -1) => Different of the initialisation
                                 pos_mouse = pygame.mouse.get_pos()  # Get the current mouse position (x, y) (usefull to update the rect's position of the piece)
                                 if self.save_image_tile_clicked != None:
-                                    self.screen.blit(self.save_image_tile_clicked, (pos_mouse[0] - SQUARE / 2, pos_mouse[1] - SQUARE / 2))  # Update the image of the piece clicked
+                                    self.screen.blit(self.save_image_tile_clicked, (pos_mouse[0] - SIZE_SQUARE / 2, pos_mouse[1] - SIZE_SQUARE / 2))  # Update the image of the piece clicked
 
                         # Section use during one of the player has finished to play and release the mouse to choose a tile to move (until the player press the mouse again)
                         if not self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is not pressed anymore and the enter_mouse_pressed is open (= True)
@@ -391,7 +391,7 @@ class Game:
                         if self.player_tile_clicked != (-1, -1):  # If the player_tile_clicked isn't (-1, -1) => Different of the initialisation
                             pos_mouse = pygame.mouse.get_pos()  # Get the current mouse position (x, y) (usefull to update the rect's position of the piece)
                             if self.save_image_tile_clicked != None:
-                                self.screen.blit(self.save_image_tile_clicked, (pos_mouse[0] - SQUARE / 2, pos_mouse[1] - SQUARE / 2))  # Update the image of the piece clicked
+                                self.screen.blit(self.save_image_tile_clicked, (pos_mouse[0] - SIZE_SQUARE / 2, pos_mouse[1] - SIZE_SQUARE / 2))  # Update the image of the piece clicked
 
                     # Section use during one of the player has finished to play and release the mouse to choose a tile to move (until the player press the mouse again)
                     if not self.mouse_pressed and self.enter_mouse_pressed:  # If the mouse is not pressed anymore and the enter_mouse_pressed is open (= True)

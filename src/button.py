@@ -17,7 +17,7 @@ class SoundButton():
         :return: True if the pos_mouse collide with the button's rect
         """
         if math.sqrt((pos_mouse[0] - (2 + self.image_sound_on.get_width() / 2)) ** 2 + (
-                      pos_mouse[1] - (2 + self.image_sound_on.get_width() / 2)) ** 2) <= SQUARE / 4:
+                      pos_mouse[1] - (2 + self.image_sound_on.get_width() / 2)) ** 2) <= SIZE_SQUARE / 4:
             return True
         return False
 
@@ -37,11 +37,11 @@ class SoundButton():
         """
         if self.sound_on:
             pygame.draw.circle(self.screen, (255, 255, 255), (2 + self.image_sound_on.get_width() / 2,
-                                                              2 + self.image_sound_on.get_width() / 2), SQUARE / 4)
+                                                              2 + self.image_sound_on.get_width() / 2), SIZE_SQUARE / 4)
             self.screen.blit(self.image_sound_on, self.rect)
         else:
             pygame.draw.circle(self.screen, (255, 255, 255), (2 + self.image_sound_off.get_width() / 2,
-                                                              2 + self.image_sound_off.get_width() / 2), SQUARE / 4)
+                                                              2 + self.image_sound_off.get_width() / 2), SIZE_SQUARE / 4)
             self.screen.blit(self.image_sound_off, self.rect)
 
 class BoardColorButton:
@@ -58,7 +58,7 @@ class BoardColorButton:
         :return: True if the pos_mouse collide with the button's rect
         """
         if math.sqrt((pos_mouse[0] - (self.screen.get_width() - self.image.get_width() / 2 - 2))
-                     ** 2 + (pos_mouse[1] - 2) ** 2) <= SQUARE / 4:  # If the mouse is on the circle of the button
+                     ** 2 + (pos_mouse[1] - 2) ** 2) <= SIZE_SQUARE / 4:  # If the mouse is on the circle of the button
             return True
         return False
 
@@ -79,5 +79,5 @@ class BoardColorButton:
         """
         pygame.draw.circle(self.screen, (255, 255, 255), (self.screen.get_width() - 2
                            - self.image.get_width() / 2, 2 + self.image.get_height()
-                           / 2), SQUARE / 4)
+                           / 2), SIZE_SQUARE / 4)
         self.screen.blit(self.image, self.rect)

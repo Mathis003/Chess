@@ -16,19 +16,19 @@ class Board:
         """
         if mod_board == "brown_mod":
             if intensity == "dark":
-                pygame.draw.rect(self.screen, COLOR_PLAYER_BEFORE_MOVE_BROWN, (tile[1] * SQUARE, tile[0] * SQUARE, SQUARE, SQUARE))
+                pygame.draw.rect(self.screen, COLOR_PLAYER_BEFORE_MOVE_BROWN, (tile[1] * SIZE_SQUARE, tile[0] * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE))
             elif intensity == "light":
-                pygame.draw.rect(self.screen, COLOR_PLAYER_AFTER_MOVE_BROWN, (tile[1] * SQUARE, tile[0] * SQUARE, SQUARE, SQUARE))
+                pygame.draw.rect(self.screen, COLOR_PLAYER_AFTER_MOVE_BROWN, (tile[1] * SIZE_SQUARE, tile[0] * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE))
         elif mod_board == "green_mod":
             if intensity == "dark":
-                pygame.draw.rect(self.screen, COLOR_PLAYER_BEFORE_MOVE_GREEN, (tile[1] * SQUARE, tile[0] * SQUARE, SQUARE, SQUARE))
+                pygame.draw.rect(self.screen, COLOR_PLAYER_BEFORE_MOVE_GREEN, (tile[1] * SIZE_SQUARE, tile[0] * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE))
             elif intensity == "light":
-                pygame.draw.rect(self.screen, COLOR_PLAYER_AFTER_MOVE_GREEN, (tile[1] * SQUARE, tile[0] * SQUARE, SQUARE, SQUARE))
+                pygame.draw.rect(self.screen, COLOR_PLAYER_AFTER_MOVE_GREEN, (tile[1] * SIZE_SQUARE, tile[0] * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE))
         elif mod_board == "blue_mod":
             if intensity == "dark":
-                pygame.draw.rect(self.screen, COLOR_PLAYER_BEFORE_MOVE_BLUE, (tile[1] * SQUARE, tile[0] * SQUARE, SQUARE, SQUARE))
+                pygame.draw.rect(self.screen, COLOR_PLAYER_BEFORE_MOVE_BLUE, (tile[1] * SIZE_SQUARE, tile[0] * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE))
             elif intensity == "light":
-                pygame.draw.rect(self.screen, COLOR_PLAYER_AFTER_MOVE_BLUE, (tile[1] * SQUARE, tile[0] * SQUARE, SQUARE, SQUARE))
+                pygame.draw.rect(self.screen, COLOR_PLAYER_AFTER_MOVE_BLUE, (tile[1] * SIZE_SQUARE, tile[0] * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE))
 
     def draw_tile_basic_board(self, tile, color):
         """
@@ -36,7 +36,7 @@ class Board:
         :param tile: tuple (a, b) where 'a' is the COL tile's number and 'b', the ROW tile's number
         :param color: new color of the tile
         """
-        pygame.draw.rect(self.screen, color, (tile[1] * SQUARE, tile[0] * SQUARE, SQUARE, SQUARE))
+        pygame.draw.rect(self.screen, color, (tile[1] * SIZE_SQUARE, tile[0] * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE))
 
     def draw_tile_on_board(self, i, j, light_color, dark_color):
         """
@@ -81,10 +81,10 @@ class Board:
         """
         for piece in LIST_BLACK_PIECES: # Loop for each black piece
             if dico_board[piece.tile][1] != None: # If the piece isn't pressed on the board => otherwise the image is None => = "Don't draw it"
-                self.screen.blit(dico_board[piece.tile][1], (piece.tile[1] * SQUARE, piece.tile[0] * SQUARE))
+                self.screen.blit(dico_board[piece.tile][1], (piece.tile[1] * SIZE_SQUARE, piece.tile[0] * SIZE_SQUARE))
         for piece in LIST_WHITE_PIECES: # Loop for each white piece
             if dico_board[piece.tile][1] != None: # If the piece isn't pressed on the board => otherwise the image is None => = "Don't draw it"
-                self.screen.blit(dico_board[piece.tile][1], (piece.tile[1] * SQUARE, piece.tile[0] * SQUARE))
+                self.screen.blit(dico_board[piece.tile][1], (piece.tile[1] * SIZE_SQUARE, piece.tile[0] * SIZE_SQUARE))
 
     def draw_possible_moves(self, tile_piece):
         """
