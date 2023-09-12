@@ -93,6 +93,7 @@ class Pawn(Piece):
 
 
 class King(Piece):
+
     def __init__(self, tile, color, first_move, rook_left, rook_right):
         super().__init__(tile, color, first_move)
         self.rook_left = rook_left # Rook at the left of the king
@@ -134,6 +135,7 @@ class King(Piece):
 
 
 class Knight(Piece):
+
     def __init__(self, tile, color, first_move):
         super().__init__(tile, color, first_move)
 
@@ -162,6 +164,7 @@ class Knight(Piece):
 
 
 class Rook(Piece):
+
     def __init__(self, tile, color, first_move):
         super().__init__(tile, color, first_move)
 
@@ -234,211 +237,92 @@ class Rook(Piece):
 
 
 class Bishop(Piece):
+
     def __init__(self, tile, color, first_move):
         super().__init__(tile, color, first_move)
 
     def update_possible_moves(self):
-        """
-        Update the basic possible moves (without check,...)
-        :return: list_possible_moves = list of all the basic possibles moves
-                 Example : list_possible_moves = [(5,3), (5,4), (7,3)]
-        """
+
         dico_board = super().update_possible_moves()
         list_possible_moves = []
-        # All the necessary enters to make the bishop move (the four diagonals)
-        enter_left_down = True
-        enter_left_up = True
-        enter_right_up = True
-        enter_right_down = True
 
+        # Diagonal Left-Up
         for i in range(1, ROW):
-            # Diagonal Left-Up
             try:
-                if enter_left_up:
-                    if dico_board[(self.tile[0] - i, self.tile[1] - i)][2] == 0:  # If the tile is empty
-                        list_possible_moves.append((self.tile[0] - i, self.tile[1] - i))   
-                    elif dico_board[(self.tile[0] - i, self.tile[1] - i)][2] == - self.color:  # If the tile is occupied by an opponent piece
-                        list_possible_moves.append((self.tile[0] - i, self.tile[1] - i))   
-                        enter_left_up = False
-                    elif dico_board[(self.tile[0] - i, self.tile[1] - i)][2] == self.color:  # If the tile is occupied by an ally piece
-                        enter_left_up = False
+                # If the tile is empty
+                if dico_board[(self.tile[0] - i, self.tile[1] - i)][2] == 0:
+                    list_possible_moves.append((self.tile[0] - i, self.tile[1] - i))
+                # If the tile is occupied by an opponent piece
+                elif dico_board[(self.tile[0] - i, self.tile[1] - i)][2] == - self.color:
+                    list_possible_moves.append((self.tile[0] - i, self.tile[1] - i))   
+                    break
+                else:
+                    break
             except:
-                enter_left_up = False  # Deal with the out of range error (The bishop can't go further left up)
-            # Diagonal Left-Down
+                pass # Deal with the out of range error (The bishop can't go further left up)
+
+        # Diagonal Left-Down
+        for i in range(1, ROW):
             try:
-                if enter_left_down:
-                    if dico_board[(self.tile[0] - i, self.tile[1] + i)][2] == 0:  # If the tile is empty
-                        list_possible_moves.append((self.tile[0] - i, self.tile[1] + i))   
-                    elif dico_board[(self.tile[0] - i, self.tile[1] + i)][2] == - self.color:  # If the tile is occupied by an opponent piece
-                        list_possible_moves.append((self.tile[0] - i, self.tile[1] + i))   
-                        enter_left_down = False
-                    elif dico_board[(self.tile[0] - i, self.tile[1] + i)][2] == self.color:  # If the tile is occupied by an ally piece
-                        enter_left_down = False
+                # If the tile is empty
+                if dico_board[(self.tile[0] - i, self.tile[1] + i)][2] == 0:
+                    list_possible_moves.append((self.tile[0] - i, self.tile[1] + i))
+                # If the tile is occupied by an opponent piece
+                elif dico_board[(self.tile[0] - i, self.tile[1] + i)][2] == - self.color:
+                    list_possible_moves.append((self.tile[0] - i, self.tile[1] + i))   
+                    break
+                else:
+                    break
             except:
-                enter_left_down = False  # Deal with the out of range error (The bishop can't go further left down)
-            # Diagonal Right-Up
+                pass # Deal with the out of range error (The bishop can't go further left down)
+
+        # Diagonal Right-Up
+        for i in range(1, ROW):
             try:
-                if enter_right_up:
-                    if dico_board[(self.tile[0] + i, self.tile[1] - i)][2] == 0:  # If the tile is empty
-                        list_possible_moves.append((self.tile[0] + i, self.tile[1] - i))   
-                    elif dico_board[(self.tile[0] + i, self.tile[1] - i)][2] == - self.color: # If the tile is occupied by an opponent piece
-                        list_possible_moves.append((self.tile[0] + i, self.tile[1] - i))   
-                        enter_right_up = False
-                    elif dico_board[(self.tile[0] + i, self.tile[1] - i)][2] == self.color:  # If the tile is occupied by an ally piece
-                        enter_right_up = False
+                # If the tile is empty
+                if dico_board[(self.tile[0] + i, self.tile[1] - i)][2] == 0:
+                    list_possible_moves.append((self.tile[0] + i, self.tile[1] - i))
+                # If the tile is occupied by an opponent piece
+                elif dico_board[(self.tile[0] + i, self.tile[1] - i)][2] == - self.color:
+                    list_possible_moves.append((self.tile[0] + i, self.tile[1] - i))   
+                    break
+                else:
+                    break
             except:
-                enter_right_up = False  # Deal with the out of range error (The bishop can't go further right up)
-            # Diagonal Right-Down
+                pass # Deal with the out of range error (The bishop can't go further right up)
+
+        # Diagonal Right-Down
+        for i in range(1, ROW):
             try:
-                if enter_right_down:
-                    if dico_board[(self.tile[0] + i, self.tile[1] + i)][2] == 0:  # If the tile is empty
-                        list_possible_moves.append((self.tile[0] + i, self.tile[1] + i))   
-                    elif dico_board[(self.tile[0] + i, self.tile[1] + i)][2] == - self.color: # If the tile is occupied by an opponent piece
-                        list_possible_moves.append((self.tile[0] + i, self.tile[1] + i))   
-                        enter_right_down = False
-                    elif dico_board[(self.tile[0] + i, self.tile[1] + i)][2] == self.color:  # If the tile is occupied by an ally piece
-                        enter_right_down = False
+                # If the tile is empty
+                if dico_board[(self.tile[0] + i, self.tile[1] + i)][2] == 0:
+                    list_possible_moves.append((self.tile[0] + i, self.tile[1] + i))
+                # If the tile is occupied by an opponent piece
+                elif dico_board[(self.tile[0] + i, self.tile[1] + i)][2] == - self.color:
+                    list_possible_moves.append((self.tile[0] + i, self.tile[1] + i))   
+                    break
+                else:
+                    break
             except:
-                enter_right_down = False  # Deal with the out of range error (The bishop can't go further right down)
+                pass # Deal with the out of range error (The bishop can't go further right down)
 
         return list_possible_moves
 
+
 class Queen(Piece):
+
     def __init__(self, tile, color, first_move):
         super().__init__(tile, color, first_move)
         self.promoted = False  # Special variable for the promotion
 
     def update_possible_moves(self):
-        """
-        Update the basic possible moves (without check,...)
-        :return: list_possible_moves = list of all the basic possibles moves
-                 Example : list_possible_moves = [(5,3), (5,4), (7,3)]
-        """
-        dico_board = super().update_possible_moves()
-        # Bishop move
-        list_possible_moves = []
-        # All the necessary enters to make the bishop move (the four diagonals)
-        enter_left_down = True
-        enter_left_up = True
-        enter_right_up = True
-        enter_right_down = True
 
-        for i in range(1, ROW):
-            # Diagonal Left-Up
-            try:
-                if enter_left_up:
-                    if dico_board[(self.tile[0] - i, self.tile[1] - i)][2] == 0:  # If the tile is empty
-                        list_possible_moves.append(
-                            (self.tile[0] - i, self.tile[1] - i))   
-                    elif dico_board[(self.tile[0] - i, self.tile[1] - i)][
-                        2] == - self.color:  # If the tile is occupied by an opponent piece
-                        list_possible_moves.append(
-                            (self.tile[0] - i, self.tile[1] - i))   
-                        enter_left_up = False
-                    elif dico_board[(self.tile[0] - i, self.tile[1] - i)][
-                        2] == self.color:  # If the tile is occupied by an ally piece
-                        enter_left_up = False
-            except:
-                enter_left_up = False  # Deal with the out of range error (The bishop can't go further left up)
-            # Diagonal Left-Down
-            try:
-                if enter_left_down:
-                    if dico_board[(self.tile[0] - i, self.tile[1] + i)][2] == 0:  # If the tile is empty
-                        list_possible_moves.append(
-                            (self.tile[0] - i, self.tile[1] + i))   
-                    elif dico_board[(self.tile[0] - i, self.tile[1] + i)][
-                        2] == - self.color:  # If the tile is occupied by an opponent piece
-                        list_possible_moves.append(
-                            (self.tile[0] - i, self.tile[1] + i))   
-                        enter_left_down = False
-                    elif dico_board[(self.tile[0] - i, self.tile[1] + i)][
-                        2] == self.color:  # If the tile is occupied by an ally piece
-                        enter_left_down = False
-            except:
-                enter_left_down = False  # Deal with the out of range error (The bishop can't go further left down)
-            # Diagonal Right-Up
-            try:
-                if enter_right_up:
-                    if dico_board[(self.tile[0] + i, self.tile[1] - i)][2] == 0:  # If the tile is empty
-                        list_possible_moves.append(
-                            (self.tile[0] + i, self.tile[1] - i))   
-                    elif dico_board[(self.tile[0] + i, self.tile[1] - i)][
-                        2] == - self.color:  # If the tile is occupied by an opponent piece
-                        list_possible_moves.append(
-                            (self.tile[0] + i, self.tile[1] - i))   
-                        enter_right_up = False
-                    elif dico_board[(self.tile[0] + i, self.tile[1] - i)][
-                        2] == self.color:  # If the tile is occupied by an ally piece
-                        enter_right_up = False
-            except:
-                enter_right_up = False  # Deal with the out of range error (The bishop can't go further right up)
-            # Diagonal Right-Down
-            try:
-                if enter_right_down:
-                    if dico_board[(self.tile[0] + i, self.tile[1] + i)][2] == 0:  # If the tile is empty
-                        list_possible_moves.append(
-                            (self.tile[0] + i, self.tile[1] + i))   
-                    elif dico_board[(self.tile[0] + i, self.tile[1] + i)][
-                        2] == - self.color:  # If the tile is occupied by an opponent piece
-                        list_possible_moves.append(
-                            (self.tile[0] + i, self.tile[1] + i))   
-                        enter_right_down = False
-                    elif dico_board[(self.tile[0] + i, self.tile[1] + i)][
-                        2] == self.color:  # If the tile is occupied by an ally piece
-                        enter_right_down = False
-            except:
-                enter_right_down = False  # Deal with the out of range error (The bishop can't go further right down)
+        bishop = Bishop(self.tile, self.color, self.first_move)
+        list_possible_moves_bishop = bishop.update_possible_moves()
+        bishop = None
 
-        # Rook move
+        rook = Rook(self.tile, self.color, self.first_move)
+        list_possible_moves_rook = rook.update_possible_moves()
+        rook = None
 
-        # Vertical moves (Up)
-        try:
-            for i in range(1, self.tile[0] + 1):
-                if dico_board[(self.tile[0] - i, self.tile[1])][2] == 0:  # If the tile is empty
-                    list_possible_moves.append(
-                        (self.tile[0] - i, self.tile[1]))   
-                if dico_board[(self.tile[0] - i, self.tile[1])][ 2] == - self.color:  # If the tile is occupied by an opponent piece
-                    list_possible_moves.append((self.tile[0] - i, self.tile[1]))   
-                    break  
-                elif dico_board[(self.tile[0] - i, self.tile[1])][2] == self.color:  # If the tile is occupied by an ally piece
-                    break  
-        except:
-            pass  # Deal with the out of range error
-        # Vertical moves (Down)
-        try:
-            for i in range(1, ROW - self.tile[0] + 1):
-                if dico_board[(self.tile[0] + i, self.tile[1])][2] == 0:  # If the tile is empty
-                    list_possible_moves.append((self.tile[0] + i, self.tile[1]))   
-                if dico_board[(self.tile[0] + i, self.tile[1])][2] == - self.color:  # If the tile is occupied by an opponent piece
-                    list_possible_moves.append((self.tile[0] + i, self.tile[1]))   
-                    break  
-                elif dico_board[(self.tile[0] + i, self.tile[1])][2] == self.color:  # If the tile is occupied by an ally piece
-                    break  
-        except:
-            pass
-        # Horizontal moves (Left)
-        try:
-            for i in range(1, self.tile[1] + 1):
-                if dico_board[(self.tile[0], self.tile[1] - i)][2] == 0:  # If the tile is empty
-                    list_possible_moves.append((self.tile[0], self.tile[1] - i))   
-                if dico_board[(self.tile[0], self.tile[1] - i)][2] == - self.color:  # If the tile is occupied by an opponent piece
-                    list_possible_moves.append((self.tile[0], self.tile[1] - i))   
-                    break  
-                elif dico_board[(self.tile[0], self.tile[1] - i)][2] == self.color:  # If the tile is occupied by an ally piece
-                    break  
-        except:
-            pass  # Deal with the out of range error
-        # Horizontal moves (Right)
-        try:
-            for i in range(1, COL - self.tile[1] + 1):
-                if dico_board[(self.tile[0], self.tile[1] + i)][2] == 0:  # If the tile is empty
-                    list_possible_moves.append((self.tile[0], self.tile[1] + i))   
-                if dico_board[(self.tile[0], self.tile[1] + i)][2] == - self.color:  # If the tile is occupied by an opponent piece
-                    list_possible_moves.append((self.tile[0], self.tile[1] + i))   
-                    break  
-                elif dico_board[(self.tile[0], self.tile[1] + i)][2] == self.color:  # If the tile is occupied by an ally piece
-                    break  
-        except:
-            pass  # Deal with the out of range error
-
-        return list_possible_moves
+        return (list_possible_moves_rook + list_possible_moves_bishop)
