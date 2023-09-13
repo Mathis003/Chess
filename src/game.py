@@ -149,7 +149,6 @@ class Game:
                         self.player_tile_moved = (final_pos_mouse[1] // SIZE_SQUARE, final_pos_mouse[0] // SIZE_SQUARE)
 
                         # If the tile moved is in the list of possible moves of the tile clicked
-
                         if self.player_tile_moved in dico_board[self.player_tile_clicked][3]:
                             mod_of_move = dico_board[self.player_tile_clicked][0].move_piece(self.player_tile_clicked, self.player_tile_moved, self.image_piece_selected)
                             self.piece_moved = dico_board[self.player_tile_moved][0]

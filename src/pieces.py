@@ -23,6 +23,8 @@ class Pieces:
             king, tile_king = self.king_white, self.king_white.tile
         return king, tile_king
 
+
+
 ###########################################################
 ### Function to have all the possibles moves with all the possible case => prevent Check,... ###
 
