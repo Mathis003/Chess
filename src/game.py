@@ -9,7 +9,7 @@ class Game:
 
         self.screen = screen
         self.board = board
-        self.pieces = pieces
+        self.pieces = pieces # To remove at the end
         self.sound_button = sound_button
         self.board_color_button = board_color_button
         self.IA_Player = IA_Player
@@ -151,7 +151,7 @@ class Game:
                         # If the tile moved is in the list of possible moves of the tile clicked
 
                         if self.player_tile_moved in dico_board[self.player_tile_clicked][3]:
-                            mod_of_move = self.pieces.move_piece(dico_board[self.player_tile_clicked][0], self.player_tile_clicked, self.player_tile_moved, self.image_piece_selected)
+                            mod_of_move = dico_board[self.player_tile_clicked][0].move_piece(self.player_tile_clicked, self.player_tile_moved, self.image_piece_selected)
                             self.piece_moved = dico_board[self.player_tile_moved][0]
 
                             # If the piece moved is a queen and had been promoted
