@@ -117,58 +117,6 @@ class Game:
         self.dico_turn["turn_white"] = not self.dico_turn["turn_white"]
         self.dico_turn["turn_black"] = not self.dico_turn["turn_black"]
 
-
-
-
-
-
-
-
-
-    def UpdateMovePieces(self, mod_of_move):
-        """
-        Update all the possibility of moves for both side (with Check,...) => UPDATE mod_of_move if the move is a check, checkmate or a stalemate and return it.
-        param mod_of_move: mod of the last move ("check" if the last move put the opponent king in Check by example).
-        return: mod_of_move updated or not.
-        """
-        # Deal with the big update of all piece !
-        self.pieces.basics_possible_moves(self.piece_moved)  # Update the movement of the pieces on which there are changes about their possibilities of moves + the specials moves ("En Passant" and "Castling")
-        enter, piece_that_check = self.pieces.CheckOpponent(self.piece_moved, self.player_tile_clicked)  # Check if the player has check the opponent
-        if enter:  # If the piece put the opponent king in check
-            mod_of_move = "check"
-            self.pieces.CheckMod_reupdate_possibles_move(piece_that_check)  # ReUpdate correctly the possibility of the pieces to move and protect the king
-            if self.pieces.Check_NoMoveAvailable(piece_that_check):  # Check if the opponent player can play at least one piece
-                mod_of_move = "checkmate"
-                self.end_menu = True
-        else:
-            self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)  # ReUpdate correctly the possibility of the pieces to move and not put their OWN king in check
-            if self.pieces.Check_NoMoveAvailable(self.piece_moved):  # Check if the opponent player can play at least one piece
-                mod_of_move = "stalemate"
-                self.end_menu = True
-
-        return mod_of_move
-
-
-
-    def UpdateEnPassantMove(self):
-        """
-        Update the enter to the move "EnPassant"
-        """
-        # Allow to make the "En Passant" rule correctly => Must be the turn just after the first move of the opponent pawn to do this rule
-        if self.enter_to_reset_EnPassant:
-            # Reset the old Pawn's object and the enter
-            self.save_pawn_first_move.just_moved = None
-            self.enter_to_reset_EnPassant = False
-        if isinstance(self.piece_moved, type(Pawn((6, 0), 1, True))):
-            if self.piece_moved.just_moved:
-                self.enter_to_reset_EnPassant = True
-                self.save_pawn_first_move = self.piece_moved
-
-
-
-
-
-
     def run(self):
 
         while self.running:
@@ -217,10 +165,34 @@ class Game:
                             self.list_color_case[1] = self.player_tile_moved
                             self.color_case_waiting = self.player_tile_clicked
 
-                            mod_of_move = self.UpdateMovePieces(mod_of_move)
+                            self.pieces.basics_possible_moves(self.piece_moved)
+                            enter, piece_that_check = self.pieces.CheckOpponent(self.piece_moved, self.player_tile_clicked)
+                            # If the piece put the opponent king in check
+                            if enter:
+                                mod_of_move = "check"
+                                self.pieces.CheckMod_reupdate_possibles_move(piece_that_check)
+                                # If the opponent player can play at least one piece
+                                if self.pieces.Check_NoMoveAvailable(piece_that_check):
+                                    mod_of_move = "checkmate"
+                                    self.end_menu = True
+                            else:
+                                self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)
+                                # If the opponent player can play at least one piece
+                                if self.pieces.Check_NoMoveAvailable(self.piece_moved):
+                                    mod_of_move = "stalemate"
+                                    self.end_menu = True
+
                             self.play_music(mod_of_move)
 
-                            self.UpdateEnPassantMove()
+                            if self.enter_to_reset_EnPassant:
+                                self.save_pawn_first_move.just_moved = None
+                                self.enter_to_reset_EnPassant = False
+
+                            if isinstance(self.piece_moved, type(Pawn((6, 0), 1, True))):
+                                if self.piece_moved.just_moved:
+                                    self.enter_to_reset_EnPassant = True
+                                    self.save_pawn_first_move = self.piece_moved
+
                             self.player_tile_clicked = (-1, -1)
 
                         # If the tile moved is not in the list of possible moves of the tile clicked
