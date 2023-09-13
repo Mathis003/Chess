@@ -1,4 +1,4 @@
-from src.all_configs.assets import *
+from src.assets import *
 
 
 """

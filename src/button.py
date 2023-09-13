@@ -1,6 +1,6 @@
 import math
 import pygame
-from src.all_configs.configs import *
+from src.configs import *
 
 
 class Button:

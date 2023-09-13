@@ -3,13 +3,13 @@ import pygame
 pygame.init()
 
 def CreateWindow():
-    from src.all_configs.configs import WIDTH, HEIGHT
+    from src.configs import WIDTH, HEIGHT
 
     # Create the window
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Chess")
 
-    from src.all_configs.assets import black_king_image
+    from src.assets import black_king_image
     pygame.display.set_icon(black_king_image[0])
 
     return screen

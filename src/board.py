@@ -1,5 +1,5 @@
 from src.all_pieces import *
-from src.all_configs.assets import *
+from src.assets import *
 
 class Board:
     
