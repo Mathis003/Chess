@@ -1,5 +1,4 @@
-from src.all_configs.variables import *
-from src.all_pieces import Pawn, Queen, King, Piece
+from src.all_pieces import Pawn, King, Piece, dico_board, dico_list_pieces
 
 class Pieces:
 

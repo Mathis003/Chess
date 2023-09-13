@@ -1,5 +1,4 @@
-from src.all_configs.variables import LIST_BLACK_PIECES, LIST_WHITE_PIECES, dico_board, dico_list_pieces
-from src.all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
+from src.all_pieces import *
 from src.all_configs.assets import *
 
 class Board:

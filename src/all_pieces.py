@@ -1,4 +1,5 @@
-from src.all_configs.configs import ROW, COL
+from src.all_configs.assets import *
+
 
 """
 These classes represent the object of a single piece that have some characteristics and some methods.
@@ -28,28 +29,21 @@ class Piece:
         """
         If the move is 'check' or 'stalemate, the variable will be updated again later.
         """
-        from src.all_configs.variables import dico_board
         if dico_board[new_tile][2] != 0:
             return "capture"
         else:
             return "move"
     
     def update_possible_moves(self):
-        
-        from src.all_configs.variables import dico_board
-        return dico_board
+        return ""
 
     def add_piece(self, piece):
-
-        from src.all_configs.variables import LIST_WHITE_PIECES, LIST_BLACK_PIECES
         if piece.color == 1:
             LIST_WHITE_PIECES.append(piece)
         elif piece.color == -1:
             LIST_BLACK_PIECES.append(piece)
 
     def remove_piece(self, tile):
-
-        from src.all_configs.variables import dico_board, LIST_WHITE_PIECES, LIST_BLACK_PIECES
 
         if dico_board[tile][0] != None:
             if dico_board[tile][2] == 1:
@@ -58,8 +52,6 @@ class Piece:
                 LIST_BLACK_PIECES.remove(dico_board[tile][0])
     
     def move_piece(self, current_tile, new_tile, idx_image):
-
-        from src.all_configs.variables import dico_board
 
         mod_of_move = self.get_mod_move(new_tile)
         self.remove_piece(new_tile)   
@@ -80,8 +72,7 @@ class Pawn(Piece):
         self.just_moved = False # Variable for the special stroke "En Passant"
 
     def update_possible_moves(self):
-        
-        dico_board = super().update_possible_moves()
+         
         list_possible_moves = []
 
         # If the tile above the pawn is empty
@@ -109,7 +100,7 @@ class Pawn(Piece):
         """
         Return a list with the possible "En Passant" move (max 2 possibility).
         """
-        dico_board = super().update_possible_moves()
+         
         list_possible_moves_enpassant = []
 
         right_tile = (self.tile[0], self.tile[1] + 1)
@@ -131,9 +122,6 @@ class Pawn(Piece):
         return list_possible_moves_enpassant
 
     def move_piece(self, current_tile, new_tile, idx_image):
-
-        from src.all_configs.variables import dico_board, dico_list_pieces
-        from src.all_configs.assets import white_queen_image, black_queen_image
 
         # If the pawn can be promoted.
         if new_tile[0] == 0 or new_tile[0] == 7:
@@ -198,7 +186,7 @@ class King(Piece):
 
     def update_possible_moves(self):
 
-        dico_board = super().update_possible_moves()
+         
         list_possible_moves = []
 
         # All moves of the king (four diagonal, two sense in horizontal direction and two sense in vertical direction => 8 possibility if no tile is out of range)
@@ -217,7 +205,6 @@ class King(Piece):
 
     def tiles_empty(self, list_tile):
 
-        dico_board = super().update_possible_moves()
         for tile in list_tile:
             if dico_board[tile][2] != 0:
                 return False
@@ -225,7 +212,6 @@ class King(Piece):
 
     def tiles_chess(self, list_tile):
 
-        from src.all_configs.variables import dico_list_pieces
         if self.color == 1:
             list_tile.append((7, 4))
         else:
@@ -240,7 +226,7 @@ class King(Piece):
     
     def castling_aux(self, list_tiles_left, list_tiles_right, tiles_left_append, tiles_right_append):
 
-        dico_board = super().update_possible_moves()
+         
         if self.first_move:
             if self.rook_left.first_move:
                 # If the tiles between the king and the left rook are empty and not in check
@@ -263,7 +249,6 @@ class King(Piece):
     
     def move_piece(self, current_tile, new_tile, idx_image):
 
-        from src.all_configs.variables import dico_board
         if self.first_move:
             # Right castling
             if new_tile == (7, 6) or new_tile == (0, 6):
@@ -292,12 +277,12 @@ class King(Piece):
                 return "castling"
             else:
                 self.first_move = False
-        else:
-            # Basic move
-            mod_of_move = self.get_mod_move(new_tile)
-            self.remove_piece(new_tile)   
-            dico_board[new_tile] = [self, dico_board[current_tile][1], dico_board[current_tile][2], []]
-            dico_board[current_tile] = [None, None, 0, []]
+
+        # Basic move
+        mod_of_move = self.get_mod_move(new_tile)
+        self.remove_piece(new_tile)   
+        dico_board[new_tile] = [self, dico_board[current_tile][1], dico_board[current_tile][2], []]
+        dico_board[current_tile] = [None, None, 0, []]
         
         self.tile = new_tile
         return mod_of_move
@@ -310,7 +295,7 @@ class Knight(Piece):
 
     def update_possible_moves(self):
 
-        dico_board = super().update_possible_moves()
+         
         list_possible_moves = []
 
         # All moves of the knight (two tiles in a direction and one tile in the perpendicular direction => in every sense => 8 possibility if no tile is out of range)
@@ -339,7 +324,7 @@ class Rook(Piece):
 
     def update_possible_moves(self):
 
-        dico_board = super().update_possible_moves()
+         
         list_possible_moves = []
 
         # Vertical moves (Up)
@@ -412,7 +397,6 @@ class Bishop(Piece):
 
     def update_possible_moves(self):
 
-        dico_board = super().update_possible_moves()
         list_possible_moves = []
 
         # Diagonal Left-Up
@@ -495,3 +479,95 @@ class Queen(Piece):
         rook = None
 
         return (list_possible_moves_rook + list_possible_moves_bishop)
+    
+
+
+"""
+###
+### Variables usefull in all the program! ###
+###
+"""
+
+
+"""
+Initialize all the pieces instances
+"""
+# Rook
+rook_white = [Rook((7, 0), 1, True), Rook((7, 7), 1, True)]
+rook_black = [Rook((0, 0), -1, True), Rook((0, 7), -1, True)]
+
+# Bishop
+bishop_white = [Bishop((7, 2), 1, True), Bishop((7, 5), 1, True)]
+bishop_black = [Bishop((0, 2), -1, True), Bishop((0, 5), -1, True)]
+
+# Queen
+queen_white = Queen((7, 3), 1, True)
+queen_black = Queen((0, 3), -1, True)
+
+# King
+king_white = King((7, 4), 1, True, rook_white[0], rook_white[1])
+king_black = King((0, 4), -1, True, rook_black[0], rook_black[1])
+
+# Knight
+knight_white = [Knight((7, 1), 1, True), Knight((7, 6), 1, True)]
+knight_black = [Knight((0, 1), -1, True), Knight((0, 6), -1, True)]
+
+# Pawn
+pawn_white = [Pawn((6, 0), 1, True), Pawn((6, 1), 1, True), Pawn((6, 2), 1, True), Pawn((6, 3), 1, True),
+              Pawn((6, 4), 1, True), Pawn((6, 5), 1, True), Pawn((6, 6), 1, True), Pawn((6, 7), 1, True)]
+
+pawn_black = [Pawn((1, 0), -1, True), Pawn((1, 1), -1, True), Pawn((1, 2), -1, True), Pawn((1, 3), -1, True),
+              Pawn((1, 4), -1, True), Pawn((1, 5), -1, True), Pawn((1, 6), -1, True), Pawn((1, 7), -1, True)]
+
+
+"""
+Create the dico of the board => will be update every turn.
+Useful if we know the tile and we want the information about the piece on it.
+
+Dictionnary :
+    key : tile's coordinates in a tuple (x, y)
+    value : list with : object (piece), image_of_the_piece, number_of_the_piece, list_of_possibile_moves
+    => number_of_the_piece : 0 if no piece, 1 if white piece, 2 if white king, -1 if black piece
+"""
+dico_board = {(0, 0): [rook_black[0], black_rook_image[0], -1, []],
+            (0, 1): [knight_black[0], black_knight_image[0], -1, [(2, 0), (2, 2)]],
+            (0, 2): [bishop_black[0], black_bishop_image[0], -1, []],
+            (0, 3): [queen_black, black_queen_image[0], -1, []], (0, 4): [king_black, black_king_image[0], -1, []],
+            (0, 5): [bishop_black[1], black_bishop_image[0], -1, []],
+            (0, 6): [knight_black[1], black_knight_image[0], -1, [(2, 5), (2, 7)]],
+            (0, 7): [rook_black[1], black_rook_image[0], -1, []],
+            (1, 0): [pawn_black[0], black_pawn_image[0], -1, [(2, 0), (3, 0)]], (1, 1): [pawn_black[1], black_pawn_image[0], -1, [(2, 1), (3, 1)]],
+            (1, 2): [pawn_black[2], black_pawn_image[0], -1, [(2, 2), (3, 2)]], (1, 3): [pawn_black[3], black_pawn_image[0], -1, [(2, 3), (3, 3)]],
+            (1, 4): [pawn_black[4], black_pawn_image[0], -1, [(2, 4), (3, 4)]], (1, 5): [pawn_black[5], black_pawn_image[0], -1, [(2, 5), (3, 5)]],
+            (1, 6): [pawn_black[6], black_pawn_image[0], -1, [(2, 6), (3, 6)]], (1, 7): [pawn_black[7], black_pawn_image[0], -1, [(2, 7), (3, 7)]],
+            (2, 0): [None, None, 0, []], (2, 1): [None, None, 0, []], (2, 2): [None, None, 0, []], (2, 3): [None, None, 0, []], (2, 4): [None, None, 0, []],
+            (2, 5): [None, None, 0, []], (2, 6): [None, None, 0, []], (2, 7): [None, None, 0, []],
+            (3, 0): [None, None, 0, []], (3, 1): [None, None, 0, []], (3, 2): [None, None, 0, []], (3, 3): [None, None, 0, []], (3, 4): [None, None, 0, []],
+            (3, 5): [None, None, 0, []], (3, 6): [None, None, 0, []], (3, 7): [None, None, 0, []],
+            (4, 0): [None, None, 0, []], (4, 1): [None, None, 0, []], (4, 2): [None, None, 0, []], (4, 3): [None, None, 0, []], (4, 4): [None, None, 0, []],
+            (4, 5): [None, None, 0, []], (4, 6): [None, None, 0, []], (4, 7): [None, None, 0, []],
+            (5, 0): [None, None, 0, []], (5, 1): [None, None, 0, []], (5, 2): [None, None, 0, []], (5, 3): [None, None, 0, []], (5, 4): [None, None, 0, []],
+            (5, 5): [None, None, 0, []], (5, 6): [None, None, 0, []], (5, 7): [None, None, 0, []],
+            (6, 0): [pawn_white[0], white_pawn_image[0], 1, [(5, 0), (4, 0)]], (6, 1): [pawn_white[1], white_pawn_image[0], 1, [(5, 1), (4, 1)]],
+            (6, 2): [pawn_white[2], white_pawn_image[0], 1, [(5, 2), (4, 2)]], (6, 3): [pawn_white[3], white_pawn_image[0], 1, [(5, 3), (4, 3)]],
+            (6, 4): [pawn_white[4], white_pawn_image[0], 1, [(5, 4), (4, 4)]], (6, 5): [pawn_white[5], white_pawn_image[0], 1, [(5, 5), (4, 5)]],
+            (6, 6): [pawn_white[6], white_pawn_image[0], 1, [(5, 6), (4, 6)]], (6, 7): [pawn_white[7], white_pawn_image[0], 1, [(5, 7), (4, 7)]],
+            (7, 0): [rook_white[0], white_rook_image[0], 1, []], (7, 1): [knight_white[0], white_knight_image[0], 1, [(5, 0), (5, 2)]],
+            (7, 2): [bishop_white[0], white_bishop_image[0], 1, []], (7, 3): [queen_white, white_queen_image[0], 1, []],
+            (7, 4): [king_white, white_king_image[0], 1, []], (7, 5): [bishop_white[1], white_bishop_image[0], 1, []],
+            (7, 6): [knight_white[1], white_knight_image[0], 1, [(5, 5), (5, 7)]], (7, 7): [rook_white[1], white_rook_image[0], 1, []]}
+
+
+"""
+List of all the pieces objects => allow to access to all the pieces objects without testing all the board's tile.
+=> will be update if the board is updated. (piece eaten, promotion,...).
+"""
+LIST_BLACK_PIECES = [rook_black[0], rook_black[1], bishop_black[0], bishop_black[1], queen_black,
+                     king_black, knight_black[0], knight_black[1], pawn_black[0], pawn_black[1], pawn_black[2],
+                     pawn_black[3], pawn_black[4], pawn_black[5], pawn_black[6], pawn_black[7]]
+
+LIST_WHITE_PIECES = [rook_white[0], rook_white[1], bishop_white[0], bishop_white[1], king_white,
+                     queen_white, knight_white[0], knight_white[1], pawn_white[0], pawn_white[1], pawn_white[2],
+                     pawn_white[3], pawn_white[4], pawn_white[5], pawn_white[6], pawn_white[7]]
+
+dico_list_pieces = {1 : LIST_WHITE_PIECES, -1 : LIST_BLACK_PIECES}

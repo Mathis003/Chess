@@ -1,7 +1,6 @@
 import math
-from src.all_configs.configs import *
-from src.all_pieces import Pawn
-from src.all_configs.variables import *
+from src.all_configs.assets import *
+from src.all_pieces import Pawn, dico_board, queen_white, MOD_MOVES, pygame
 
 class Game:
 

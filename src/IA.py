@@ -1,4 +1,3 @@
-from src.all_configs.variables import dico_board
 from src.all_pieces import *
 import time
 import math
