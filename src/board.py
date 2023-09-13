@@ -1,11 +1,42 @@
-from src.all_configs.variables import LIST_BLACK_PIECES, LIST_WHITE_PIECES, dico_board
-from src.all_configs.configs import *
-import pygame
+from src.all_configs.variables import LIST_BLACK_PIECES, LIST_WHITE_PIECES, dico_board, dico_list_pieces
+from src.all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
+from src.all_configs.assets import *
 
 class Board:
     
     def __init__(self, screen):
         self.screen = screen
+    
+    def change_image(self, idx_image):
+        new_idx_image = abs(1 - idx_image)
+
+        for piece in dico_list_pieces[1]:
+            if isinstance(piece, type(Pawn((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_pawn_image[new_idx_image]
+            elif isinstance(piece, type(Queen((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_queen_image[new_idx_image]
+            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
+                dico_board[piece.tile][1] = white_king_image[new_idx_image]
+            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_bishop_image[new_idx_image]
+            elif isinstance(piece, type(Knight((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_knight_image[new_idx_image]
+            elif isinstance(piece, type(Rook((7, 4), 1, True))):
+                dico_board[piece.tile][1] = white_rook_image[new_idx_image]
+
+        for piece in dico_list_pieces[-1]:
+            if isinstance(piece, type(Pawn((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_pawn_image[new_idx_image]
+            elif isinstance(piece, type(Queen((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_queen_image[new_idx_image]
+            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
+                dico_board[piece.tile][1] = black_king_image[new_idx_image]
+            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_bishop_image[new_idx_image]
+            elif isinstance(piece, type(Knight((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_knight_image[new_idx_image]
+            elif isinstance(piece, type(Rook((7, 4), 1, True))):
+                dico_board[piece.tile][1] = black_rook_image[new_idx_image]
 
     def draw_tile(self, tile, color):
         """

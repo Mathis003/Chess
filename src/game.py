@@ -69,7 +69,7 @@ class Game:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # If the mouse is clicked on the wheel
                 if event.button == 2:
-                    self.pieces.change_image(self.image_piece_selected)
+                    self.board.change_image(self.image_piece_selected)
                     self.image_piece_selected = abs(1 - self.image_piece_selected)
 
                 # If the mouse is clicked on the left button

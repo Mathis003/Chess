@@ -1,103 +1,13 @@
 from src.all_configs.variables import *
-from src.all_pieces import Pawn, Queen, King, Bishop, Knight, Rook
+from src.all_pieces import Pawn, Queen, King, Piece
 
 class Pieces:
 
     def __init__(self, king_white, king_black):
+        self.piece = Piece(None, None, None)
         self.king_white = king_white
         self.king_black = king_black
 
-    def change_image(self, idx_image):
-        """
-        Change the pieces's images.
-        """
-        new_idx_image = abs(1 - idx_image)
-
-        for piece in dico_list_pieces[1]:
-            if isinstance(piece, type(Pawn((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_pawn_image[new_idx_image]
-            elif isinstance(piece, type(Queen((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_queen_image[new_idx_image]
-            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
-                dico_board[piece.tile][1] = white_king_image[new_idx_image]
-            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_bishop_image[new_idx_image]
-            elif isinstance(piece, type(Knight((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_knight_image[new_idx_image]
-            elif isinstance(piece, type(Rook((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_rook_image[new_idx_image]
-
-        for piece in dico_list_pieces[-1]:
-            if isinstance(piece, type(Pawn((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_pawn_image[new_idx_image]
-            elif isinstance(piece, type(Queen((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_queen_image[new_idx_image]
-            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
-                dico_board[piece.tile][1] = black_king_image[new_idx_image]
-            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_bishop_image[new_idx_image]
-            elif isinstance(piece, type(Knight((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_knight_image[new_idx_image]
-            elif isinstance(piece, type(Rook((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_rook_image[new_idx_image]
-
-
-### Functions for 'CASTLING' move ###
-
-    def TileBetweenEmpty(self, list_tile):
-        """
-        Check if the tiles in the "list_tile" are all empty => in this case, boolean =  True.
-        Otherwise, boolean = False.
-        :param list_tile: list of tiles
-        :return: boolean
-        """
-        for tile in list_tile:
-            if dico_board[tile][2] != 0:
-                return False
-        return True
-
-    def ChessTileBetween(self, list_tile, king_piece):
-        """
-        Check if the tiles in the "list_tile" are all not in Check => in this case, boolean = True.
-        Otherwise, boolean = False.
-        :param list_tile: list of tiles
-        :param king_piece: the king piece
-        :return: boolean
-        """
-        list_tile.append((7, 4))
-        for piece in dico_list_pieces[- king_piece.color]:
-            list_possible_moves = piece.update_possible_moves()
-            for tile in list_tile:
-                if tile in list_possible_moves:
-                    return True
-        return False
-
-    def CastlingStroke(self, king_piece):
-        """
-        Update dico_board with the "Castling" move if the king can do it.
-        :param king_piece: the king piece
-        """
-        if king_piece.color == 1: # If the king is white
-            list_tile_leftstroke = [(7, 5), (7, 6)]
-            list_tile_rightstroke = [(7, 3), (7, 2), (7, 1)]
-            tile_to_append_left = (7, 6)
-            tile_to_append_right = (7, 2)
-
-        else: # If the king is black
-            list_tile_leftstroke = [(0, 5), (0, 6)]
-            list_tile_rightstroke = [(0, 3), (0, 2), (0, 1)]
-            tile_to_append_left = (0, 6)
-            tile_to_append_right = (0, 2)
-
-        if king_piece.Rook_LeftStroke(): # If the king and the left rook haven't played yet
-            if self.TileBetweenEmpty(list_tile_leftstroke) and not self.ChessTileBetween(list_tile_leftstroke, king_piece): # If the tiles between the king and the left rook are empty and not in check
-                dico_board[king_piece.tile][3].append(tile_to_append_left) # Add the tile to the list of possible moves of the king
-
-        if king_piece.Rook_RightStroke(): # If the king and the right rook haven't played yet
-            if self.TileBetweenEmpty(list_tile_rightstroke) and not self.ChessTileBetween(list_tile_rightstroke, king_piece): # If the tiles between the king and the right rook are empty and not in check
-                dico_board[king_piece.tile][3].append(tile_to_append_right) # Add the tile to the list of possible moves of the king
-
-#####################################
 
 ### Function very usefull for the paragraph just below ###
 
@@ -130,7 +40,7 @@ class Pieces:
             dico_board[piece.tile][3] = piece.update_possible_moves()  # Update possible moves of the piece
 
             if isinstance(piece, type(King((7, 4), 1, True, 0, 0))): # If the piece is the king
-                self.CastlingStroke(piece) # Update the possible moves of the king if he can do the "Castling" stroke
+                piece.castling_stroke() # Update the possible moves of the king if he can do the "Castling" stroke
 
             if isinstance(piece, type(Pawn((7, 4), 1, True))): # If the piece is the pawn
                 possible_move = piece.EnPassantMove()
@@ -320,42 +230,9 @@ class Pieces:
         dico_board[piece.tile][2] = piece.color  # Reset the color of the tile
         return enter
 
-##################################################################################
 
-### Functions that allows to add / remove a piece from the list of board's pieces ###
 
-    def remove_from_list_piece_eaten(self, tile):
-        """
-        Remove the instance object (in the pieces's list) from the 'tile'
-        :param tile: tile where the piece must be removed
-        """
-        if dico_board[tile][0] != None: # If the tile contain a piece (= isn't empty)
-            if dico_board[tile][2] == 1: # If the piece is white
-                LIST_WHITE_PIECES.remove(dico_board[tile][0]) # Remove the white piece from the list of pieces
-                dico_list_pieces[1] = LIST_WHITE_PIECES # Update the list of pieces
-            elif dico_board[tile][2] == -1: # If the piece is black
-                LIST_BLACK_PIECES.remove(dico_board[tile][0]) # Remove the black piece from the list of pieces
-                dico_list_pieces[-1] = LIST_BLACK_PIECES  # Update the list of pieces
 
-            if isinstance(dico_board[tile][0], type(Queen((5,5), 1, True))): # If the piece is a queen
-                if dico_board[tile][2] == 1: # If the piece is white
-                    pass
-                elif dico_board[tile][2] == -1: # If the piece is black
-                    pass
-
-    def add_from_list_piece(self, piece):
-        """
-        Add 'piece' to the right list of pieces (BLACK or WHITE).
-        :param piece: piece that must be add to the list of pieces
-        """
-        if piece.color == 1:
-            LIST_WHITE_PIECES.append(piece)
-            dico_list_pieces[1] = LIST_WHITE_PIECES
-        elif piece.color == -1:
-            LIST_BLACK_PIECES.append(piece)
-            dico_list_pieces[-1] = LIST_BLACK_PIECES
-
-##########################################################################################
 
 ### Functions very usefull for the paragraph just below ###
 
@@ -386,6 +263,8 @@ class Pieces:
 
 ##############################################################
 
+
+
 ### Functions that allows to move the pieces on the board ###
 
     def move_pawn(self, pawn_piece, current_tile, new_tile, idx_image):
@@ -410,9 +289,9 @@ class Pieces:
                 list_piece, image_queen = LIST_BLACK_PIECES, black_queen_image[idx_image]
 
             new_queen = Queen(new_tile, pawn_piece.color, False)
-            self.remove_from_list_piece_eaten(new_tile)
-            self.remove_from_list_piece_eaten(current_tile)
-            self.add_from_list_piece(new_queen)  # Add the queen to the list of pieces
+            self.piece.remove_piece(new_tile)
+            self.piece.remove_piece(current_tile)
+            self.add_piece(new_queen)  # Add the queen to the list of pieces
             # Change the object in the dictionary
             dico_board[current_tile] = [None, None, 0, []]  # Reset the tile of the pawn from the dico_board
             dico_board[new_tile] = [new_queen, image_queen, new_queen.color, []]  # Add the queen to the dico_board
@@ -448,7 +327,7 @@ class Pieces:
             else:
                 ### Basic Move ###
                 mod_of_move =  "capture"
-                self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
+                self.piece.remove_piece(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
                 self.update_dico_board_basic_stroke(pawn_piece, current_tile, new_tile)
 
         return mod_of_move
@@ -515,14 +394,14 @@ class Pieces:
 
                 ### Basic Move ###
                 mod_of_move = self.play_basic_music(new_tile)
-                self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
+                self.piece.remove_piece(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
                 self.update_dico_board_basic_stroke(king_piece, current_tile, new_tile)
 
         else:
 
             ### Basic Move ###
             mod_of_move = self.play_basic_music(new_tile)
-            self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
+            self.piece.remove_piece(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
             self.update_dico_board_basic_stroke(king_piece, current_tile, new_tile)
 
         return mod_of_move
@@ -538,7 +417,7 @@ class Pieces:
         :return: mod_of_move = mod of the last move
         """
         mod_of_move = self.play_basic_music(new_tile)
-        self.remove_from_list_piece_eaten(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
+        self.piece.remove_piece(new_tile)  # Remove the piece eaten from the list of pieces (if there is one)
         self.update_dico_board_basic_stroke(moved_piece, current_tile, new_tile)
 
         return mod_of_move
