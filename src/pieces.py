@@ -8,7 +8,6 @@ class Pieces:
         self.king_white = king_white
         self.king_black = king_black
 
-
 ### Function very usefull for the paragraph just below ###
 
     def King_with_his_Tile(self, piece_moved):
@@ -25,8 +24,6 @@ class Pieces:
         return king, tile_king
 
 ###########################################################
-
-
 ### Function to have all the possibles moves with all the possible case => prevent Check,... ###
 
     ### IMPORTANT FUNCTION !!! ###
@@ -43,7 +40,7 @@ class Pieces:
                 piece.castling_stroke() # Update the possible moves of the king if he can do the "Castling" stroke
 
             if isinstance(piece, type(Pawn((7, 4), 1, True))): # If the piece is the pawn
-                possible_move = piece.EnPassantMove()
+                possible_move = piece.move_en_passant()
                 # If the pawn can do the "en passant" move
                 if len(possible_move) != 0:
                     # Update the possible moves of the pawn by adding the move(s) "en passant"
@@ -229,4 +226,3 @@ class Pieces:
 
         dico_board[piece.tile][2] = piece.color  # Reset the color of the tile
         return enter
-
