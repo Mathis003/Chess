@@ -4,14 +4,18 @@ from src.piece import Piece
 
 class Game:
 
-    def __init__(self, screen, board, sound_button, board_color_button):
+    def __init__(self, screen, board, board_pieces, list_black_pieces, list_white_pieces, sound_button, board_color_button):
 
         self.screen = screen
         self.board = board
         self.sound_button = sound_button
         self.board_color_button = board_color_button
 
-        self.piece = Piece(self.board.board_pieces, [], [], None, None, [], [None, None], 0, True)
+        self.board_pieces = board_pieces
+        self.list_black_pieces = list_black_pieces
+        self.list_white_pieces = list_white_pieces
+
+        self.piece = Piece(None, None, [], [None, None], 0, True)
 
         self.white_turn = True
         self.mouse_just_released = False
@@ -34,30 +38,6 @@ class Game:
         # To draw the color of the tiles where the player moves (before and after)
         self.list_colors_player = [None, None]
         self.color_player = None
-
-    def draw_pieces(self):
-        for piece in self.piece.list_white_pieces + self.piece.list_black_pieces:
-            if piece.image != None:
-                self.screen.blit(piece.image, (piece.tile[1] * SIZE_SQUARE, piece.tile[0] * SIZE_SQUARE))
-
-    def update_board_all_pieces(self):
-        for piece in self.board.list_black_pieces + self.board.list_white_pieces:
-            piece.update_board_pieces(self.board.board_pieces)
-        
-    def update_list_pieces(self):
-        for i in range(0, 2):
-            for j in range(8):
-                self.piece.list_black_pieces.append(self.board.board_pieces[i][j])
-
-        for i in range(6, 8):
-            for j in range(8):
-                self.piece.list_white_pieces.append(self.board.board_pieces[i][j])
-
-        self.piece.dico_list_pieces = {1 : self.piece.list_white_pieces, -1 : self.piece.list_black_pieces}
-
-        for piece in self.piece.list_black_pieces + self.piece.list_white_pieces:
-            piece.list_black_pieces = self.piece.list_black_pieces
-            piece.list_white_pieces = self.piece.list_white_pieces
 
     def play_music(self, mod_of_move):
         if self.sound_button.sound_on:
@@ -99,7 +79,7 @@ class Game:
                 elif ((event.button == 1) and (not self.end_menu)):
                     initial_pos_mouse = pygame.mouse.get_pos()
                     tile_clicked = (initial_pos_mouse[1] // SIZE_SQUARE, initial_pos_mouse[0] // SIZE_SQUARE)
-                    piece = self.board.board_pieces[tile_clicked[0]][tile_clicked[1]]
+                    piece = self.board_pieces[tile_clicked[0]][tile_clicked[1]]
                     if ((math.sqrt((initial_pos_mouse[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) > SIZE_SQUARE / 4) and \
                         (math.sqrt((initial_pos_mouse[0] - (self.screen.get_width() - button_changes_boardcolor.get_width() / 2 - 2)) ** 2 + (initial_pos_mouse[1] - 2) ** 2) > SIZE_SQUARE / 4)):
                         if (piece != None):
@@ -117,7 +97,7 @@ class Game:
         
     def display_menu(self):
         self.board.draw_board(self.board_color_button.mod_board)
-        self.draw_pieces()
+        self.board.draw_pieces(self.list_black_pieces + self.list_white_pieces)
         self.screen.blit(player_1, player_1_rect_1)
         self.screen.blit(player_2, player_2_rect)
         self.screen.blit(player_1, player_1_rect_2)
@@ -133,8 +113,8 @@ class Game:
         if self.color_player != None:
             self.board.draw_tile(self.color_player, COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
         if self.tile_pressed != None:
-            self.board.draw_possible_moves(self.board.board_pieces[self.tile_pressed[0]][self.tile_pressed[1]].available_moves)
-        self.draw_pieces()
+            self.board.draw_possible_moves(self.board_pieces[self.tile_pressed[0]][self.tile_pressed[1]].available_moves)
+        self.board.draw_pieces(self.list_black_pieces + self.list_white_pieces)
 
         mouse_pos = pygame.mouse.get_pos()
         self.board_color_button.activateFunctionButton(mouse_pos)
@@ -142,8 +122,6 @@ class Game:
 
     def run(self):
         
-        self.update_board_all_pieces()
-        self.update_list_pieces()
         while self.running:
 
             # If the player is in the menu
@@ -174,7 +152,7 @@ class Game:
                         self.tile_moved = (final_pos_mouse[1] // SIZE_SQUARE, final_pos_mouse[0] // SIZE_SQUARE)
 
                         # If the tile moved is in the list of possible moves of the tile clicked
-                        piece = self.board.board_pieces[self.tile_pressed[0]][self.tile_pressed[1]]
+                        piece = self.board_pieces[self.tile_pressed[0]][self.tile_pressed[1]]
                         if self.tile_moved in piece.available_moves:
 
                             mod_of_move = piece.move_piece(self.tile_pressed, self.tile_moved, self.image_piece_selected)
