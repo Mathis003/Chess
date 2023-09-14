@@ -1,41 +1,40 @@
-from src.all_pieces import *
 from src.assets import *
+from src.all_pieces import Rook, Knight, Pawn, Bishop, Queen, King
 
 class Board:
     
     def __init__(self, screen):
         self.screen = screen
-    
-    def change_image(self, idx_image):
-        new_idx_image = abs(1 - idx_image)
 
-        for piece in dico_list_pieces[1]:
-            if isinstance(piece, type(Pawn((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_pawn_image[new_idx_image]
-            elif isinstance(piece, type(Queen((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_queen_image[new_idx_image]
-            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
-                dico_board[piece.tile][1] = white_king_image[new_idx_image]
-            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_bishop_image[new_idx_image]
-            elif isinstance(piece, type(Knight((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_knight_image[new_idx_image]
-            elif isinstance(piece, type(Rook((7, 4), 1, True))):
-                dico_board[piece.tile][1] = white_rook_image[new_idx_image]
+        self.rook_white_left = Rook((7, 0), 1, [], white_rook_image, 0, True)
+        self.rook_white_right = Rook((7, 7), 1, [], white_rook_image, 0, True)
+        self.rook_black_left = Rook((0, 0), -1, [], black_rook_image, 0, True)
+        self.rook_black_right = Rook((0, 7), -1, [], black_rook_image, 0,True)
 
-        for piece in dico_list_pieces[-1]:
-            if isinstance(piece, type(Pawn((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_pawn_image[new_idx_image]
-            elif isinstance(piece, type(Queen((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_queen_image[new_idx_image]
-            elif isinstance(piece, type(King((7, 4), 1, True, 0, 0))):
-                dico_board[piece.tile][1] = black_king_image[new_idx_image]
-            elif isinstance(piece, type(Bishop((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_bishop_image[new_idx_image]
-            elif isinstance(piece, type(Knight((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_knight_image[new_idx_image]
-            elif isinstance(piece, type(Rook((7, 4), 1, True))):
-                dico_board[piece.tile][1] = black_rook_image[new_idx_image]
+        self.board = [[self.rook_black_left, Knight((0, 1), -1, [], black_knight_image, 0, True), Bishop((0, 2), -1, [], black_bishop_image, 0, True), Queen((0, 3), -1, [], black_queen_image, 0, True), King((0, 4), -1, [], black_king_image, 0, True, self.rook_black_left, self.rook_black_right), Bishop((0, 5), -1, [], black_bishop_image, 0,True), Knight((0, 6), -1, [], black_knight_image, 0,True), self.rook_black_right],
+                      [Pawn((1, 0), -1, [(2, 0), (3, 0)], black_pawn_image, 0, True), Pawn((1, 1), -1, [(2, 1), (3, 1)], black_pawn_image, 0, True), Pawn((1, 2), -1, [(2, 2), (3, 2)], black_pawn_image, 0, True), Pawn((1, 3), -1, [(2, 3), (3, 3)], black_pawn_image, 0, True), Pawn((1, 4), -1, [(2, 4), (3, 4)], black_pawn_image, 0, True), Pawn((1, 5), -1, [(2, 5), (3, 5)], black_pawn_image, 0, True), Pawn((1, 6), -1, [(2, 6), (3, 6)], black_pawn_image, 0, True), Pawn((1, 7), -1, [(2, 7), (3, 7)], black_pawn_image, 0, True)],
+                      [None, None, None, None, None, None, None],
+                      [None, None, None, None, None, None, None],
+                      [None, None, None, None, None, None, None],
+                      [None, None, None, None, None, None, None],
+                      [Pawn((6, 0), 1, [(5, 0), (4, 0)], white_pawn_image, 0, True), Pawn((6, 1), 1, [(5, 1), (4, 1)], white_pawn_image, 0, True), Pawn((6, 2), 1, [(5, 2), (4, 2)], white_pawn_image, 0, True), Pawn((6, 3), 1, [(5, 3), (4, 3)], white_pawn_image, 0, True), Pawn((6, 4), 1, [(5, 4), (4, 4)], white_pawn_image, 0, True), Pawn((6, 5), 1, [(5, 5), (4, 5)], white_pawn_image, 0, True), Pawn((6, 6), 1, [(5, 6), (4, 6)], white_pawn_image, 0, True), Pawn((6, 7), 1, [(5, 7), (4, 7)], white_pawn_image, 0, True)],
+                      [self.rook_white_left, Knight((7, 1), 1, [], white_knight_image, 0, True), Bishop((7, 2), 1, [], white_bishop_image, 0, True), Queen((7, 3), 1, [], white_queen_image, 0, True), King((7, 4), 1, [], white_king_image, 0, True, self.rook_white_left, self.rook_white_right), Bishop((7, 5), 1, [], white_bishop_image, 0, True), Knight((7, 6), 1, [], white_knight_image, 0, True), self.rook_white_right]]
+        
+        self.LIST_BLACK_PIECES = []
+        for i in range(0, 2):
+            for j in range(8):
+                self.LIST_BLACK_PIECES.append(self.board[i][j])
+
+        self.LIST_WHITE_PIECES = []
+        for i in range(6, 8):
+            for j in range(8):
+                self.LIST_WHITE_PIECES.append(self.board[i][j])
+        
+        self.dico_list_pieces = {1 : self.LIST_WHITE_PIECES, -1 : self.LIST_BLACK_PIECES}
+
+    def change_image(self):
+        for piece in self.dico_list_pieces[1]:
+            piece.current_idx_image = abs(1 - piece.current_idx_image)
 
     def draw_tile(self, tile, color):
         """
@@ -71,10 +70,10 @@ class Board:
         """
         Draw all the pieces on the board.
         """
-        for piece in LIST_WHITE_PIECES + LIST_BLACK_PIECES:
+        for piece in self.LIST_WHITE_PIECES + self.LIST_BLACK_PIECES:
             # If the piece isn't pressed on the board => otherwise the image is None => = "Don't draw it"
-            if dico_board[piece.tile][1] != None:
-                self.screen.blit(dico_board[piece.tile][1], (piece.tile[1] * SIZE_SQUARE, piece.tile[0] * SIZE_SQUARE))
+            if piece.image != None:
+                self.screen.blit(piece.image, (piece.tile[1] * SIZE_SQUARE, piece.tile[0] * SIZE_SQUARE))
     
     def draw_possible_moves(self, tile_piece):
         """
@@ -82,7 +81,7 @@ class Board:
         param tile_piece: tuple (a, b) where 'a' is the COL tile's number and 'b', the ROW tile's number (where the piece is)
         """
         if tile_piece != (-1, -1):
-            for move_tile in dico_board[tile_piece][3]:
+            for move_tile in self.board[tile_piece[0]][tile_piece[1]].available_moves:
                 if self.check_dark_tile(move_tile):
                     self.draw_tile(move_tile, COLOR_POSSIBLE_MOVES_DARK)
                 else:

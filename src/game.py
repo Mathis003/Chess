@@ -1,17 +1,16 @@
 import math
 from src.assets import *
-from src.all_pieces import Pawn, dico_board, queen_white, MOD_MOVES, pygame
+from src.all_pieces import Pawn, Queen, MOD_MOVES, pygame
 
 class Game:
 
-    def __init__(self, screen, board, pieces, sound_button, board_color_button, IA_Player):
+    def __init__(self, screen, board, pieces, sound_button, board_color_button):
 
         self.screen = screen
         self.board = board
         self.pieces = pieces # To remove at the end
         self.sound_button = sound_button
         self.board_color_button = board_color_button
-        self.IA_Player = IA_Player
 
         self.dico_turn = {"turn_white": True, "turn_black": False}
         self.mouse_just_released = False # Allow to not click after drop the mouse's pression on a random tile and move the Rect on the image of the piece just before (If True = pressed mouse and Rect's moving, if False = no pressing mouse and Rect's not moving)
@@ -75,18 +74,18 @@ class Game:
                 elif ((event.button == 1) and (not self.end_menu)):
                     initial_pos_mouse = pygame.mouse.get_pos()
                     tile_clicked = (initial_pos_mouse[1] // SIZE_SQUARE, initial_pos_mouse[0] // SIZE_SQUARE)
-
+                    piece = self.board.board[tile_clicked[0]][tile_clicked[1]]
                     if ((math.sqrt((initial_pos_mouse[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) > SIZE_SQUARE / 4) and \
                         (math.sqrt((initial_pos_mouse[0] - (self.screen.get_width() - button_changes_boardcolor.get_width() / 2 - 2)) ** 2 + (initial_pos_mouse[1] - 2) ** 2) > SIZE_SQUARE / 4)):
-                        if (dico_board[tile_clicked][0] != None):
-                            if (self.dico_turn["turn_white"] and (dico_board[tile_clicked][0].color == 1)) or \
-                                (self.dico_turn["turn_black"] and (dico_board[tile_clicked][0].color == -1)):
+                        if (piece != None):
+                            if (self.dico_turn["turn_white"] and (piece.color == 1)) or \
+                                (self.dico_turn["turn_black"] and (piece.color == -1)):
 
                                 self.player_tile_clicked = tile_clicked
                                 self.list_color_case[0] = tile_clicked
-                                self.save_image_tile_clicked = dico_board[self.player_tile_clicked][1]
+                                self.save_image_tile_clicked = piece.image
                                 self.mouse_just_released = True
-                                dico_board[self.player_tile_clicked][1] = None
+                                piece.image = None
                     else:
                         self.board_color_button.buttonUpdateClick(initial_pos_mouse)
                         self.sound_button.buttonUpdateClick(initial_pos_mouse)
@@ -148,15 +147,16 @@ class Game:
                         self.player_tile_moved = (final_pos_mouse[1] // SIZE_SQUARE, final_pos_mouse[0] // SIZE_SQUARE)
 
                         # If the tile moved is in the list of possible moves of the tile clicked
-                        if self.player_tile_moved in dico_board[self.player_tile_clicked][3]:
-                            mod_of_move = dico_board[self.player_tile_clicked][0].move_piece(self.player_tile_clicked, self.player_tile_moved, self.image_piece_selected)
-                            self.piece_moved = dico_board[self.player_tile_moved][0]
+                        piece = self.board.board[self.player_tile_clicked[0]][self.player_tile_clicked[1]]
+                        if self.player_tile_moved in piece.available_moves:
+                            mod_of_move = piece.move_piece(self.player_tile_clicked, self.player_tile_moved, self.image_piece_selected)
+                            self.piece_moved = piece
 
                             # If the piece moved is a queen and had been promoted
-                            if isinstance(self.piece_moved, type(queen_white)) and self.piece_moved.promoted:
+                            if isinstance(self.piece_moved, type(Queen(None, None, None, None, None, None))) and self.piece_moved.promoted:
                                 self.piece_moved.promoted = False
                             else:
-                                dico_board[self.player_tile_moved][1] = self.save_image_tile_clicked
+                                self.piece_moved.list_images[self.piece_moved.current_idx_image] = self.save_image_tile_clicked
 
                             self.change_turn_player()
 
@@ -195,7 +195,7 @@ class Game:
 
                         # If the tile moved is not in the list of possible moves of the tile clicked
                         else:
-                            dico_board[self.player_tile_clicked][1] = self.save_image_tile_clicked
+                            piece.list_images[piece.current_idx_image] = self.save_image_tile_clicked
                             self.player_tile_clicked = (-1, -1)
                             self.list_color_case[0] = (-1, -1)
 

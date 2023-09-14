@@ -51,7 +51,6 @@ stalemate_sound = pygame.mixer.Sound("images/music/Stalemate sound.mp3")
 
 MOD_MOVES = {"move" : move_sound, "capture" : capture_sound, "check" : check_sound, "castling" : castling_sound, "checkmate" : checkmate_sound, "stalemate" : stalemate_sound}
 
-
 ### Button ###
 
 # button 'Sound On/Off'
