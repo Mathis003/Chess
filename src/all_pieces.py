@@ -1,81 +1,6 @@
 from src.assets import *
+from src.piece import Piece
 
-"""
-These classes represent the object of a single piece that have some characteristics and some methods.
-=> The common characteristics are:
-- The color of the piece (white : 1 or black : -1)
-- The tile where the piece is on the board (the tile is a tuple (row, column))
-- A variable for the first move of the piece (True or False) => True if the piece hasn't played yet, False otherwise
-
-=> The main method are:
-- update_possible_moves(): Update the list of possible basics moves of the piece (Doesn't take into account if the king
-  is in Chess or not, if the move is legal (don't put the king in Chess),...
-  => Other methods are called to reupdate the list of possible moves in the class Pieces).
-"""
-
-
-"""
-Parent class
-"""
-class Piece:
-
-    def __init__(self, board_pieces, list_black_pieces, list_white_pieces, tile, color, available_moves, list_images, current_idx_image, first_move):
-        self.board_pieces = board_pieces
-        self.list_black_pieces = list_black_pieces
-        self.list_white_pieces = list_white_pieces
-        self.tile = tile
-        self.color = color
-        self.available_moves = available_moves
-        self.list_images = list_images
-        self.current_idx_image = current_idx_image
-        self.image = self.list_images[self.current_idx_image]
-        self.first_move = first_move
-    
-
-    def get_mod_move(self, new_tile):
-        """
-        If the move is 'check' or 'stalemate, the variable will be updated again later.
-        """
-        if self.board_pieces[new_tile[0]][new_tile[1]] != None:
-            return "capture"
-        else:
-            return "move"
-    
-    def update_possible_moves(self):
-        return []
-
-    def add_piece(self, piece):
-        if piece.color == 1:
-            self.list_white_pieces.append(piece)
-        elif piece.color == -1:
-            self.list_black_pieces.append(piece)
-
-    def remove_piece(self, piece):
-        if piece != None:
-            if piece.color == 1:
-                self.list_white_pieces.remove(piece)
-            else:
-                self.list_black_pieces.remove(piece)
-    
-    def move_piece(self, current_tile, new_tile, idx_image):
-
-        mod_of_move = self.get_mod_move(new_tile)
-        piece_eaten = self.board_pieces[new_tile[0]][new_tile[1]]
-        if piece_eaten != None:
-            self.remove_piece(piece_eaten)
-
-        self.board_pieces[new_tile[0]][new_tile[1]] = self
-        self.board_pieces[current_tile[0]][current_tile[1]] = None
-
-        self.tile = new_tile
-
-        if self.first_move:
-            self.first_move = False
-
-        return mod_of_move
-
-    def update_board_pieces(self, board_pieces):
-        self.board_pieces = board_pieces
 
 class Pawn(Piece):
 
@@ -158,6 +83,7 @@ class Pawn(Piece):
 
             return super().move_piece(current_tile, new_tile, idx_image)
         
+
         
 class King(Piece):
 
@@ -263,6 +189,7 @@ class King(Piece):
         return super().move_piece(current_tile, new_tile, idx_image)
 
 
+
 class Knight(Piece):
 
     def __init__(self, board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move):
@@ -290,6 +217,7 @@ class Knight(Piece):
                         self.available_moves.append((self.tile[0] + j, self.tile[1] + i))
                     elif piece.color == -self.color:
                         self.available_moves.append((self.tile[0] + j, self.tile[1] + i))
+
 
 
 class Rook(Piece):
@@ -363,6 +291,7 @@ class Rook(Piece):
                     RIGHT_ENTER = False 
 
 
+
 class Bishop(Piece):
 
     def __init__(self, board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move):
@@ -427,6 +356,8 @@ class Bishop(Piece):
                     break
                 else:
                     break
+
+
 
 class Queen(Piece):
 

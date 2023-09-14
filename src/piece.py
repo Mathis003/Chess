@@ -1,11 +1,63 @@
-from src.all_pieces import Bishop, King
+class Piece:
 
-class Pieces:
+    def __init__(self, board_pieces, list_black_pieces, list_white_pieces, tile, color, available_moves, list_images, current_idx_image, first_move):
+        
+        self.board_pieces = board_pieces
+        self.list_black_pieces = list_black_pieces
+        self.list_white_pieces = list_white_pieces
+        self.tile = tile
+        self.color = color
+        self.available_moves = available_moves
+        self.list_images = list_images
+        self.current_idx_image = current_idx_image
+        self.image = self.list_images[self.current_idx_image]
+        self.first_move = first_move
+    
+    def get_mod_move(self, new_tile):
+        """
+        If the move is 'check' or 'stalemate, the variable will be updated again later.
+        """
+        if self.board_pieces[new_tile[0]][new_tile[1]] != None:
+            return "capture"
+        else:
+            return "move"
+    
+    def update_possible_moves(self):
+        return []
 
-    def __init__(self, board, king_white, king_black):
-        self.board = board
-        self.king_white = king_white
-        self.king_black = king_black
+    def add_piece(self, piece):
+        if piece.color == 1:
+            self.list_white_pieces.append(piece)
+        elif piece.color == -1:
+            self.list_black_pieces.append(piece)
+
+    def remove_piece(self, piece):
+        if piece != None:
+            if piece.color == 1:
+                self.list_white_pieces.remove(piece)
+            else:
+                self.list_black_pieces.remove(piece)
+    
+    def move_piece(self, current_tile, new_tile, idx_image):
+
+        mod_of_move = self.get_mod_move(new_tile)
+        piece_eaten = self.board_pieces[new_tile[0]][new_tile[1]]
+        if piece_eaten != None:
+            self.remove_piece(piece_eaten)
+
+        self.board_pieces[new_tile[0]][new_tile[1]] = self
+        self.board_pieces[current_tile[0]][current_tile[1]] = None
+
+        self.tile = new_tile
+
+        if self.first_move:
+            self.first_move = False
+
+        return mod_of_move
+
+    def update_board_pieces(self, board_pieces):
+        self.board_pieces = board_pieces
+
     
     def get_list_pieces(self, color_piece):
         if color_piece == 1:
@@ -15,8 +67,11 @@ class Pieces:
     
     def get_king(self, color):
         for piece in self.get_list_pieces(color):
-            if type(piece) == type(King(None, [], [], None, None, [], [None, None], 0, True, None, None)):
+            try:
+                piece.rook_left
                 return piece
+            except:
+                pass
         return None
     
     def opponent_check(self, moved_piece):
@@ -67,8 +122,6 @@ class Pieces:
                             # End Simulation 1
                             self.board.board_pieces[move_piece[0]][move_piece[1]] =  save_piece_moved_tile
         return can_defend
-
-    
 
     def remove_moves_of_king_that_chess_him(self, moved_piece_color):
 

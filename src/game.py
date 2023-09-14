@@ -1,7 +1,6 @@
 import math
 from src.assets import *
-from src.all_pieces import Piece
-from src.pieces import Pieces
+from src.piece import Piece
 
 class Game:
 
@@ -12,7 +11,6 @@ class Game:
         self.sound_button = sound_button
         self.board_color_button = board_color_button
 
-        self.pieces = Pieces(self.board, self.board.board_pieces[7][4], self.board.board_pieces[0][4])
         self.piece = Piece(self.board.board_pieces, [], [], None, None, [], [None, None], 0, True)
 
         self.white_turn = True
@@ -29,13 +27,13 @@ class Game:
         self.pressed_piece_image = None  # Save the image of the pressed piece (to play) => will be reset the next turn
         self.piece_moved = None  # Save the instance of the piece that has been moved => will be reset the next turn
 
-        # (-1, -1) is out of the screen => will be immediatly update when the game begin
-        self.tile_pressed = (-1, -1)
-        self.tile_moved = (-1, -1)
+        # None is out of the screen => will be immediatly update when the game begin
+        self.tile_pressed = None
+        self.tile_moved = None
 
         # To draw the color of the tiles where the player moves (before and after)
-        self.list_colors_player = [(-1, -1), (-1, -1)]
-        self.color_player = (-1, -1)
+        self.list_colors_player = [None, None]
+        self.color_player = None
 
     def draw_pieces(self):
         for piece in self.piece.list_white_pieces + self.piece.list_black_pieces:
@@ -128,10 +126,14 @@ class Game:
     
     def display_game(self):
         self.board.draw_board(self.board_color_button.mod_board)
-        self.board.draw_tile(self.list_colors_player[0], COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
-        self.board.draw_tile(self.list_colors_player[1], COLORS_MOVES_BOARD[self.board_color_button.mod_board][False])
-        self.board.draw_tile(self.color_player, COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
-        self.board.draw_possible_moves(self.tile_pressed)
+        if self.list_colors_player[0] != None:
+            self.board.draw_tile(self.list_colors_player[0], COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
+        if self.list_colors_player[1] != None:
+            self.board.draw_tile(self.list_colors_player[1], COLORS_MOVES_BOARD[self.board_color_button.mod_board][False])
+        if self.color_player != None:
+            self.board.draw_tile(self.color_player, COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
+        if self.tile_pressed != None:
+            self.board.draw_possible_moves(self.board.board_pieces[self.tile_pressed[0]][self.tile_pressed[1]].available_moves)
         self.draw_pieces()
 
         mouse_pos = pygame.mouse.get_pos()
@@ -161,7 +163,7 @@ class Game:
 
                     # If the player is playing and choose a tile to move (the mouse is pressed)
                     if self.mouse_pressed and self.mouse_just_released:
-                        if ((self.tile_pressed != (-1, -1)) and (self.pressed_piece_image != None)):
+                        if ((self.tile_pressed != None) and (self.pressed_piece_image != None)):
                             pos_mouse = pygame.mouse.get_pos()
                             self.screen.blit(self.pressed_piece_image, (pos_mouse[0] - SIZE_SQUARE / 2, pos_mouse[1] - SIZE_SQUARE / 2))
 
@@ -184,27 +186,27 @@ class Game:
                             self.list_colors_player[1] = self.tile_moved
                             self.color_player = self.tile_pressed
 
-                            self.pieces.update_available_moves(self.piece_moved)
+                            self.piece.update_available_moves(self.piece_moved)
                             
                             # If the piece put the opponent king in check
-                            if self.pieces.opponent_check(self.piece_moved):
+                            if self.piece.opponent_check(self.piece_moved):
                                 mod_of_move = "check"
-                                if not self.pieces.defend_checked_king(-self.piece_moved.color):
+                                if not self.piece.defend_checked_king(-self.piece_moved.color):
                                     mod_of_move = "checkmate"
                                     self.end_menu = True
                             else:
-                                if self.pieces.stalemate(self.piece_moved):
+                                if self.piece.stalemate(self.piece_moved):
                                     mod_of_move = "stalemate"
                                     self.end_menu = True
 
                             self.play_music(mod_of_move)
-                            self.tile_pressed = (-1, -1)
+                            self.tile_pressed = None
 
                         # If the tile moved is not in the list of possible moves of the tile clicked
                         else:
                             piece.image = self.pressed_piece_image
-                            self.tile_pressed = (-1, -1)
-                            self.list_colors_player[0] = (-1, -1)
+                            self.tile_pressed = None
+                            self.list_colors_player[0] = None
 
                 if self.IA:
                     pass

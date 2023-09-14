@@ -1,6 +1,11 @@
 from src.assets import *
 from src.all_pieces import Rook, King, Queen, Pawn, Bishop, Knight
 
+
+## TODO :METTRE self.board_pieces, self.list_black_pieces, self.list_white_pieces AUTRE PART !!
+## TODO :METTRE self.board_pieces, self.list_black_pieces, self.list_white_pieces AUTRE PART !!
+## TODO :METTRE self.board_pieces, self.list_black_pieces, self.list_white_pieces AUTRE PART !!
+
 class Board:
     
     def __init__(self, screen):
@@ -35,28 +40,15 @@ class Board:
             piece.current_idx_image = abs(1 - piece.current_idx_image)
 
     def draw_tile(self, tile, color):
-        """
-        Draw the rect of a tile with the good color
-        param tile: tuple (a, b) where 'a' is the COL tile's number and 'b', the ROW tile's number
-        param color: new color of the tile
-        """
         pygame.draw.rect(self.screen, color, (tile[1] * SIZE_SQUARE, tile[0] * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE))
     
     def check_dark_tile(self, tile):
-        """
-        Check if the tile is a dark tile or a light tile.
-        param tile: tuple (a, b) where 'a' is the COL tile's number and 'b', the ROW tile's number
-        """
         if tile[0] % 2 == 0:
             return (tile[1] % 2 != 0)
         else:
             return (tile[1] % 2 == 0)
 
     def draw_board(self, mod_board):
-        """
-        Draw all the board's tiles
-        param mod_board: mod of the board's color
-        """
         for i in range(ROW):
             for j in range(COL):
                 if self.check_dark_tile((i, j)):
@@ -64,14 +56,9 @@ class Board:
                 else:
                     self.draw_tile((i, j), COLORS_BOARD[mod_board][0])
     
-    def draw_possible_moves(self, tile_piece):
-        """
-        Draw the tile's new color of the pieces's all possible moves.
-        param tile_piece: tuple (a, b) where 'a' is the COL tile's number and 'b', the ROW tile's number (where the piece is)
-        """
-        if tile_piece != (-1, -1):
-            for move_tile in self.board_pieces[tile_piece[0]][tile_piece[1]].available_moves:
-                if self.check_dark_tile(move_tile):
-                    self.draw_tile(move_tile, COLOR_POSSIBLE_MOVES_DARK)
-                else:
-                    self.draw_tile(move_tile, COLOR_POSSIBLE_MOVES_LIGHT)
+    def draw_possible_moves(self, available_moves):
+        for move_tile in available_moves:
+            if self.check_dark_tile(move_tile):
+                self.draw_tile(move_tile, COLOR_POSSIBLE_MOVES_DARK)
+            else:
+                self.draw_tile(move_tile, COLOR_POSSIBLE_MOVES_LIGHT)
