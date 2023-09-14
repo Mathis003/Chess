@@ -1,14 +1,16 @@
 import math
 from src.assets import *
-from src.all_pieces import Pawn, Queen, MOD_MOVES, pygame
+from src.all_pieces import Piece, Pawn, Queen
+from src.pieces import Pieces
 
 class Game:
 
-    def __init__(self, screen, board, pieces, sound_button, board_color_button):
+    def __init__(self, screen, board, sound_button, board_color_button):
 
         self.screen = screen
         self.board = board
-        self.pieces = pieces # To remove at the end
+        self.pieces = Pieces(self.board, self.board.board_pieces[7][4], self.board.board_pieces[0][4])
+        self.piece = Piece(None, None, None, [], [None, None], 0, True)
         self.sound_button = sound_button
         self.board_color_button = board_color_button
 
@@ -33,6 +35,10 @@ class Game:
         self.player_tile_moved = (-1, -1)  # Tile where the player clicked on the board to move (after playing) (initialize on (-1, -1) to be out of the board without causing error)
         self.list_color_case = [(-1, -1), (-1, -1)]  # List of the color of the case where the player clicked on the board (to have the historic and draw constantly the color until the next player play)
         self.color_case_waiting = (-1, -1)  # Color of the case where the player clicked on the board (to have the historic and draw constantly the color until the next player play)
+
+    def update_board_all_pieces(self, board_pieces):
+        for piece in self.board.LIST_BLACK_PIECES + self.board.LIST_WHITE_PIECES:
+            piece.update_board_pieces(board_pieces)
 
     def play_music(self, mod_of_move):
         if self.sound_button.sound_on:
@@ -74,7 +80,7 @@ class Game:
                 elif ((event.button == 1) and (not self.end_menu)):
                     initial_pos_mouse = pygame.mouse.get_pos()
                     tile_clicked = (initial_pos_mouse[1] // SIZE_SQUARE, initial_pos_mouse[0] // SIZE_SQUARE)
-                    piece = self.board.board[tile_clicked[0]][tile_clicked[1]]
+                    piece = self.board.board_pieces[tile_clicked[0]][tile_clicked[1]]
                     if ((math.sqrt((initial_pos_mouse[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) > SIZE_SQUARE / 4) and \
                         (math.sqrt((initial_pos_mouse[0] - (self.screen.get_width() - button_changes_boardcolor.get_width() / 2 - 2)) ** 2 + (initial_pos_mouse[1] - 2) ** 2) > SIZE_SQUARE / 4)):
                         if (piece != None):
@@ -84,8 +90,8 @@ class Game:
                                 self.player_tile_clicked = tile_clicked
                                 self.list_color_case[0] = tile_clicked
                                 self.save_image_tile_clicked = piece.image
-                                self.mouse_just_released = True
                                 piece.image = None
+                                self.mouse_just_released = True
                     else:
                         self.board_color_button.buttonUpdateClick(initial_pos_mouse)
                         self.sound_button.buttonUpdateClick(initial_pos_mouse)
@@ -117,6 +123,7 @@ class Game:
 
     def run(self):
 
+        self.update_board_all_pieces(self.board.board_pieces)
         while self.running:
 
             # If the player is in the menu
@@ -147,13 +154,13 @@ class Game:
                         self.player_tile_moved = (final_pos_mouse[1] // SIZE_SQUARE, final_pos_mouse[0] // SIZE_SQUARE)
 
                         # If the tile moved is in the list of possible moves of the tile clicked
-                        piece = self.board.board[self.player_tile_clicked[0]][self.player_tile_clicked[1]]
+                        piece = self.board.board_pieces[self.player_tile_clicked[0]][self.player_tile_clicked[1]]
                         if self.player_tile_moved in piece.available_moves:
                             mod_of_move = piece.move_piece(self.player_tile_clicked, self.player_tile_moved, self.image_piece_selected)
                             self.piece_moved = piece
 
                             # If the piece moved is a queen and had been promoted
-                            if isinstance(self.piece_moved, type(Queen(None, None, None, None, None, None))) and self.piece_moved.promoted:
+                            if isinstance(self.piece_moved, type(Queen(None, None, None, [], [None, None], 0, True))) and self.piece_moved.promoted:
                                 self.piece_moved.promoted = False
                             else:
                                 self.piece_moved.list_images[self.piece_moved.current_idx_image] = self.save_image_tile_clicked
@@ -195,7 +202,7 @@ class Game:
 
                         # If the tile moved is not in the list of possible moves of the tile clicked
                         else:
-                            piece.list_images[piece.current_idx_image] = self.save_image_tile_clicked
+                            piece.image = self.save_image_tile_clicked
                             self.player_tile_clicked = (-1, -1)
                             self.list_color_case[0] = (-1, -1)
 

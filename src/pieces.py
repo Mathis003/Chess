@@ -37,10 +37,10 @@ class Pieces:
         for piece in self.board.dico_list_pieces[- moved_piece.color]: # Loop for each piece of the good color
             piece.update_possible_moves()
 
-            if isinstance(piece, type(King((7, 4), 1, True, 0, 0))): # If the piece is the king
+            if isinstance(piece, type(King(None, None, None, [], [None, None], 0, True, 0, 0))): # If the piece is the king
                 piece.castling_stroke() # Update the possible moves of the king if he can do the "Castling" stroke
 
-            if isinstance(piece, type(Pawn((7, 4), 1, True))): # If the piece is the pawn
+            if isinstance(piece, type(Pawn(None, None, None, [], [None, None], 0, True))): # If the piece is the pawn
                 possible_move = piece.move_en_passant()
                 # If the pawn can do the "en passant" move
                 if len(possible_move) != 0:
