@@ -21,6 +21,9 @@ class Piece:
 
     def __init__(self, board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move):
         self.board_pieces = board_pieces
+        self.LIST_WHITE_PIECES = []
+        self.LIST_BLACK_PIECES = []
+        self.dico_list_pieces = {}
         self.tile = tile
         self.color = color
         self.available_moves = available_moves
@@ -29,12 +32,23 @@ class Piece:
         self.image = self.list_images[self.current_idx_image]
         self.first_move = first_move
     
+    def initialize_variables(self):
+        for i in range(0, 2):
+            for j in range(8):
+                self.LIST_BLACK_PIECES.append(self.board_pieces[i][j])
+        
+        for i in range(6, 8):
+            for j in range(8):
+                self.LIST_WHITE_PIECES.append(self.board_pieces[i][j])
+
+        self.dico_list_pieces = {1 : self.LIST_WHITE_PIECES, -1 : self.LIST_BLACK_PIECES}
     
+
     def get_mod_move(self, new_tile):
         """
         If the move is 'check' or 'stalemate, the variable will be updated again later.
         """
-        if self.board_pieces[new_tile[0]][new_tile[1]].color != 0:
+        if self.board_pieces[new_tile[0]][new_tile[1]] != None:
             return "capture"
         else:
             return "move"
@@ -44,18 +58,18 @@ class Piece:
 
     def add_piece(self, piece):
         if piece.color == 1:
-            self.board.LIST_WHITE_PIECES.append(piece)
+            self.LIST_WHITE_PIECES.append(piece)
         elif piece.color == -1:
-            self.board.LIST_BLACK_PIECES.append(piece)
+            self.LIST_BLACK_PIECES.append(piece)
 
     def remove_piece(self, piece):
         if piece != None:
             if piece.color == 1:
-                self.board.LIST_WHITE_PIECES.remove(piece)
-            elif piece.color == -1:
-                self.board.LIST_BLACK_PIECES.remove(piece)
+                self.LIST_WHITE_PIECES.remove(piece)
+            else:
+                self.LIST_BLACK_PIECES.remove(piece)
     
-    def move_piece(self, current_tile, new_tile):
+    def move_piece(self, current_tile, new_tile, idx_image):
 
         mod_of_move = self.get_mod_move(new_tile)
         piece = self.board_pieces[new_tile[0]][new_tile[1]]
@@ -82,55 +96,52 @@ class Pawn(Piece):
 
     def update_possible_moves(self):
          
-        list_possible_moves = []
+        self.available_moves = []
 
         # If the tile above the pawn is empty
-        if self.board_pieces[self.tile[0] - self.color][self.tile[1]] == None:
-            list_possible_moves.append((self.tile[0] - self.color, self.tile[1]))
+        piece = self.board_pieces[self.tile[0] - self.color][self.tile[1]]
+        if piece != None:
+            self.available_moves.append((piece.tile[0], piece.tile[1]))
             
             # If the pawn is on its first move and the tile above is empty
             if self.first_move:
                 # If the tile above (x2) the pawn is empty (special stroke when first move)
-                if self.board_pieces[self.tile[0] - 2 * self.color][self.tile[1]] == None:
-                    list_possible_moves.append((self.tile[0] - 2 * self.color, self.tile[1]))
+                piece = self.board_pieces[self.tile[0] - 2 * self.color][self.tile[1]]
+                if piece != None:
+                    self.available_moves.append((piece.tile[0], piece.tile[1]))
 
         # Attack moves
         for i in range(-1, 2, 2):
-            try:
+            if ((0 <= self.tile[0] - self.color <= 7) and (0 <= self.tile[1] + i <= 7)):
                 # If the tile diagonally above the pawn is occupied by an opponent piece
-                if self.board_pieces[self.tile[0] - self.color][self.tile[1] + i].color == - self.color:
-                    list_possible_moves.append((self.tile[0] - self.color, self.tile[1] + i))
-            except:
-                pass # Deal with the out of range error (By example, if the pawn is on the last column and the player want to move it to the diagonal RIGHT, the program will raise an error)
+                piece = self.board_pieces[self.tile[0] - self.color][self.tile[1] + i]
+                if piece != None:
+                    if piece.color == -self.color:
+                        self.available_moves.append((piece.tile[0], piece.tile[1]))
 
-        self.available_moves = list_possible_moves
+        self.move_en_passant()
 
     def move_en_passant(self):
         """
         Return a list with the possible "En Passant" move (max 2 possibility).
         """
-         
         list_possible_moves_enpassant = []
 
-        try:
-            right_tile = (self.tile[0], self.tile[1] + 1)
+        right_tile = (self.tile[0], self.tile[1] + 1)
+        if ((0 <= right_tile[0] <= 7) and (0 <= right_tile[1] <= 7)):
             piece_right = self.board_pieces[right_tile[0]][right_tile[1]]
             # If the tile to the right is occupied by an opponent pawn and the pawn just moved of two tiles (his first move)
             if type(piece_right) == type(self) and piece_right.just_moved:
                 list_possible_moves_enpassant.append((self.tile[0] - self.color, self.tile[1] + 1))
-        except:
-            pass # Deal with the out of range error (By example, if the pawn is on the last column and the player want to move it to the diagonal RIGHT, the program will raise an error)
 
-        try:
-            left_tile = (self.tile[0], self.tile[1] - 1)
+        left_tile = (self.tile[0], self.tile[1] - 1)
+        if ((0 <= left_tile[0] <= 7) and (0 <= left_tile[1] <= 7)):
             piece_left = self.board_pieces[left_tile[0]][left_tile[1]]
             # If the tile to the left is occupied by an opponent pawn and the pawn just moved of two tiles (his first move)
             if type(piece_left) == type(self) and piece_left.just_moved:
                 list_possible_moves_enpassant.append((self.tile[0] - self.color, self.tile[1] - 1))
-        except:
-            pass # Deal with the out of range error (By example, if the pawn is on the last column and the player want to move it to the diagonal RIGHT, the program will raise an error)
 
-        return list_possible_moves_enpassant
+        self.available_moves += list_possible_moves_enpassant
 
     def move_piece(self, current_tile, new_tile, idx_image):
 
@@ -144,8 +155,8 @@ class Pawn(Piece):
                 image_queen = black_queen_image[idx_image]
 
             new_queen = Queen(new_tile, self.color, image_queen, False)
-            self.remove_piece(new_tile)
-            self.remove_piece(current_tile)
+            self.remove_piece(self.board_pieces[new_tile[0]][new_tile[1]])
+            self.remove_piece(self.board_pieces[current_tile[0]][current_tile[1]])
             self.add_piece(new_queen)
             new_queen.promoted = True
 
@@ -160,7 +171,7 @@ class Pawn(Piece):
 
                     tile_piece_eaten = (current_tile[0], new_tile[1])
                     piece_eaten = self.board_pieces[tile_piece_eaten[0]][tile_piece_eaten[1]]
-                    self.board.dico_list_pieces[-self.color].remove(piece_eaten)
+                    self.dico_list_pieces[-self.color].remove(piece_eaten)
                     mod_of_move =  "capture"
                 else:
                     mod_of_move = "move"
@@ -177,7 +188,7 @@ class Pawn(Piece):
             else:
                 # If the pawn move to atack a piece (basic move).
                 mod_of_move =  "capture"
-                self.remove_piece(new_tile)
+                self.remove_piece(self.board_pieces[new_tile[0]][new_tile[1]])
                 self.board_pieces[new_tile[0]][new_tile[1]] = self
                 self.board_pieces[current_tile[0]][current_tile[1]] = None
 
@@ -197,21 +208,20 @@ class King(Piece):
 
     def update_possible_moves(self):
          
-        list_possible_moves = []
+        self.available_moves = []
 
         # All moves of the king (four diagonal, two sense in horizontal direction and two sense in vertical direction => 8 possibility if no tile is out of range)
         for i in range(-1, 2):
             for j in range(-1, 2):
                 # If the tile is not the same as the king
-                if (i, j) != (0,0):
-                    try:
-                        # If the tile is empty or is occupied by an opponent piece
-                        if self.board_pieces[self.tile[0] + i][self.tile[1] + j].color in [0, -self.color]:
-                            list_possible_moves.append((self.tile[0] + i, self.tile[1] + j))
-                    except:
-                        pass # Deal with the out of range error
-                
-        self.available_moves = list_possible_moves
+                if (i, j) != (0,0) and ((0 <= self.tile[0] + i <= 7) and (0 <= self.tile[1] + j <= 7)):
+                    # If the tile is empty or is occupied by an opponent piece
+                    piece = self.board_pieces[self.tile[0] + i][self.tile[1] + j]
+                    if piece != None:
+                        if piece.color in [0, -self.color]:
+                            self.available_moves.append((self.tile[0] + i, self.tile[1] + j))
+    
+        self.castling_stroke()
 
     def tiles_empty(self, list_tile):
 
@@ -227,7 +237,7 @@ class King(Piece):
         else:
             list_tile.append((0, 4))
 
-        for piece in self.board.dico_list_pieces[-self.color]:
+        for piece in self.dico_list_pieces[-self.color]:
             piece.update_possible_moves()
             for tile in list_tile:
                 if tile in piece.available_moves:
@@ -240,13 +250,13 @@ class King(Piece):
             if self.rook_left.first_move:
                 # If the tiles between the king and the left rook are empty and not in check
                 if self.tiles_empty(list_tiles_left) and not self.tiles_chess(list_tiles_left):
-                    self.board_pieces[self.tile[0]][self.tile[1]].available_moves.append(tiles_left_append)
+                    self.available_moves.append(tiles_left_append)
 
             # If the king and the right rook haven't played yet
             if self.rook_right.first_move:
                 # If the tiles between the king and the right rook are empty and not in check
                 if self.tiles_empty(list_tiles_right) and not self.tiles_chess(list_tiles_right):
-                    self.board_pieces[self.tile[0]][self.tile[1]].available_moves.append(tiles_right_append)
+                    self.available_moves.append(tiles_right_append)
 
     def castling_stroke(self):
 
@@ -286,7 +296,7 @@ class King(Piece):
 
         # Basic move
         mod_of_move = self.get_mod_move(new_tile)
-        self.remove_piece(new_tile)   
+        self.remove_piece(self.board_pieces[new_tile[0]][new_tile[1]])
         self.board_pieces[new_tile[0]][new_tile[1]] = self
         self.board_pieces[current_tile[0]][current_tile[1]] = None
         self.tile = new_tile
@@ -300,25 +310,24 @@ class Knight(Piece):
 
     def update_possible_moves(self):
          
-        list_possible_moves = []
+        self.available_moves = []
 
         # All moves of the knight (two tiles in a direction and one tile in the perpendicular direction => in every sense => 8 possibility if no tile is out of range)
         for i in range(-2, 3, 4):
             for j in range(-1, 2, 2):
-                try:
+                if ((0 <= self.tile[0] + i <= 7) and (0 <= self.tile[1] + j <= 7)):
                     # If the tile is empty or is occupied by an opponent piece
-                    if self.board_pieces[self.tile[0] + i][self.tile[1]+ j].color in [0, - self.color]:
-                        list_possible_moves.append((self.tile[0] + i, self.tile[1] + j))
-                except:
-                    pass # Deal with the out of range error$
-                try:
-                    # If the tile is empty or is occupied by an opponent piece
-                    if self.board_pieces[self.tile[0] + j][self.tile[1]+ i].color in [0, - self.color]:
-                        list_possible_moves.append((self.tile[0] + j, self.tile[1] + i))
-                except:
-                    pass # Deal with the out of range error
+                    piece = self.board_pieces[self.tile[0] + i][self.tile[1] + j]
+                    if piece != None:
+                        if piece.color in [0, -self.color]:
+                            self.available_moves.append((self.tile[0] + i, self.tile[1] + j))
 
-        self.available_moves = list_possible_moves
+                if ((0 <= self.tile[0] + j <= 7) and (0 <= self.tile[1] + i <= 7)):
+                    # If the tile is empty or is occupied by an opponent piece
+                    piece = self.board_pieces[self.tile[0] + j][self.tile[1] + i]
+                    if piece != None:
+                        if piece.color in [0, -self.color]:
+                            self.available_moves.append((self.tile[0] + j, self.tile[1] + i))
 
 
 class Rook(Piece):
@@ -328,69 +337,63 @@ class Rook(Piece):
 
     def update_possible_moves(self):
          
-        list_possible_moves = []
+        self.available_moves = []
 
         # Vertical moves (Up)
-        try:
-            for i in range(1, self.tile[0] + 1):
+        for i in range(1, self.tile[0] + 1):
+            if ((0 <= self.tile[0] - i <= 7) and (0 <= self.tile[1] <= 7)):
                 # If the tile is empty
-                if self.board_pieces[self.tile[0] - i][self.tile[1]].color == 0:
-                    list_possible_moves.append((self.tile[0] - i, self.tile[1]))
+                piece = self.board_pieces[self.tile[0] - i][self.tile[1]]
+                if piece == None:
+                    self.available_moves.append((self.tile[0] - i, self.tile[1]))
                 # If the tile is occupied by an opponent piece
-                elif self.board_pieces[self.tile[0] - i][self.tile[1]].color == -self.color:
-                    list_possible_moves.append((self.tile[0] - i, self.tile[1]))
+                elif piece.color == -self.color:
+                    self.available_moves.append((self.tile[0] - i, self.tile[1]))
                     break
                 else:
                     break
-        except:
-            pass # Deal with the out of range error
         
         # Vertical moves (Down)
-        try:
-            for i in  range(1, ROW - self.tile[0] + 1):
+        for i in  range(1, ROW - self.tile[0] + 1):
+            if ((0 <= self.tile[0] + i <= 7) and (0 <= self.tile[1] <= 7)):
                 # If the tile is empty
-                if self.board_pieces[self.tile[0] + i][self.tile[1]].color == 0:
-                    list_possible_moves.append((self.tile[0] + i, self.tile[1]))
+                piece = self.board_pieces[self.tile[0] + i][self.tile[1]]
+                if piece == None:
+                    self.available_moves.append((self.tile[0] + i, self.tile[1]))
                 # If the tile is occupied by an opponent piece
-                elif self.board_pieces[self.tile[0] + i][self.tile[1]].color == - self.color:
-                    list_possible_moves.append((self.tile[0] + i, self.tile[1]))  
+                elif piece.color == - self.color:
+                    self.available_moves.append((self.tile[0] + i, self.tile[1]))  
                     break
                 else:
                     break
-        except:
-            pass
 
         # Horizontal moves (Left)
-        try:
-            for i in range(1, self.tile[1] + 1):
+        for i in range(1, self.tile[1] + 1):
+            if ((0 <= self.tile[0] <= 7) and (0 <= self.tile[1] - i <= 7)):
                 # If the tile is empty
-                if self.board_pieces[self.tile[0]][self.tile[1] - i].color == 0:
-                    list_possible_moves.append((self.tile[0], self.tile[1] - i))
+                piece = self.board_pieces[self.tile[0]][self.tile[1] - i]
+                if piece == None:
+                    self.available_moves.append((self.tile[0], self.tile[1] - i))
                 # If the tile is occupied by an opponent piece
-                elif self.board_pieces[self.tile[0]][self.tile[1] - i].color == - self.color:
-                    list_possible_moves.append((self.tile[0], self.tile[1] - i))   
+                elif piece.color == - self.color:
+                    self.available_moves.append((self.tile[0], self.tile[1] - i))   
                     break
                 else:
                     break
-        except:
-            pass # Deal with the out of range error
 
         # Horizontal moves (Right)
-        try:
-            for i in range(1, COL - self.tile[1] + 1):
+        for i in range(1, COL - self.tile[1] + 1):
+            if ((0 <= self.tile[0] <= 7) and (0 <= self.tile[1] + i <= 7)):
                 # If the tile is empty
-                if self.board_pieces[self.tile[0]][self.tile[1] + i].color == 0:
-                    list_possible_moves.append((self.tile[0], self.tile[1] + i))
+                piece = self.board_pieces[self.tile[0]][self.tile[1] + i]
+                if piece == None:
+                    self.available_moves.append((self.tile[0], self.tile[1] + i))
                 # If the tile is occupied by an opponent piece
-                elif self.board_pieces[self.tile[0]][self.tile[1] + i].color == - self.color:
-                    list_possible_moves.append((self.tile[0], self.tile[1] + i))  
+                elif piece.color == - self.color:
+                    self.available_moves.append((self.tile[0], self.tile[1] + i))  
                     break 
                 else:
                     break 
-        except:
-            pass # Deal with the out of range error
-
-        self.available_moves = list_possible_moves
 
 
 class Bishop(Piece):
@@ -400,70 +403,63 @@ class Bishop(Piece):
 
     def update_possible_moves(self):
 
-        list_possible_moves = []
+        self.available_moves = []
 
         # Diagonal Left-Up
         for i in range(1, ROW):
-            try:
-                # If the tile is empty
-                if self.board_pieces[self.tile[0] - i][self.tile[1] - i].color == 0:
-                    list_possible_moves.append((self.tile[0] - i, self.tile[1] - i))
+            # If the tile is empty
+            if ((0 <= self.tile[0] - i <= 7) and (0 <= self.tile[1] - i <= 7)):
+                piece = self.board_pieces[self.tile[0] - i][self.tile[1] - i]
+                if piece == None:
+                    self.available_moves.append((self.tile[0] - i, self.tile[1] - i))
                 # If the tile is occupied by an opponent piece
                 elif self.board_pieces[self.tile[0] - i][self.tile[1] - i].color == - self.color:
-                    list_possible_moves.append((self.tile[0] - i, self.tile[1] - i))   
+                    self.available_moves.append((self.tile[0] - i, self.tile[1] - i))   
                     break
                 else:
                     break
-            except:
-                pass # Deal with the out of range error (The bishop can't go further left up)
 
         # Diagonal Left-Down
         for i in range(1, ROW):
-            try:
+            if ((0 <= self.tile[0] - i <= 7) and (0 <= self.tile[1] + i <= 7)):
                 # If the tile is empty
-                if self.board_pieces[self.tile[0] - i][self.tile[1] + i].color == 0:
-                    list_possible_moves.append((self.tile[0] - i, self.tile[1] + i))
+                piece = self.board_pieces[self.tile[0] - i][self.tile[1] + i]
+                if piece == None:
+                    self.available_moves.append((self.tile[0] - i, self.tile[1] + i))
                 # If the tile is occupied by an opponent piece
-                elif self.board_pieces[self.tile[0] - i][self.tile[1] + i].color == - self.color:
-                    list_possible_moves.append((self.tile[0] - i, self.tile[1] + i))   
+                elif piece.color == - self.color:
+                    self.available_moves.append((self.tile[0] - i, self.tile[1] + i))   
                     break
                 else:
                     break
-            except:
-                pass # Deal with the out of range error (The bishop can't go further left down)
 
         # Diagonal Right-Up
         for i in range(1, ROW):
-            try:
+            if ((0 <= self.tile[0] + i <= 7) and (0 <= self.tile[1] - i <= 7)):
                 # If the tile is empty
-                if self.board_pieces[self.tile[0] + i][self.tile[1] - i].color == 0:
-                    list_possible_moves.append((self.tile[0] + i, self.tile[1] - i))
+                piece = self.board_pieces[self.tile[0] + i][self.tile[1] - i]
+                if piece == None:
+                    self.available_moves.append((self.tile[0] + i, self.tile[1] - i))
                 # If the tile is occupied by an opponent piece
-                elif self.board_pieces[self.tile[0] + i][self.tile[1] - i].color == - self.color:
-                    list_possible_moves.append((self.tile[0] + i, self.tile[1] - i))   
+                elif piece.color == - self.color:
+                    self.available_moves.append((self.tile[0] + i, self.tile[1] - i))   
                     break
                 else:
                     break
-            except:
-                pass # Deal with the out of range error (The bishop can't go further right up)
 
         # Diagonal Right-Down
         for i in range(1, ROW):
-            try:
+            if ((0 <= self.tile[0] + i <= 7) and (0 <= self.tile[1] + i <= 7)):
                 # If the tile is empty
-                if self.board_pieces[self.tile[0] + i][self.tile[1] + i].color == 0:
-                    list_possible_moves.append((self.tile[0] + i, self.tile[1] + i))
+                piece = self.board_pieces[self.tile[0] + i][self.tile[1] + i]
+                if piece == None:
+                    self.available_moves.append((self.tile[0] + i, self.tile[1] + i))
                 # If the tile is occupied by an opponent piece
-                elif self.board_pieces[self.tile[0] + i][self.tile[1] + i].color == - self.color:
-                    list_possible_moves.append((self.tile[0] + i, self.tile[1] + i))   
+                elif piece.color == - self.color:
+                    self.available_moves.append((self.tile[0] + i, self.tile[1] + i))   
                     break
                 else:
                     break
-            except:
-                pass # Deal with the out of range error (The bishop can't go further right down)
-
-        self.available_moves = list_possible_moves
-
 
 class Queen(Piece):
 

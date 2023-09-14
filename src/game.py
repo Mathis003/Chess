@@ -10,7 +10,7 @@ class Game:
         self.screen = screen
         self.board = board
         self.pieces = Pieces(self.board, self.board.board_pieces[7][4], self.board.board_pieces[0][4])
-        self.piece = Piece(None, None, None, [], [None, None], 0, True)
+        self.piece = Piece(self.board.board_pieces, None, None, [], [None, None], 0, True)
         self.sound_button = sound_button
         self.board_color_button = board_color_button
 
@@ -124,6 +124,7 @@ class Game:
     def run(self):
 
         self.update_board_all_pieces(self.board.board_pieces)
+        self.piece.initialize_variables()
         while self.running:
 
             # If the player is in the menu
@@ -158,6 +159,7 @@ class Game:
                         if self.player_tile_moved in piece.available_moves:
                             mod_of_move = piece.move_piece(self.player_tile_clicked, self.player_tile_moved, self.image_piece_selected)
                             self.piece_moved = piece
+                            self.piece_moved.image = self.save_image_tile_clicked
 
                             # If the piece moved is a queen and had been promoted
                             if isinstance(self.piece_moved, type(Queen(None, None, None, [], [None, None], 0, True))) and self.piece_moved.promoted:
@@ -170,22 +172,19 @@ class Game:
                             self.list_color_case[1] = self.player_tile_moved
                             self.color_case_waiting = self.player_tile_clicked
 
-                            self.pieces.basics_possible_moves(self.piece_moved)
-                            enter, piece_that_check = self.pieces.CheckOpponent(self.piece_moved, self.player_tile_clicked)
+                            self.pieces.update_available_moves(self.player_tile_clicked, self.piece_moved)
+                            
                             # If the piece put the opponent king in check
-                            if enter:
+                            if self.pieces.opponent_check(self.piece_moved):
                                 mod_of_move = "check"
-                                self.pieces.CheckMod_reupdate_possibles_move(piece_that_check)
-                                # If the opponent player can play at least one piece
-                                if self.pieces.Check_NoMoveAvailable(piece_that_check):
+                                if not self.pieces.defend_checked_king(-self.piece_moved.color):
                                     mod_of_move = "checkmate"
                                     self.end_menu = True
                             else:
-                                self.pieces.ReUpdate_ToNot_OwnChess(self.piece_moved)
-                                # If the opponent player can play at least one piece
-                                if self.pieces.Check_NoMoveAvailable(self.piece_moved):
+                                if self.pieces.stalemate(self.piece_moved):
                                     mod_of_move = "stalemate"
                                     self.end_menu = True
+                                    print("Wtf")
 
                             self.play_music(mod_of_move)
 
@@ -193,7 +192,7 @@ class Game:
                                 self.save_pawn_first_move.just_moved = None
                                 self.enter_to_reset_EnPassant = False
 
-                            if isinstance(self.piece_moved, type(Pawn((6, 0), 1, True))):
+                            if isinstance(self.piece_moved, type(Pawn(None, None, None, [], [None, None], 0, True))):
                                 if self.piece_moved.just_moved:
                                     self.enter_to_reset_EnPassant = True
                                     self.save_pawn_first_move = self.piece_moved
