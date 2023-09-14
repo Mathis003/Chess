@@ -1,6 +1,6 @@
 import math
 from src.assets import *
-from src.all_pieces import Piece, Pawn, Queen
+from src.all_pieces import Piece, Pawn
 from src.pieces import Pieces
 
 class Game:
@@ -10,7 +10,7 @@ class Game:
         self.screen = screen
         self.board = board
         self.pieces = Pieces(self.board, self.board.board_pieces[7][4], self.board.board_pieces[0][4])
-        self.piece = Piece(self.board.board_pieces, self.board.LIST_BLACK_PIECES, self.board.LIST_WHITE_PIECES, None, None, [], [None, None], 0, True)
+        self.piece = Piece(self.board.board_pieces, [], [], None, None, [], [None, None], 0, True)
         self.sound_button = sound_button
         self.board_color_button = board_color_button
 
@@ -37,7 +37,7 @@ class Game:
         self.color_case_waiting = (-1, -1)  # Color of the case where the player clicked on the board (to have the historic and draw constantly the color until the next player play)
 
     def update_board_all_pieces(self):
-        for piece in self.board.LIST_BLACK_PIECES + self.board.LIST_WHITE_PIECES:
+        for piece in self.board.list_black_pieces + self.board.list_white_pieces:
             piece.update_board_pieces(self.board.board_pieces)
         
     def update_list_pieces(self):
@@ -51,7 +51,7 @@ class Game:
 
         self.piece.dico_list_pieces = {1 : self.piece.list_white_pieces, -1 : self.piece.list_black_pieces}
 
-        for piece in self.board.LIST_BLACK_PIECES + self.board.LIST_WHITE_PIECES:
+        for piece in self.piece.list_black_pieces + self.piece.list_white_pieces:
             piece.list_black_pieces = self.piece.list_black_pieces
             piece.list_white_pieces = self.piece.list_white_pieces
 
@@ -172,15 +172,10 @@ class Game:
                         # If the tile moved is in the list of possible moves of the tile clicked
                         piece = self.board.board_pieces[self.player_tile_clicked[0]][self.player_tile_clicked[1]]
                         if self.player_tile_moved in piece.available_moves:
+
                             mod_of_move = piece.move_piece(self.player_tile_clicked, self.player_tile_moved, self.image_piece_selected)
                             self.piece_moved = piece
                             self.piece_moved.image = self.save_image_tile_clicked
-
-                            # If the piece moved is a queen and had been promoted
-                            if isinstance(self.piece_moved, type(Queen(None, [], [], None, None, [], [None, None], 0, True))) and self.piece_moved.promoted:
-                                self.piece_moved.promoted = False
-                            else:
-                                self.piece_moved.list_images[self.piece_moved.current_idx_image] = self.save_image_tile_clicked
 
                             self.change_turn_player()
 

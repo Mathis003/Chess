@@ -132,21 +132,16 @@ class Pawn(Piece):
 
     def move_piece(self, current_tile, new_tile, idx_image):
 
-        # If the pawn can be promoted.
+        # If the pawn can be promoted into a queen.
         if new_tile[0] == 0 or new_tile[0] == 7:
             mod_of_move = self.get_mod_move(new_tile)
-            if self.color == 1:
-                image_queen = white_queen_image[idx_image]
-            else:
-                image_queen = black_queen_image[idx_image]
 
-            new_queen = Queen(self.board_pieces, new_tile, self.color, [], image_queen, idx_image, False)
+            new_queen = Queen(self.board_pieces, self.list_black_pieces, self.list_white_pieces, new_tile, self.color, [], white_queen_image, idx_image, False)
             piece_eaten = self.board_pieces[new_tile[0]][new_tile[1]]
             if piece_eaten != None:
                 self.remove_piece(piece_eaten)
             self.remove_piece(self.board_pieces[current_tile[0]][current_tile[1]])
             self.add_piece(new_queen)
-            new_queen.promoted = True
             self.board_pieces[new_tile[0]][new_tile[1]] = new_queen
             return mod_of_move
         else:
@@ -192,7 +187,12 @@ class King(Piece):
         else:
             list_tile.append((0, 4))
 
-        for piece in self.dico_list_pieces[-self.color]:
+        if self.color == 1:
+            list_pieces = self.list_white_pieces
+        else:
+            list_pieces = self.list_black_pieces
+
+        for piece in list_pieces:
             piece.update_possible_moves()
             for tile in list_tile:
                 if tile in piece.available_moves:
@@ -305,7 +305,6 @@ class Rook(Piece):
                 # If the tile is occupied by an opponent piece
                 elif piece.color == -self.color:
                     self.available_moves.append((self.tile[0] - i, self.tile[1]))
-                    print("okkk")
                     UP_ENTER = False
                 else:
                     UP_ENTER = False
@@ -423,7 +422,6 @@ class Queen(Piece):
 
     def __init__(self, board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move):
         super().__init__(board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move)
-        self.promoted = False  # Special variable for the promotion
 
     def update_possible_moves(self):
 

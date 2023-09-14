@@ -1,5 +1,5 @@
 from src.assets import *
-from src.all_pieces import Piece, Rook, King, Queen, Pawn, Bishop, Knight
+from src.all_pieces import Rook, King, Queen, Pawn, Bishop, Knight
 
 class Board:
     
@@ -20,21 +20,25 @@ class Board:
                             [Pawn(None, [], [], (6, 0), 1, [(5, 0), (4, 0)], white_pawn_image, 0, True), Pawn(None, [], [], (6, 1), 1, [(5, 1), (4, 1)], white_pawn_image, 0, True), Pawn(None, [], [], (6, 2), 1, [(5, 2), (4, 2)], white_pawn_image, 0, True), Pawn(None, [], [], (6, 3), 1, [(5, 3), (4, 3)], white_pawn_image, 0, True), Pawn(None, [], [], (6, 4), 1, [(5, 4), (4, 4)], white_pawn_image, 0, True), Pawn(None, [], [], (6, 5), 1, [(5, 5), (4, 5)], white_pawn_image, 0, True), Pawn(None, [], [], (6, 6), 1, [(5, 6), (4, 6)], white_pawn_image, 0, True), Pawn(None, [], [], (6, 7), 1, [(5, 7), (4, 7)], white_pawn_image, 0, True)],
                             [self.rook_white_left, Knight(None, [], [], (7, 1), 1, [(5, 0), (5, 2)], white_knight_image, 0, True), Bishop(None, [], [], (7, 2), 1, [], white_bishop_image, 0, True), Queen(None, [], [], (7, 3), 1, [], white_queen_image, 0, True), King(None, [], [], (7, 4), 1, [], white_king_image, 0, True,  self.rook_white_left,  self.rook_white_right), Bishop(None, [], [], (7, 5), 1, [], white_bishop_image, 0, True), Knight(None, [], [], (7, 6), 1, [(5, 5), (5, 7)], white_knight_image, 0, True),  self.rook_white_right]]
 
-        self.LIST_BLACK_PIECES = []
+        self.list_black_pieces = []
         for i in range(0, 2):
             for j in range(8):
-                self.LIST_BLACK_PIECES.append(self.board_pieces[i][j])
+                self.list_black_pieces.append(self.board_pieces[i][j])
 
-        self.LIST_WHITE_PIECES = []
+        self.list_white_pieces = []
         for i in range(6, 8):
             for j in range(8):
-                self.LIST_WHITE_PIECES.append(self.board_pieces[i][j])
-
-        self.dico_list_pieces = {1 : self.LIST_WHITE_PIECES, -1 : self.LIST_BLACK_PIECES}
-
+                self.list_white_pieces.append(self.board_pieces[i][j])
+        
     def change_image(self):
         for piece in self.dico_list_pieces[1]:
             piece.current_idx_image = abs(1 - piece.current_idx_image)
+    
+    def draw_pieces(self):
+        for piece in self.list_white_pieces + self.list_black_pieces:
+            # If the piece isn't pressed on the board => otherwise the image is None => = "Don't draw it"
+            if piece.image != None:
+                self.screen.blit(piece.image, (piece.tile[1] * SIZE_SQUARE, piece.tile[0] * SIZE_SQUARE))
 
     def draw_tile(self, tile, color):
         """
@@ -65,15 +69,6 @@ class Board:
                     self.draw_tile((i, j), COLORS_BOARD[mod_board][1])
                 else:
                     self.draw_tile((i, j), COLORS_BOARD[mod_board][0])
-
-    def draw_pieces(self):
-        """
-        Draw all the pieces on the board.
-        """
-        for piece in self.LIST_WHITE_PIECES + self.LIST_BLACK_PIECES:
-            # If the piece isn't pressed on the board => otherwise the image is None => = "Don't draw it"
-            if piece.image != None:
-                self.screen.blit(piece.image, (piece.tile[1] * SIZE_SQUARE, piece.tile[0] * SIZE_SQUARE))
     
     def draw_possible_moves(self, tile_piece):
         """
