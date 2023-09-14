@@ -172,7 +172,7 @@ class Game:
                             self.list_color_case[1] = self.player_tile_moved
                             self.color_case_waiting = self.player_tile_clicked
 
-                            self.pieces.update_available_moves(self.player_tile_clicked, self.piece_moved)
+                            self.pieces.update_available_moves(self.piece_moved)
                             
                             # If the piece put the opponent king in check
                             if self.pieces.opponent_check(self.piece_moved):

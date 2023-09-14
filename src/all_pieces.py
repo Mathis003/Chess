@@ -72,8 +72,9 @@ class Piece:
     def move_piece(self, current_tile, new_tile, idx_image):
 
         mod_of_move = self.get_mod_move(new_tile)
-        piece = self.board_pieces[new_tile[0]][new_tile[1]]
-        self.remove_piece(piece)
+        piece_eaten = self.board_pieces[new_tile[0]][new_tile[1]]
+        if piece_eaten != None:
+            self.remove_piece(piece_eaten)
 
         self.board_pieces[new_tile[0]][new_tile[1]] = self
         self.board_pieces[current_tile[0]][current_tile[1]] = None
@@ -100,24 +101,24 @@ class Pawn(Piece):
 
         # If the tile above the pawn is empty
         piece = self.board_pieces[self.tile[0] - self.color][self.tile[1]]
-        if piece != None:
-            self.available_moves.append((piece.tile[0], piece.tile[1]))
+        if piece == None:
+            self.available_moves.append((self.tile[0] - self.color, self.tile[1]))
             
             # If the pawn is on its first move and the tile above is empty
             if self.first_move:
                 # If the tile above (x2) the pawn is empty (special stroke when first move)
                 piece = self.board_pieces[self.tile[0] - 2 * self.color][self.tile[1]]
-                if piece != None:
-                    self.available_moves.append((piece.tile[0], piece.tile[1]))
+                if piece == None:
+                    self.available_moves.append((self.tile[0] - 2 * self.color, self.tile[1]))
 
         # Attack moves
         for i in range(-1, 2, 2):
-            if ((0 <= self.tile[0] - self.color <= 7) and (0 <= self.tile[1] + i <= 7)):
+            if (0 <= self.tile[1] + i <= 7):
                 # If the tile diagonally above the pawn is occupied by an opponent piece
                 piece = self.board_pieces[self.tile[0] - self.color][self.tile[1] + i]
                 if piece != None:
                     if piece.color == -self.color:
-                        self.available_moves.append((piece.tile[0], piece.tile[1]))
+                        self.available_moves.append((self.tile[0] - self.color, self.tile[1] + i))
 
         self.move_en_passant()
 
@@ -125,80 +126,44 @@ class Pawn(Piece):
         """
         Return a list with the possible "En Passant" move (max 2 possibility).
         """
-        list_possible_moves_enpassant = []
-
         right_tile = (self.tile[0], self.tile[1] + 1)
-        if ((0 <= right_tile[0] <= 7) and (0 <= right_tile[1] <= 7)):
+        left_tile = (self.tile[0], self.tile[1] - 1)
+
+        if (0 <= right_tile[1] <= 7):
             piece_right = self.board_pieces[right_tile[0]][right_tile[1]]
             # If the tile to the right is occupied by an opponent pawn and the pawn just moved of two tiles (his first move)
-            if type(piece_right) == type(self) and piece_right.just_moved:
-                list_possible_moves_enpassant.append((self.tile[0] - self.color, self.tile[1] + 1))
+            if (type(piece_right) == type(self)) and piece_right.just_moved:
+                self.available_moves.append((self.tile[0] - self.color, right_tile[1]))
 
-        left_tile = (self.tile[0], self.tile[1] - 1)
-        if ((0 <= left_tile[0] <= 7) and (0 <= left_tile[1] <= 7)):
+        if (0 <= left_tile[1] <= 7):
             piece_left = self.board_pieces[left_tile[0]][left_tile[1]]
             # If the tile to the left is occupied by an opponent pawn and the pawn just moved of two tiles (his first move)
-            if type(piece_left) == type(self) and piece_left.just_moved:
-                list_possible_moves_enpassant.append((self.tile[0] - self.color, self.tile[1] - 1))
-
-        self.available_moves += list_possible_moves_enpassant
+            if (type(piece_left) == type(self)) and piece_left.just_moved:
+                self.available_moves.append((self.tile[0] - self.color, left_tile[1]))
 
     def move_piece(self, current_tile, new_tile, idx_image):
 
         # If the pawn can be promoted.
         if new_tile[0] == 0 or new_tile[0] == 7:
-
             mod_of_move = self.get_mod_move(new_tile)
             if self.color == 1:
                 image_queen = white_queen_image[idx_image]
             else:
                 image_queen = black_queen_image[idx_image]
 
-            new_queen = Queen(new_tile, self.color, image_queen, False)
-            self.remove_piece(self.board_pieces[new_tile[0]][new_tile[1]])
+            new_queen = Queen(self.board_pieces, new_tile, self.color, [], image_queen, idx_image, False)
+            piece_eaten = self.board_pieces[new_tile[0]][new_tile[1]]
+            if piece_eaten != None:
+                self.remove_piece(piece_eaten)
             self.remove_piece(self.board_pieces[current_tile[0]][current_tile[1]])
             self.add_piece(new_queen)
             new_queen.promoted = True
-
             self.board_pieces[new_tile[0]][new_tile[1]] = new_queen
-            self.board_pieces[current_tile[0]][current_tile[1]] = None
-
+            return mod_of_move
         else:
-            # If the piece is a pawn that move to an empty tile.
-            if self.board_pieces[new_tile[0]][new_tile[1]] == None:
-                # If the pawn can do the move 'en passant'.
-                if new_tile == (current_tile[0] - self.color, current_tile[1] + 1) or new_tile == (current_tile[0] - self.color, current_tile[1] - 1):
-
-                    tile_piece_eaten = (current_tile[0], new_tile[1])
-                    piece_eaten = self.board_pieces[tile_piece_eaten[0]][tile_piece_eaten[1]]
-                    self.dico_list_pieces[-self.color].remove(piece_eaten)
-                    mod_of_move =  "capture"
-                else:
-                    mod_of_move = "move"
-                
-                self.board_pieces[new_tile[0]][new_tile[1]] = self
-                self.board_pieces[current_tile[0]][current_tile[1]] = None
-
-                if self.first_move:
-                    # If the pawn has moved 2 tiles.
-                    if abs(current_tile[0] - new_tile[0]) == 2:
-                        self.just_moved = True
-                else:
-                    self.just_moved = False
-            else:
-                # If the pawn move to atack a piece (basic move).
-                mod_of_move =  "capture"
-                self.remove_piece(self.board_pieces[new_tile[0]][new_tile[1]])
-                self.board_pieces[new_tile[0]][new_tile[1]] = self
-                self.board_pieces[current_tile[0]][current_tile[1]] = None
-
-        self.tile = new_tile
-
-        if self.first_move:
-            self.first_move = False  
-
-        return mod_of_move
-
+            return super().move_piece(current_tile, new_tile, idx_image)
+        
+        
 class King(Piece):
 
     def __init__(self, board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move, rook_left, rook_right):
@@ -217,16 +182,17 @@ class King(Piece):
                 if (i, j) != (0,0) and ((0 <= self.tile[0] + i <= 7) and (0 <= self.tile[1] + j <= 7)):
                     # If the tile is empty or is occupied by an opponent piece
                     piece = self.board_pieces[self.tile[0] + i][self.tile[1] + j]
-                    if piece != None:
-                        if piece.color in [0, -self.color]:
-                            self.available_moves.append((self.tile[0] + i, self.tile[1] + j))
+                    if piece == None:
+                        self.available_moves.append((self.tile[0] + i, self.tile[1] + j))
+                    elif piece.color == -self.color:
+                        self.available_moves.append((self.tile[0] + i, self.tile[1] + j))
     
         self.castling_stroke()
 
     def tiles_empty(self, list_tile):
 
         for tile in list_tile:
-            if self.board_pieces[tile[0]][tile[1]].color != 0:
+            if self.board_pieces[tile[0]][tile[1]] != None:
                 return False
         return True
 
@@ -271,7 +237,6 @@ class King(Piece):
         if self.first_move:
             # Right castling
             if new_tile == (7, 6) or new_tile == (0, 6):
-
                 self.board_pieces[new_tile[0]][6] = self.board_pieces[new_tile[0]][4]
                 self.board_pieces[new_tile[0]][7] = None
                 rook_piece = self.board_pieces[new_tile[0]][5]
@@ -295,12 +260,7 @@ class King(Piece):
                 self.first_move = False
 
         # Basic move
-        mod_of_move = self.get_mod_move(new_tile)
-        self.remove_piece(self.board_pieces[new_tile[0]][new_tile[1]])
-        self.board_pieces[new_tile[0]][new_tile[1]] = self
-        self.board_pieces[current_tile[0]][current_tile[1]] = None
-        self.tile = new_tile
-        return mod_of_move
+        return super().move_piece(current_tile, new_tile, idx_image)
 
 
 class Knight(Piece):
@@ -313,21 +273,23 @@ class Knight(Piece):
         self.available_moves = []
 
         # All moves of the knight (two tiles in a direction and one tile in the perpendicular direction => in every sense => 8 possibility if no tile is out of range)
-        for i in range(-2, 3, 4):
-            for j in range(-1, 2, 2):
+        for i in range(-2, 3, 4): # -2 or 2
+            for j in range(-1, 2, 2): # -1 or 1
                 if ((0 <= self.tile[0] + i <= 7) and (0 <= self.tile[1] + j <= 7)):
                     # If the tile is empty or is occupied by an opponent piece
                     piece = self.board_pieces[self.tile[0] + i][self.tile[1] + j]
-                    if piece != None:
-                        if piece.color in [0, -self.color]:
-                            self.available_moves.append((self.tile[0] + i, self.tile[1] + j))
+                    if piece == None:
+                        self.available_moves.append((self.tile[0] + i, self.tile[1] + j))
+                    elif piece.color == -self.color:
+                        self.available_moves.append((self.tile[0] + i, self.tile[1] + j))
 
                 if ((0 <= self.tile[0] + j <= 7) and (0 <= self.tile[1] + i <= 7)):
                     # If the tile is empty or is occupied by an opponent piece
                     piece = self.board_pieces[self.tile[0] + j][self.tile[1] + i]
-                    if piece != None:
-                        if piece.color in [0, -self.color]:
-                            self.available_moves.append((self.tile[0] + j, self.tile[1] + i))
+                    if piece == None:
+                        self.available_moves.append((self.tile[0] + j, self.tile[1] + i))
+                    elif piece.color == -self.color:
+                        self.available_moves.append((self.tile[0] + j, self.tile[1] + i))
 
 
 class Rook(Piece):
@@ -339,9 +301,14 @@ class Rook(Piece):
          
         self.available_moves = []
 
+        UP_ENTER = True
+        DOWN_ENTER = True  
+        LEFT_ENTER = True
+        RIGHT_ENTER = True
+
         # Vertical moves (Up)
         for i in range(1, self.tile[0] + 1):
-            if ((0 <= self.tile[0] - i <= 7) and (0 <= self.tile[1] <= 7)):
+            if UP_ENTER:
                 # If the tile is empty
                 piece = self.board_pieces[self.tile[0] - i][self.tile[1]]
                 if piece == None:
@@ -349,13 +316,14 @@ class Rook(Piece):
                 # If the tile is occupied by an opponent piece
                 elif piece.color == -self.color:
                     self.available_moves.append((self.tile[0] - i, self.tile[1]))
-                    break
+                    print("okkk")
+                    UP_ENTER = False
                 else:
-                    break
+                    UP_ENTER = False
         
         # Vertical moves (Down)
-        for i in  range(1, ROW - self.tile[0] + 1):
-            if ((0 <= self.tile[0] + i <= 7) and (0 <= self.tile[1] <= 7)):
+        for i in  range(1, ROW - self.tile[0]):
+            if DOWN_ENTER:
                 # If the tile is empty
                 piece = self.board_pieces[self.tile[0] + i][self.tile[1]]
                 if piece == None:
@@ -363,13 +331,13 @@ class Rook(Piece):
                 # If the tile is occupied by an opponent piece
                 elif piece.color == - self.color:
                     self.available_moves.append((self.tile[0] + i, self.tile[1]))  
-                    break
+                    DOWN_ENTER = False
                 else:
-                    break
+                    DOWN_ENTER = False
 
         # Horizontal moves (Left)
         for i in range(1, self.tile[1] + 1):
-            if ((0 <= self.tile[0] <= 7) and (0 <= self.tile[1] - i <= 7)):
+            if LEFT_ENTER:
                 # If the tile is empty
                 piece = self.board_pieces[self.tile[0]][self.tile[1] - i]
                 if piece == None:
@@ -377,13 +345,14 @@ class Rook(Piece):
                 # If the tile is occupied by an opponent piece
                 elif piece.color == - self.color:
                     self.available_moves.append((self.tile[0], self.tile[1] - i))   
-                    break
+                    LEFT_ENTER = False
                 else:
-                    break
+                    LEFT_ENTER = False
 
         # Horizontal moves (Right)
-        for i in range(1, COL - self.tile[1] + 1):
-            if ((0 <= self.tile[0] <= 7) and (0 <= self.tile[1] + i <= 7)):
+        for i in range(1, COL - self.tile[1]):
+            print(i)
+            if RIGHT_ENTER:
                 # If the tile is empty
                 piece = self.board_pieces[self.tile[0]][self.tile[1] + i]
                 if piece == None:
@@ -391,9 +360,9 @@ class Rook(Piece):
                 # If the tile is occupied by an opponent piece
                 elif piece.color == - self.color:
                     self.available_moves.append((self.tile[0], self.tile[1] + i))  
-                    break 
+                    RIGHT_ENTER = False 
                 else:
-                    break 
+                    RIGHT_ENTER = False 
 
 
 class Bishop(Piece):
