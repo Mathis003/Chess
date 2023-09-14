@@ -19,11 +19,10 @@ Parent class
 """
 class Piece:
 
-    def __init__(self, board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move):
+    def __init__(self, board_pieces, list_black_pieces, list_white_pieces, tile, color, available_moves, list_images, current_idx_image, first_move):
         self.board_pieces = board_pieces
-        self.LIST_WHITE_PIECES = []
-        self.LIST_BLACK_PIECES = []
-        self.dico_list_pieces = {}
+        self.list_black_pieces = list_black_pieces
+        self.list_white_pieces = list_white_pieces
         self.tile = tile
         self.color = color
         self.available_moves = available_moves
@@ -31,17 +30,6 @@ class Piece:
         self.current_idx_image = current_idx_image
         self.image = self.list_images[self.current_idx_image]
         self.first_move = first_move
-    
-    def initialize_variables(self):
-        for i in range(0, 2):
-            for j in range(8):
-                self.LIST_BLACK_PIECES.append(self.board_pieces[i][j])
-        
-        for i in range(6, 8):
-            for j in range(8):
-                self.LIST_WHITE_PIECES.append(self.board_pieces[i][j])
-
-        self.dico_list_pieces = {1 : self.LIST_WHITE_PIECES, -1 : self.LIST_BLACK_PIECES}
     
 
     def get_mod_move(self, new_tile):
@@ -58,16 +46,17 @@ class Piece:
 
     def add_piece(self, piece):
         if piece.color == 1:
-            self.LIST_WHITE_PIECES.append(piece)
+            self.list_white_pieces.append(piece)
         elif piece.color == -1:
-            self.LIST_BLACK_PIECES.append(piece)
+            self.list_black_pieces.append(piece)
 
     def remove_piece(self, piece):
+        print(self.list_black_pieces)
         if piece != None:
             if piece.color == 1:
-                self.LIST_WHITE_PIECES.remove(piece)
+                self.list_white_pieces.remove(piece)
             else:
-                self.LIST_BLACK_PIECES.remove(piece)
+                self.list_black_pieces.remove(piece)
     
     def move_piece(self, current_tile, new_tile, idx_image):
 
@@ -91,8 +80,8 @@ class Piece:
 
 class Pawn(Piece):
 
-    def __init__(self, board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move):
-        super().__init__(board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move)
+    def __init__(self, board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move):
+        super().__init__(board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move)
         self.just_moved = False # Variable for the special stroke "En Passant"
 
     def update_possible_moves(self):
@@ -166,8 +155,8 @@ class Pawn(Piece):
         
 class King(Piece):
 
-    def __init__(self, board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move, rook_left, rook_right):
-        super().__init__(board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move)
+    def __init__(self, board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move, rook_left, rook_right):
+        super().__init__(board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move)
         self.rook_left = rook_left # Rook at the left of the king
         self.rook_right = rook_right # Rook at the right of the king
 
@@ -265,8 +254,8 @@ class King(Piece):
 
 class Knight(Piece):
 
-    def __init__(self, board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move):
-        super().__init__(board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move)
+    def __init__(self, board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move):
+        super().__init__(board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move)
 
     def update_possible_moves(self):
          
@@ -294,8 +283,8 @@ class Knight(Piece):
 
 class Rook(Piece):
 
-    def __init__(self, board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move):
-        super().__init__(board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move)
+    def __init__(self, board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move):
+        super().__init__(board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move)
 
     def update_possible_moves(self):
          
@@ -367,8 +356,8 @@ class Rook(Piece):
 
 class Bishop(Piece):
 
-    def __init__(self, board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move):
-        super().__init__(board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move)
+    def __init__(self, board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move):
+        super().__init__(board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move)
 
     def update_possible_moves(self):
 
@@ -432,16 +421,16 @@ class Bishop(Piece):
 
 class Queen(Piece):
 
-    def __init__(self, board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move):
-        super().__init__(board_pieces, tile, color, available_moves, list_images, current_idx_image, first_move)
+    def __init__(self, board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move):
+        super().__init__(board_pieces, list_black_piece, list_white_piece, tile, color, available_moves, list_images, current_idx_image, first_move)
         self.promoted = False  # Special variable for the promotion
 
     def update_possible_moves(self):
 
-        bishop = Bishop(self.board_pieces, self.tile, self.color, [], [None, None], 0, self.first_move)
+        bishop = Bishop(self.board_pieces, self.list_black_pieces, self.list_white_pieces, self.tile, self.color, [], [None, None], 0, self.first_move)
         bishop.update_possible_moves()
 
-        rook = Rook(self.board_pieces, self.tile, self.color, [], [None, None], 0, self.first_move)
+        rook = Rook(self.board_pieces, self.list_black_pieces, self.list_white_pieces, self.tile, self.color, [], [None, None], 0, self.first_move)
         rook.update_possible_moves()
 
         self.available_moves = (rook.available_moves + bishop.available_moves)

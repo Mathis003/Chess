@@ -10,7 +10,7 @@ class Game:
         self.screen = screen
         self.board = board
         self.pieces = Pieces(self.board, self.board.board_pieces[7][4], self.board.board_pieces[0][4])
-        self.piece = Piece(self.board.board_pieces, None, None, [], [None, None], 0, True)
+        self.piece = Piece(self.board.board_pieces, self.board.LIST_BLACK_PIECES, self.board.LIST_WHITE_PIECES, None, None, [], [None, None], 0, True)
         self.sound_button = sound_button
         self.board_color_button = board_color_button
 
@@ -36,9 +36,24 @@ class Game:
         self.list_color_case = [(-1, -1), (-1, -1)]  # List of the color of the case where the player clicked on the board (to have the historic and draw constantly the color until the next player play)
         self.color_case_waiting = (-1, -1)  # Color of the case where the player clicked on the board (to have the historic and draw constantly the color until the next player play)
 
-    def update_board_all_pieces(self, board_pieces):
+    def update_board_all_pieces(self):
         for piece in self.board.LIST_BLACK_PIECES + self.board.LIST_WHITE_PIECES:
-            piece.update_board_pieces(board_pieces)
+            piece.update_board_pieces(self.board.board_pieces)
+        
+    def update_list_pieces(self):
+        for i in range(0, 2):
+            for j in range(8):
+                self.piece.list_black_pieces.append(self.board.board_pieces[i][j])
+
+        for i in range(6, 8):
+            for j in range(8):
+                self.piece.list_white_pieces.append(self.board.board_pieces[i][j])
+
+        self.piece.dico_list_pieces = {1 : self.piece.list_white_pieces, -1 : self.piece.list_black_pieces}
+
+        for piece in self.board.LIST_BLACK_PIECES + self.board.LIST_WHITE_PIECES:
+            piece.list_black_pieces = self.piece.list_black_pieces
+            piece.list_white_pieces = self.piece.list_white_pieces
 
     def play_music(self, mod_of_move):
         if self.sound_button.sound_on:
@@ -122,9 +137,9 @@ class Game:
         self.dico_turn["turn_black"] = not self.dico_turn["turn_black"]
 
     def run(self):
-
-        self.update_board_all_pieces(self.board.board_pieces)
-        self.piece.initialize_variables()
+        
+        self.update_board_all_pieces()
+        self.update_list_pieces()
         while self.running:
 
             # If the player is in the menu
@@ -162,7 +177,7 @@ class Game:
                             self.piece_moved.image = self.save_image_tile_clicked
 
                             # If the piece moved is a queen and had been promoted
-                            if isinstance(self.piece_moved, type(Queen(None, None, None, [], [None, None], 0, True))) and self.piece_moved.promoted:
+                            if isinstance(self.piece_moved, type(Queen(None, [], [], None, None, [], [None, None], 0, True))) and self.piece_moved.promoted:
                                 self.piece_moved.promoted = False
                             else:
                                 self.piece_moved.list_images[self.piece_moved.current_idx_image] = self.save_image_tile_clicked
@@ -192,7 +207,7 @@ class Game:
                                 self.save_pawn_first_move.just_moved = None
                                 self.enter_to_reset_EnPassant = False
 
-                            if isinstance(self.piece_moved, type(Pawn(None, None, None, [], [None, None], 0, True))):
+                            if isinstance(self.piece_moved, type(Pawn(None, [], [], None, None, [], [None, None], 0, True))):
                                 if self.piece_moved.just_moved:
                                     self.enter_to_reset_EnPassant = True
                                     self.save_pawn_first_move = self.piece_moved

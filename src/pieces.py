@@ -9,7 +9,7 @@ class Pieces:
     
     def get_king(self, color):
         for piece in self.board.dico_list_pieces[color]:
-            if type(piece) == type(King(None, None, None, [], [None, None], 0, True, None, None)):
+            if type(piece) == type(King(None, [], [], None, None, [], [None, None], 0, True, None, None)):
                 return piece
         return None
     
