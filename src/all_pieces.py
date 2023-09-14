@@ -66,7 +66,7 @@ class Pawn(Piece):
         if new_tile[0] == 0 or new_tile[0] == 7:
             mod_of_move = self.get_mod_move(new_tile)
 
-            new_queen = Queen(board_pieces, list_black_pieces, list_white_pieces, new_tile, self.color, [], white_queen_image, idx_image, False)
+            new_queen = Queen(new_tile, self.color, [], white_queen_image, idx_image, False)
             piece_eaten = board_pieces[new_tile[0]][new_tile[1]]
             if piece_eaten != None:
                 self.remove_piece(piece_eaten)

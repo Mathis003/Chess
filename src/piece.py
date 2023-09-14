@@ -37,8 +37,8 @@ class Piece:
 
     def add_piece(self, piece):
 
-        list_white_pieces = self.list_white_pieces()
-        list_black_pieces = self.list_black_pieces()
+        list_white_pieces = self.get_list_white_pieces()
+        list_black_pieces = self.get_list_black_pieces()
 
         if piece.color == 1:
             list_white_pieces.append(piece)
@@ -47,8 +47,8 @@ class Piece:
 
     def remove_piece(self, piece):
 
-        list_white_pieces = self.list_white_pieces()
-        list_black_pieces = self.list_black_pieces()
+        list_white_pieces = self.get_list_white_pieces()
+        list_black_pieces = self.get_list_black_pieces()
 
         if piece != None:
             if piece.color == 1:
