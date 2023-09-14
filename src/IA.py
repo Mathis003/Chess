@@ -6,7 +6,7 @@ import numpy
 
 
 #############################################################
-############### DOESN'T WORK FOR THE MOMENT ! ###############
+############### DOESN'T USED FOR THE MOMENT ! ###############
 #############################################################
 
 
@@ -89,11 +89,6 @@ matrix_points_king_white = [
 ]
 
 matrix_points_king_black = list(numpy.array(matrix_points_king_white)[::-1]) # Reverse the matrix
-
-# INUTILE POUR LE MOMENT => CLASSE NON APPELE
-# PLEINS DE BUGS , TOUT REFAIRE => J'AI LAISSER POUR AVOIR UN SQUELETTE SI NECESSAIRE
-
-# Variables
 
 dico_points_pieces_white = {type(Pawn((7, 4), 1, True)): matrix_points_pawn_white,
                             type(Queen((7, 4), 1, True)): matrix_points_queen_white,

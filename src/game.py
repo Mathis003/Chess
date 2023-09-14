@@ -1,6 +1,6 @@
 import math
 from src.assets import *
-from src.all_pieces import Piece, Pawn
+from src.all_pieces import Piece
 from src.pieces import Pieces
 
 class Game:
@@ -9,13 +9,14 @@ class Game:
 
         self.screen = screen
         self.board = board
-        self.pieces = Pieces(self.board, self.board.board_pieces[7][4], self.board.board_pieces[0][4])
-        self.piece = Piece(self.board.board_pieces, [], [], None, None, [], [None, None], 0, True)
         self.sound_button = sound_button
         self.board_color_button = board_color_button
 
-        self.dico_turn = {"turn_white": True, "turn_black": False}
-        self.mouse_just_released = False # Allow to not click after drop the mouse's pression on a random tile and move the Rect on the image of the piece just before (If True = pressed mouse and Rect's moving, if False = no pressing mouse and Rect's not moving)
+        self.pieces = Pieces(self.board, self.board.board_pieces[7][4], self.board.board_pieces[0][4])
+        self.piece = Piece(self.board.board_pieces, [], [], None, None, [], [None, None], 0, True)
+
+        self.white_turn = True
+        self.mouse_just_released = False
         self.mouse_pressed = False
 
         self.running = True
@@ -23,20 +24,21 @@ class Game:
         self.end_menu = False
         self.image_piece_selected = 0 # Type of pieces selected (for the images)
         
-        self.IA = True # Boolean to know if the player is playing against the IA or not (True = against IA, False = against player)
+        self.IA = False
 
-        # Initialization of variables that will be directly change ! (Initialyze random value to prevent errors)
-        self.save_image_tile_clicked = None  # Save the image of the tile clicked => Will be reset the next Turn
-        self.piece_moved = None  # Save the object : Piece that has been moved => Will be reset the next Turn
+        self.pressed_piece_image = None  # Save the image of the pressed piece (to play) => will be reset the next turn
+        self.piece_moved = None  # Save the instance of the piece that has been moved => will be reset the next turn
 
-        self.player_tile_clicked = (-1, -1)  # Tile where the player clicked on the board to begin to play (initialize on (-1, -1) to be out of the board without causing error)
-        self.player_tile_moved = (-1, -1)  # Tile where the player clicked on the board to move (after playing) (initialize on (-1, -1) to be out of the board without causing error)
-        self.list_color_case = [(-1, -1), (-1, -1)]  # List of the color of the case where the player clicked on the board (to have the historic and draw constantly the color until the next player play)
-        self.color_case_waiting = (-1, -1)  # Color of the case where the player clicked on the board (to have the historic and draw constantly the color until the next player play)
+        # (-1, -1) is out of the screen => will be immediatly update when the game begin
+        self.tile_pressed = (-1, -1)
+        self.tile_moved = (-1, -1)
+
+        # To draw the color of the tiles where the player moves (before and after)
+        self.list_colors_player = [(-1, -1), (-1, -1)]
+        self.color_player = (-1, -1)
 
     def draw_pieces(self):
         for piece in self.piece.list_white_pieces + self.piece.list_black_pieces:
-            # If the piece isn't pressed on the board => otherwise the image is None => = "Don't draw it"
             if piece.image != None:
                 self.screen.blit(piece.image, (piece.tile[1] * SIZE_SQUARE, piece.tile[0] * SIZE_SQUARE))
 
@@ -103,12 +105,12 @@ class Game:
                     if ((math.sqrt((initial_pos_mouse[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) > SIZE_SQUARE / 4) and \
                         (math.sqrt((initial_pos_mouse[0] - (self.screen.get_width() - button_changes_boardcolor.get_width() / 2 - 2)) ** 2 + (initial_pos_mouse[1] - 2) ** 2) > SIZE_SQUARE / 4)):
                         if (piece != None):
-                            if (self.dico_turn["turn_white"] and (piece.color == 1)) or \
-                                (self.dico_turn["turn_black"] and (piece.color == -1)):
+                            if (self.white_turn and (piece.color == 1)) or \
+                                (not self.white_turn and (piece.color == -1)):
 
-                                self.player_tile_clicked = tile_clicked
-                                self.list_color_case[0] = tile_clicked
-                                self.save_image_tile_clicked = piece.image
+                                self.tile_pressed = tile_clicked
+                                self.list_colors_player[0] = tile_clicked
+                                self.pressed_piece_image = piece.image
                                 piece.image = None
                                 self.mouse_just_released = True
                     else:
@@ -126,19 +128,15 @@ class Game:
     
     def display_game(self):
         self.board.draw_board(self.board_color_button.mod_board)
-        self.board.draw_tile(self.list_color_case[0], COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
-        self.board.draw_tile(self.list_color_case[1], COLORS_MOVES_BOARD[self.board_color_button.mod_board][False])
-        self.board.draw_tile(self.color_case_waiting, COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
-        self.board.draw_possible_moves(self.player_tile_clicked)
+        self.board.draw_tile(self.list_colors_player[0], COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
+        self.board.draw_tile(self.list_colors_player[1], COLORS_MOVES_BOARD[self.board_color_button.mod_board][False])
+        self.board.draw_tile(self.color_player, COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
+        self.board.draw_possible_moves(self.tile_pressed)
         self.draw_pieces()
 
         mouse_pos = pygame.mouse.get_pos()
         self.board_color_button.activateFunctionButton(mouse_pos)
         self.sound_button.activateFunctionButton(mouse_pos)
-    
-    def change_turn_player(self):
-        self.dico_turn["turn_white"] = not self.dico_turn["turn_white"]
-        self.dico_turn["turn_black"] = not self.dico_turn["turn_black"]
 
     def run(self):
         
@@ -163,28 +161,28 @@ class Game:
 
                     # If the player is playing and choose a tile to move (the mouse is pressed)
                     if self.mouse_pressed and self.mouse_just_released:
-                        if ((self.player_tile_clicked != (-1, -1)) and (self.save_image_tile_clicked != None)):
+                        if ((self.tile_pressed != (-1, -1)) and (self.pressed_piece_image != None)):
                             pos_mouse = pygame.mouse.get_pos()
-                            self.screen.blit(self.save_image_tile_clicked, (pos_mouse[0] - SIZE_SQUARE / 2, pos_mouse[1] - SIZE_SQUARE / 2))
+                            self.screen.blit(self.pressed_piece_image, (pos_mouse[0] - SIZE_SQUARE / 2, pos_mouse[1] - SIZE_SQUARE / 2))
 
                     # If the player has finished to play and has released the mouse (until the player press the mouse again)
                     if not self.mouse_pressed and self.mouse_just_released:
                         self.mouse_just_released = False
                         final_pos_mouse = pygame.mouse.get_pos()
-                        self.player_tile_moved = (final_pos_mouse[1] // SIZE_SQUARE, final_pos_mouse[0] // SIZE_SQUARE)
+                        self.tile_moved = (final_pos_mouse[1] // SIZE_SQUARE, final_pos_mouse[0] // SIZE_SQUARE)
 
                         # If the tile moved is in the list of possible moves of the tile clicked
-                        piece = self.board.board_pieces[self.player_tile_clicked[0]][self.player_tile_clicked[1]]
-                        if self.player_tile_moved in piece.available_moves:
+                        piece = self.board.board_pieces[self.tile_pressed[0]][self.tile_pressed[1]]
+                        if self.tile_moved in piece.available_moves:
 
-                            mod_of_move = piece.move_piece(self.player_tile_clicked, self.player_tile_moved, self.image_piece_selected)
+                            mod_of_move = piece.move_piece(self.tile_pressed, self.tile_moved, self.image_piece_selected)
                             self.piece_moved = piece
-                            self.piece_moved.image = self.save_image_tile_clicked
+                            self.piece_moved.image = self.pressed_piece_image
 
-                            self.change_turn_player()
+                            self.white_turn = not self.white_turn
 
-                            self.list_color_case[1] = self.player_tile_moved
-                            self.color_case_waiting = self.player_tile_clicked
+                            self.list_colors_player[1] = self.tile_moved
+                            self.color_player = self.tile_pressed
 
                             self.pieces.update_available_moves(self.piece_moved)
                             
@@ -200,13 +198,13 @@ class Game:
                                     self.end_menu = True
 
                             self.play_music(mod_of_move)
-                            self.player_tile_clicked = (-1, -1)
+                            self.tile_pressed = (-1, -1)
 
                         # If the tile moved is not in the list of possible moves of the tile clicked
                         else:
-                            piece.image = self.save_image_tile_clicked
-                            self.player_tile_clicked = (-1, -1)
-                            self.list_color_case[0] = (-1, -1)
+                            piece.image = self.pressed_piece_image
+                            self.tile_pressed = (-1, -1)
+                            self.list_colors_player[0] = (-1, -1)
 
                 if self.IA:
                     pass

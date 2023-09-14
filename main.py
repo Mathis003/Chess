@@ -1,20 +1,18 @@
-from src.configs import *
 import pygame
+from src.configs import WIDTH, HEIGHT
 
 pygame.init()
-
-# Create the window
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
 
 from src.assets import black_king_image
+
 pygame.display.set_icon(black_king_image[0])
 
 from src.assets import button_sound_on, button_sound_off, button_sound_rect, button_changes_boardcolor, button_changes_boardcolor_rect
-from src.board import Board # Represent the board (Draw all tiles correctly with the good color)
-from src.button import Sound_Button, BoardColor_Button # Represent the two buttons of the Game to put the sound on/off and to change the board's colors
-from src.game import Game # The game himself with the mainloop function
-
+from src.board import Board
+from src.game import Game
+from src.button import Sound_Button, BoardColor_Button
 
 if __name__ == '__main__':
 
