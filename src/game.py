@@ -26,8 +26,6 @@ class Game:
         self.IA = True # Boolean to know if the player is playing against the IA or not (True = against IA, False = against player)
 
         # Initialization of variables that will be directly change ! (Initialyze random value to prevent errors)
-        self.enter_to_reset_EnPassant = False  # Allow to reset some stuffs for the "En Passant" move
-        self.save_pawn_first_move = None  # Save the object : Pawn that has done, the turn before, his first move => Will be reset the next Turn => Usefull for the "En Passant" rule :)
         self.save_image_tile_clicked = None  # Save the image of the tile clicked => Will be reset the next Turn
         self.piece_moved = None  # Save the object : Piece that has been moved => Will be reset the next Turn
 
@@ -35,6 +33,12 @@ class Game:
         self.player_tile_moved = (-1, -1)  # Tile where the player clicked on the board to move (after playing) (initialize on (-1, -1) to be out of the board without causing error)
         self.list_color_case = [(-1, -1), (-1, -1)]  # List of the color of the case where the player clicked on the board (to have the historic and draw constantly the color until the next player play)
         self.color_case_waiting = (-1, -1)  # Color of the case where the player clicked on the board (to have the historic and draw constantly the color until the next player play)
+
+    def draw_pieces(self):
+        for piece in self.piece.list_white_pieces + self.piece.list_black_pieces:
+            # If the piece isn't pressed on the board => otherwise the image is None => = "Don't draw it"
+            if piece.image != None:
+                self.screen.blit(piece.image, (piece.tile[1] * SIZE_SQUARE, piece.tile[0] * SIZE_SQUARE))
 
     def update_board_all_pieces(self):
         for piece in self.board.list_black_pieces + self.board.list_white_pieces:
@@ -113,7 +117,7 @@ class Game:
         
     def display_menu(self):
         self.board.draw_board(self.board_color_button.mod_board)
-        self.board.draw_pieces()
+        self.draw_pieces()
         self.screen.blit(player_1, player_1_rect_1)
         self.screen.blit(player_2, player_2_rect)
         self.screen.blit(player_1, player_1_rect_2)
@@ -126,7 +130,7 @@ class Game:
         self.board.draw_tile(self.list_color_case[1], COLORS_MOVES_BOARD[self.board_color_button.mod_board][False])
         self.board.draw_tile(self.color_case_waiting, COLORS_MOVES_BOARD[self.board_color_button.mod_board][True])
         self.board.draw_possible_moves(self.player_tile_clicked)
-        self.board.draw_pieces()
+        self.draw_pieces()
 
         mouse_pos = pygame.mouse.get_pos()
         self.board_color_button.activateFunctionButton(mouse_pos)
@@ -194,19 +198,8 @@ class Game:
                                 if self.pieces.stalemate(self.piece_moved):
                                     mod_of_move = "stalemate"
                                     self.end_menu = True
-                                    print("Wtf")
 
                             self.play_music(mod_of_move)
-
-                            if self.enter_to_reset_EnPassant:
-                                self.save_pawn_first_move.just_moved = None
-                                self.enter_to_reset_EnPassant = False
-
-                            if isinstance(self.piece_moved, type(Pawn(None, [], [], None, None, [], [None, None], 0, True))):
-                                if self.piece_moved.just_moved:
-                                    self.enter_to_reset_EnPassant = True
-                                    self.save_pawn_first_move = self.piece_moved
-
                             self.player_tile_clicked = (-1, -1)
 
                         # If the tile moved is not in the list of possible moves of the tile clicked

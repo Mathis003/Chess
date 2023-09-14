@@ -33,12 +33,6 @@ class Board:
     def change_image(self):
         for piece in self.dico_list_pieces[1]:
             piece.current_idx_image = abs(1 - piece.current_idx_image)
-    
-    def draw_pieces(self):
-        for piece in self.list_white_pieces + self.list_black_pieces:
-            # If the piece isn't pressed on the board => otherwise the image is None => = "Don't draw it"
-            if piece.image != None:
-                self.screen.blit(piece.image, (piece.tile[1] * SIZE_SQUARE, piece.tile[0] * SIZE_SQUARE))
 
     def draw_tile(self, tile, color):
         """

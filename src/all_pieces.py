@@ -51,7 +51,6 @@ class Piece:
             self.list_black_pieces.append(piece)
 
     def remove_piece(self, piece):
-        print(self.list_black_pieces)
         if piece != None:
             if piece.color == 1:
                 self.list_white_pieces.remove(piece)
@@ -145,6 +144,18 @@ class Pawn(Piece):
             self.board_pieces[new_tile[0]][new_tile[1]] = new_queen
             return mod_of_move
         else:
+            if (new_tile[0] == 3 or new_tile[0] == 4) and self.first_move:
+                self.just_moved = True
+                self.first_move = False
+            else:
+                self.just_moved = False
+            
+            # If the move is 'en passant'
+            if (self.board_pieces[new_tile[0]][new_tile[1]] == None) and (new_tile[1] != current_tile[1]):
+                piece_eaten = self.board_pieces[new_tile[0] + self.color][new_tile[1]]
+                self.remove_piece(piece_eaten)
+                self.board_pieces[new_tile[0] - self.color][new_tile[1]] = None
+
             return super().move_piece(current_tile, new_tile, idx_image)
         
         
@@ -339,7 +350,6 @@ class Rook(Piece):
 
         # Horizontal moves (Right)
         for i in range(1, COL - self.tile[1]):
-            print(i)
             if RIGHT_ENTER:
                 # If the tile is empty
                 piece = self.board_pieces[self.tile[0]][self.tile[1] + i]
