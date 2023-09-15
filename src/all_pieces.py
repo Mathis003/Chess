@@ -5,10 +5,10 @@ class Pawn(Piece):
 
     def __init__(self, tile, color):
         super().__init__(tile, color)
-        if self.color == 1:
-            self.image = white_pawn_image[0]
-        else:
-            self.image = black_pawn_image[0]
+
+        self.list_image = [white_pawn_image, black_pawn_image]
+        self.images = self.get_image(color, self.list_image)
+        self.image = self.images[0]
 
         self.first_move = True
         self.just_moved = False
@@ -111,10 +111,10 @@ class King(Piece):
 
     def __init__(self, tile, color, rook_left, rook_right):
         super().__init__(tile, color)
-        if self.color == 1:
-            self.image = white_king_image[0]
-        else:
-            self.image = black_king_image[0]
+        
+        self.list_image = [white_king_image, black_king_image]
+        self.images = self.get_image(color, self.list_image)
+        self.image = self.images[0]
 
         self.first_move = True
         self.just_moved = False
@@ -226,10 +226,10 @@ class Knight(Piece):
 
     def __init__(self, tile, color):
         super().__init__(tile, color)
-        if self.color == 1:
-            self.image = white_knight_image[0]
-        else:
-            self.image = black_knight_image[0]
+        
+        self.list_image = [white_knight_image, black_knight_image]
+        self.images = self.get_image(color, self.list_image)
+        self.image = self.images[0]
 
         self.first_move = True
         self.just_moved = False
@@ -264,10 +264,10 @@ class Rook(Piece):
 
     def __init__(self, tile, color):
         super().__init__(tile, color)
-        if self.color == 1:
-            self.image = white_rook_image[0]
-        else:
-            self.image = black_rook_image[0]
+
+        self.list_image = [white_rook_image, black_rook_image]
+        self.images = self.get_image(color, self.list_image)
+        self.image = self.images[0]
 
         self.first_move = True
         self.just_moved = False
@@ -344,10 +344,10 @@ class Bishop(Piece):
 
     def __init__(self, tile, color):
         super().__init__(tile, color)
-        if self.color == 1:
-            self.image = white_bishop_image[0]
-        else:
-            self.image = black_bishop_image[0]
+        
+        self.list_image = [white_bishop_image, black_bishop_image]
+        self.images = self.get_image(color, self.list_image)
+        self.image = self.images[0]
 
         self.first_move = True
         self.just_moved = False
@@ -420,10 +420,10 @@ class Queen(Piece):
 
     def __init__(self, tile, color):
         super().__init__(tile, color)
-        if self.color == 1:
-            self.image = white_queen_image[0]
-        else:
-            self.image = black_queen_image[0]
+       
+        self.list_image = [white_queen_image, black_queen_image]
+        self.images = self.get_image(color, self.list_image)
+        self.image = self.images[0]
 
         self.first_move = True
         self.just_moved = False

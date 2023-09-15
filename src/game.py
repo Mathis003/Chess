@@ -20,7 +20,7 @@ class Game:
         self.running = True
         self.begin_menu = True
         self.end_menu = False
-        self.image_piece_selected = 0 # Type of pieces selected (for the images)
+        self.type_image_piece = 0 # Type of pieces selected (for the images)
         
         self.IA = False
 
@@ -34,6 +34,11 @@ class Game:
         # To draw the color of the tiles where the player moves (before and after)
         self.list_colors_player = [None, None]
         self.color_player = None
+    
+    def change_image(self):
+        for piece in self.piece.get_list_black_pieces() + self.piece.get_list_white_pieces():
+            piece.switch_image(self.type_image_piece)
+        self.type_image_piece = 1 - self.type_image_piece
 
     def play_music(self, mod_of_move):
         if self.sound_button.sound_on:
@@ -68,8 +73,7 @@ class Game:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # If the mouse is clicked on the wheel
                 if event.button == 2:
-                    self.board.change_image(self.image_piece_selected)
-                    self.image_piece_selected = abs(1 - self.image_piece_selected)
+                    self.change_image()
 
                 # If the mouse is clicked on the left button
                 elif ((event.button == 1) and (not self.end_menu)):
@@ -155,7 +159,7 @@ class Game:
                         piece = self.piece.get_board_pieces()[self.tile_pressed[0]][self.tile_pressed[1]]
                         if self.tile_moved in piece.available_moves:
 
-                            mod_of_move = piece.move_piece(self.tile_pressed, self.tile_moved, self.image_piece_selected)
+                            mod_of_move = piece.move_piece(self.tile_pressed, self.tile_moved, self.type_image_piece)
                             self.piece_moved = piece
                             self.piece_moved.image = self.pressed_piece_image
 

@@ -18,6 +18,15 @@ class Piece:
     def get_list_white_pieces(self):
         from src.variables import list_white_pieces
         return list_white_pieces
+
+    def get_image(self, color_piece, list_image):
+        if color_piece == 1:
+            return list_image[0]
+        else:
+            return list_image[1]
+
+    def switch_image(self, current_idx):
+        self.image = self.images[1 - current_idx]
     
     def get_mod_move(self, new_tile):
         board_pieces = self.get_board_pieces()

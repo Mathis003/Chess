@@ -5,10 +5,6 @@ class Board:
     
     def __init__(self, screen):
         self.screen = screen
-        
-    def change_image(self):
-        for piece in self.dico_list_pieces[1]:
-            piece.current_idx_image = abs(1 - piece.current_idx_image)
 
     def draw_tile(self, tile, color):
         pygame.draw.rect(self.screen, color, (tile[1] * SIZE_SQUARE, tile[0] * SIZE_SQUARE, SIZE_SQUARE, SIZE_SQUARE))
