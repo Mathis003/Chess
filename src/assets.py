@@ -60,5 +60,3 @@ check_sound = pygame.mixer.Sound("images/music/Check sound.mp3")
 game_start_sound = pygame.mixer.Sound("images/music/Game-Start sound.mp3")
 checkmate_sound = pygame.mixer.Sound("images/music/Checkmate sound.mp3")
 stalemate_sound = pygame.mixer.Sound("images/music/Stalemate sound.mp3")
-
-MOD_MOVES = {"move" : move_sound, "capture" : capture_sound, "check" : check_sound, "castling" : castling_sound, "checkmate" : checkmate_sound, "stalemate" : stalemate_sound}

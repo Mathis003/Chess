@@ -1,28 +1,26 @@
-import math
 from src.assets import *
-from src.piece import Piece
+import math
 
 class Game:
 
-    def __init__(self, screen, board, sound_button, board_color_button):
+    def __init__(self, screen, piece, board, sound_button, board_color_button):
 
         self.screen = screen
+        self.piece = piece
         self.board = board
         self.sound_button = sound_button
         self.board_color_button = board_color_button
 
-        self.piece = Piece(None, None)
-
-        self.white_turn = True
-        self.mouse_just_released = False
-        self.mouse_pressed = False
-
+        self.IA = False
         self.running = True
         self.begin_menu = True
         self.end_menu = False
+        self.white_turn = True
+
         self.type_image_piece = 0 # Type of pieces selected (for the images)
-        
-        self.IA = False
+
+        self.mouse_pressed = False
+        self.mouse_just_released = False
 
         self.pressed_piece_image = None  # Save the image of the pressed piece (to play) => will be reset the next turn
         self.piece_moved = None  # Save the instance of the piece that has been moved => will be reset the next turn
@@ -42,6 +40,7 @@ class Game:
 
     def play_music(self, mod_of_move):
         if self.sound_button.sound_on:
+            MOD_MOVES = {"move" : move_sound, "capture" : capture_sound, "check" : check_sound, "castling" : castling_sound, "checkmate" : checkmate_sound, "stalemate" : stalemate_sound}
             MOD_MOVES[mod_of_move].play()
 
     def events_menu(self):

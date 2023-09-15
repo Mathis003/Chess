@@ -1,5 +1,8 @@
 from src.all_pieces import Rook, Queen, King, Pawn, Bishop, Knight
-from src.assets import *
+
+"""
+Variables used in almost every file .py
+"""
 
 rook_white_left = Rook((7, 0), 1)
 rook_white_right = Rook((7, 7), 1)
