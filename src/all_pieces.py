@@ -202,7 +202,6 @@ class King(Piece):
         return super().move_piece(current_tile, new_tile, idx_image)
 
 
-
 class Knight(Piece):
 
     def __init__(self, tile, color, available_moves, list_images, current_idx_image, first_move):
