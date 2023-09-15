@@ -44,12 +44,10 @@ class Game:
             MOD_MOVES[mod_of_move].play()
 
     def events_menu(self):
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
                 pygame.quit()
-
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # If the left mouse button is clicked
                 if event.button == 1:
@@ -63,13 +61,12 @@ class Game:
                     game_start_sound.play()
 
     def events_game_without_IA(self):
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
                 pygame.quit()
-
             elif event.type == pygame.MOUSEBUTTONDOWN:
+
                 # If the mouse is clicked on the wheel
                 if event.button == 2:
                     self.change_image()
@@ -119,12 +116,13 @@ class Game:
         self.board_color_button.activateFunctionButton(mouse_pos)
         self.sound_button.activateFunctionButton(mouse_pos)
 
-    def run(self):
-        
-        # Update possible moves for the white player (for the first turn!)
+    def update_moves_first_turn(self):
         for piece in self.piece.get_list_white_pieces():
             piece.update_possible_moves()
 
+    def run(self):
+        
+        self.update_moves_first_turn()
         while self.running:
 
             # If the player is in the menu
@@ -144,48 +142,62 @@ class Game:
 
                     # If the player is playing and choose a tile to move (the mouse is pressed)
                     if self.mouse_pressed and self.mouse_just_released:
+
+                        # If the player clicked on a valid piece
                         if ((self.tile_pressed != None) and (self.pressed_piece_image != None)):
                             pos_mouse = pygame.mouse.get_pos()
                             self.screen.blit(self.pressed_piece_image, (pos_mouse[0] - SIZE_SQUARE / 2, pos_mouse[1] - SIZE_SQUARE / 2))
 
                     # If the player has finished to play and has released the mouse (until the player press the mouse again)
                     if not self.mouse_pressed and self.mouse_just_released:
+
                         self.mouse_just_released = False
                         final_pos_mouse = pygame.mouse.get_pos()
                         self.tile_moved = (final_pos_mouse[1] // SIZE_SQUARE, final_pos_mouse[0] // SIZE_SQUARE)
+                        piece_clicked = self.piece.get_board_pieces()[self.tile_pressed[0]][self.tile_pressed[1]]
 
-                        # If the tile moved is in the list of possible moves of the tile clicked
-                        piece = self.piece.get_board_pieces()[self.tile_pressed[0]][self.tile_pressed[1]]
-                        if self.tile_moved in piece.available_moves:
+                        # If the tile_moved is in the list of possible moves of the piece clicked
+                        if self.tile_moved in piece_clicked.available_moves:
 
-                            mod_of_move = piece.move_piece(self.tile_pressed, self.tile_moved, self.type_image_piece)
-                            self.piece_moved = piece
-                            self.piece_moved.image = self.pressed_piece_image
+                            # Move the piece
+                            mod_of_move = piece_clicked.move_piece(self.tile_pressed, self.tile_moved, self.type_image_piece)
+                            self.piece_moved = piece_clicked
 
+                            ## Update variables ##
                             self.white_turn = not self.white_turn
-
+                            self.piece_moved.image = self.pressed_piece_image
+                            self.tile_pressed = None
                             self.list_colors_player[1] = self.tile_moved
                             self.color_player = self.tile_pressed
 
+                            # Update all the available moves for the new player
                             mod_of_move = self.piece.update_available_moves(self.piece_moved)
 
+                            """
+                            If the game is over (checkmate or stalemate)
+                            - checkmate : the king is in chess and the player can't move any pieces.
+                            - stalemate : the king is NOT in chess but the player can't move any pieces.
+                            """
                             if mod_of_move == "checkmate" or mod_of_move == "stalemate":
                                 self.end_menu = True
 
+                            # Launch the music of the move played
                             self.play_music(mod_of_move)
-                            self.tile_pressed = None
 
-                        # If the tile moved is not in the list of possible moves of the tile clicked
+                        # If the tile_moved isn't in the list of possible moves of the piece clicked
                         else:
-                            piece.image = self.pressed_piece_image
+                            ## Update variables ##
+                            piece_clicked.image = self.pressed_piece_image
                             self.tile_pressed = None
                             self.list_colors_player[0] = None
 
                 if self.IA:
+                    # TODO
                     pass
             
-            # If the player is in the end menu
+            # If the player is in the end menu (end game)
             else:
+                # TODO
                 pass
-
+                    
             pygame.display.update()
