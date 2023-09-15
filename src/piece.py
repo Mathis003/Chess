@@ -22,18 +22,12 @@ class Piece:
         return list_white_pieces
     
     def get_mod_move(self, new_tile):
-        """
-        If the move is 'check' or 'stalemate, the variable will be updated again later.
-        """
         board_pieces = self.get_board_pieces()
 
         if board_pieces[new_tile[0]][new_tile[1]] != None:
             return "capture"
         else:
             return "move"
-    
-    def update_possible_moves(self):
-        return []
 
     def add_piece(self, piece):
 

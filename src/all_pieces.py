@@ -78,6 +78,7 @@ class Pawn(Piece):
             board_pieces[new_tile[0]][new_tile[1]] = new_queen
             board_pieces[current_tile[0]][current_tile[1]] = None
             return mod_of_move
+        
         else:
             if (new_tile[0] == 3 or new_tile[0] == 4) and self.first_move:
                 self.just_moved = True
@@ -89,7 +90,7 @@ class Pawn(Piece):
             if (board_pieces[new_tile[0]][new_tile[1]] == None) and (new_tile[1] != current_tile[1]):
                 piece_eaten = board_pieces[new_tile[0] + self.color][new_tile[1]]
                 self.remove_piece(piece_eaten)
-                board_pieces[new_tile[0] - self.color][new_tile[1]] = None
+                board_pieces[new_tile[0] + self.color][new_tile[1]] = None
 
             return super().move_piece(current_tile, new_tile, idx_image)
         
@@ -309,7 +310,6 @@ class Rook(Piece):
                     RIGHT_ENTER = False 
                 else:
                     RIGHT_ENTER = False 
-
 
 
 class Bishop(Piece):
