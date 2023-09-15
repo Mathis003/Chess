@@ -47,6 +47,35 @@ class Game:
         self.list_colors_player = [None, None]
         self.color_player = None
 
+        import src.variables
+        from src.all_pieces import Rook, Queen, King, Pawn, Bishop, Knight
+
+        rook_white_left = Rook((7, 0), 1)
+        rook_white_right = Rook((7, 7), 1)
+        rook_black_left = Rook((0, 0), -1)
+        rook_black_right = Rook((0, 7), -1)
+
+        src.variables.board_pieces = [[rook_black_left, Knight((0, 1), -1), Bishop((0, 2), -1), Queen((0, 3), -1), King((0, 4), -1, rook_black_left, rook_black_right), Bishop((0, 5), -1), Knight((0, 6), -1), rook_black_right],
+                        [Pawn((1, 0), -1), Pawn((1, 1), -1), Pawn((1, 2), -1), Pawn((1, 3), -1), Pawn((1, 4), -1), Pawn((1, 5), -1), Pawn((1, 6), -1), Pawn((1, 7), -1)],
+                        [None, None, None, None, None, None, None, None],
+                        [None, None, None, None, None, None, None, None],
+                        [None, None, None, None, None, None, None, None],
+                        [None, None, None, None, None, None, None, None],
+                        [Pawn((6, 0), 1), Pawn((6, 1), 1), Pawn((6, 2), 1), Pawn((6, 3), 1), Pawn((6, 4), 1), Pawn((6, 5), 1), Pawn((6, 6), 1), Pawn((6, 7), 1)],
+                        [rook_white_left, Knight((7, 1), 1), Bishop((7, 2), 1), Queen((7, 3), 1), King((7, 4), 1, rook_white_left, rook_white_right), Bishop((7, 5), 1), Knight((7, 6), 1), rook_white_right]]
+
+        src.variables.list_black_pieces = []
+        for i in range(0, 2):
+            for j in range(8):
+                src.variables.list_black_pieces.append(src.variables.board_pieces[i][j])
+
+        src.variables.list_white_pieces = []
+        for i in range(6, 8):
+            for j in range(8):
+                src.variables.list_white_pieces.append(src.variables.board_pieces[i][j])
+        
+        self.update_moves_first_turn()
+
     def change_image(self):
         for piece in self.piece.get_list_black_pieces() + self.piece.get_list_white_pieces():
             piece.switch_image(self.type_image_piece)
