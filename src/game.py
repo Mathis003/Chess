@@ -1,6 +1,8 @@
 from src.assets import *
 import math
 
+# TODO : The sound doesn't work except for check !
+
 class Game:
 
     def __init__(self, screen, piece, board, sound_button, board_color_button):
@@ -84,6 +86,7 @@ class Game:
     def play_music(self, mod_of_move):
         if self.sound_button.sound_on:
             MOD_MOVES = {"move" : move_sound, "capture" : capture_sound, "check" : check_sound, "castling" : castling_sound, "checkmate" : checkmate_sound, "stalemate" : stalemate_sound}
+            print(MOD_MOVES[mod_of_move])
             MOD_MOVES[mod_of_move].play()
 
     def events_menu(self):
