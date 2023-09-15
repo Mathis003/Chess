@@ -135,21 +135,19 @@ class Piece:
         return None
 
 
-    def removes_moves_that_doesnt_protect_king(self, moved_piece, opponent_piece):
+    def removes_moves_that_doesnt_protect_king(self, moved_piece, opponent_piece, piece_that_check):
 
         board_pieces = self.get_board_pieces()
         opponent_king = self.get_king(-moved_piece.color)
-        piece_that_check = self.get_piece_that_check(moved_piece.color)
         list_moves_to_remove = []
 
         # Begin Simulation 1
         board_pieces[opponent_piece.tile[0]][opponent_piece.tile[1]] = None
 
-        if self.king_in_chess(opponent_king):
-            opponent_piece.available_moves = []
-        else:
-            for opponent_move in opponent_piece.available_moves:
-
+        for opponent_move in opponent_piece.available_moves:
+            
+            if opponent_move != piece_that_check.tile:
+            
                 # Begin Simulation 2
                 save_piece_moved_tile = board_pieces[opponent_move[0]][opponent_move[1]]
                 board_pieces[opponent_move[0]][opponent_move[1]] = opponent_piece
@@ -206,7 +204,8 @@ class Piece:
 
                 # If the piece is not the king
                 else:
-                    self.removes_moves_that_doesnt_protect_king(moved_piece, opponent_piece)
+                    piece_that_check = self.get_piece_that_check(moved_piece.color)
+                    self.removes_moves_that_doesnt_protect_king(moved_piece, opponent_piece, piece_that_check)
                 
                 if self.player_cant_move(-moved_piece.color):
                     mod_of_move = "checkmate"
