@@ -3,9 +3,16 @@ from src.piece import Piece
 
 class Pawn(Piece):
 
-    def __init__(self, tile, color, available_moves, list_images, current_idx_image, first_move):
-        super().__init__(tile, color, available_moves, list_images, current_idx_image, first_move)
-        self.just_moved = False # Variable for the special stroke "En Passant"
+    def __init__(self, tile, color):
+        super().__init__(tile, color)
+        if self.color == 1:
+            self.image = white_pawn_image[0]
+        else:
+            self.image = black_pawn_image[0]
+
+        self.first_move = True
+        self.just_moved = False
+        self.available_moves = []
 
     def update_possible_moves(self):
          
@@ -64,12 +71,16 @@ class Pawn(Piece):
         if new_tile[0] == 0 or new_tile[0] == 7:
             mod_of_move = self.get_mod_move(new_tile)
 
-            if self.color == 1:
-                image_queen = white_queen_image
-            else:
-                image_queen = black_queen_image
+            new_queen = Queen(new_tile, self.color)
+            new_queen.first_move = False
 
-            new_queen = Queen(new_tile, self.color, [], image_queen, idx_image, False)
+            if self.color == 1:
+                image_queen = white_queen_image[idx_image]
+            else:
+                image_queen = black_queen_image[idx_image]
+            
+            new_queen.image = image_queen
+
             piece_eaten = board_pieces[new_tile[0]][new_tile[1]]
             if piece_eaten != None:
                 self.remove_piece(piece_eaten)
@@ -93,13 +104,22 @@ class Pawn(Piece):
                 board_pieces[new_tile[0] + self.color][new_tile[1]] = None
 
             return super().move_piece(current_tile, new_tile, idx_image)
-        
 
-        
+    
+
 class King(Piece):
 
-    def __init__(self, tile, color, available_moves, list_images, current_idx_image, first_move, rook_left, rook_right):
-        super().__init__(tile, color, available_moves, list_images, current_idx_image, first_move)
+    def __init__(self, tile, color, rook_left, rook_right):
+        super().__init__(tile, color)
+        if self.color == 1:
+            self.image = white_king_image[0]
+        else:
+            self.image = black_king_image[0]
+
+        self.first_move = True
+        self.just_moved = False
+        self.available_moves = []
+
         self.rook_left = rook_left # Rook at the left of the king
         self.rook_right = rook_right # Rook at the right of the king
 
@@ -204,8 +224,16 @@ class King(Piece):
 
 class Knight(Piece):
 
-    def __init__(self, tile, color, available_moves, list_images, current_idx_image, first_move):
-        super().__init__(tile, color, available_moves, list_images, current_idx_image, first_move)
+    def __init__(self, tile, color):
+        super().__init__(tile, color)
+        if self.color == 1:
+            self.image = white_knight_image[0]
+        else:
+            self.image = black_knight_image[0]
+
+        self.first_move = True
+        self.just_moved = False
+        self.available_moves = []
 
     def update_possible_moves(self):
         
@@ -232,11 +260,18 @@ class Knight(Piece):
                         self.available_moves.append((self.tile[0] + j, self.tile[1] + i))
 
 
-
 class Rook(Piece):
 
-    def __init__(self, tile, color, available_moves, list_images, current_idx_image, first_move):
-        super().__init__(tile, color, available_moves, list_images, current_idx_image, first_move)
+    def __init__(self, tile, color):
+        super().__init__(tile, color)
+        if self.color == 1:
+            self.image = white_rook_image[0]
+        else:
+            self.image = black_rook_image[0]
+
+        self.first_move = True
+        self.just_moved = False
+        self.available_moves = []
 
     def update_possible_moves(self):
          
@@ -307,8 +342,16 @@ class Rook(Piece):
 
 class Bishop(Piece):
 
-    def __init__(self, tile, color, available_moves, list_images, current_idx_image, first_move):
-        super().__init__(tile, color, available_moves, list_images, current_idx_image, first_move)
+    def __init__(self, tile, color):
+        super().__init__(tile, color)
+        if self.color == 1:
+            self.image = white_bishop_image[0]
+        else:
+            self.image = black_bishop_image[0]
+
+        self.first_move = True
+        self.just_moved = False
+        self.available_moves = []
 
     def update_possible_moves(self):
 
@@ -375,17 +418,23 @@ class Bishop(Piece):
 
 class Queen(Piece):
 
-    def __init__(self, tile, color, available_moves, list_images, current_idx_image, first_move):
-        super().__init__(tile, color, available_moves, list_images, current_idx_image, first_move)
+    def __init__(self, tile, color):
+        super().__init__(tile, color)
+        if self.color == 1:
+            self.image = white_queen_image[0]
+        else:
+            self.image = black_queen_image[0]
+
+        self.first_move = True
+        self.just_moved = False
+        self.available_moves = []
 
     def update_possible_moves(self):
 
-        board_pieces = self.get_board_pieces()
-
-        bishop = Bishop(self.tile, self.color, [], [None, None], 0, self.first_move)
+        bishop = Bishop(self.tile, self.color)
         bishop.update_possible_moves()
 
-        rook = Rook(self.tile, self.color, [], [None, None], 0, self.first_move)
+        rook = Rook(self.tile, self.color)
         rook.update_possible_moves()
 
         self.available_moves = (rook.available_moves + bishop.available_moves)

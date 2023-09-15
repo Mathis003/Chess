@@ -13,7 +13,6 @@ from src.assets import *
 from src.board import Board
 from src.game import Game
 from src.button import Sound_Button, BoardColor_Button
-from src.all_pieces import Rook, Queen, King, Pawn, Bishop, Knight
 
 if __name__ == '__main__':
 

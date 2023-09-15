@@ -11,7 +11,7 @@ class Game:
         self.sound_button = sound_button
         self.board_color_button = board_color_button
 
-        self.piece = Piece(None, None, [], [None, None], 0, True)
+        self.piece = Piece(None, None)
 
         self.white_turn = True
         self.mouse_just_released = False
@@ -118,6 +118,10 @@ class Game:
 
     def run(self):
         
+        # Update possible moves for the white player (for the first turn!)
+        for piece in self.piece.get_list_white_pieces():
+            piece.update_possible_moves()
+
         while self.running:
 
             # If the player is in the menu
