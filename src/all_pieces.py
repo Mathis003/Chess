@@ -1,10 +1,16 @@
-from src.assets import *
 from src.piece import Piece
+from src.configs import ROW, COL
+from src.assets import white_pawn_image, black_pawn_image, white_queen_image, \
+                       black_queen_image, white_king_image, black_king_image, \
+                       white_knight_image, black_knight_image, white_rook_image, \
+                       black_rook_image, white_bishop_image, black_bishop_image
 
 class Pawn(Piece):
 
     def __init__(self, tile, color):
-        super().__init__(tile, color)
+
+        self.tile = tile
+        self.color = color
 
         self.list_image = [white_pawn_image, black_pawn_image]
         self.images = self.get_image(color, self.list_image)
@@ -43,9 +49,7 @@ class Pawn(Piece):
         self.move_en_passant()
 
     def move_en_passant(self):
-        """
-        Return a list with the possible "En Passant" move (max 2 possibility).
-        """
+
         board_pieces = self.get_board_pieces()
 
         right_tile = (self.tile[0], self.tile[1] + 1)
@@ -84,6 +88,7 @@ class Pawn(Piece):
             piece_eaten = board_pieces[new_tile[0]][new_tile[1]]
             if piece_eaten != None:
                 self.remove_piece(piece_eaten)
+
             self.remove_piece(self)
             self.add_piece(new_queen)
             board_pieces[new_tile[0]][new_tile[1]] = new_queen
@@ -106,11 +111,12 @@ class Pawn(Piece):
             return super().move_piece(current_tile, new_tile, idx_image)
 
     
-
 class King(Piece):
 
     def __init__(self, tile, color, rook_left, rook_right):
-        super().__init__(tile, color)
+
+        self.tile = tile
+        self.color = color
         
         self.list_image = [white_king_image, black_king_image]
         self.images = self.get_image(color, self.list_image)
@@ -120,8 +126,8 @@ class King(Piece):
         self.just_moved = False
         self.available_moves = []
 
-        self.rook_left = rook_left # Rook at the left of the king
-        self.rook_right = rook_right # Rook at the right of the king
+        self.rook_left = rook_left
+        self.rook_right = rook_right
 
     def update_possible_moves(self):
         
@@ -144,33 +150,27 @@ class King(Piece):
 
     def tiles_empty(self, list_tile):
 
-        board_pieces = self.get_board_pieces()
-
         for tile in list_tile:
-            if board_pieces[tile[0]][tile[1]] != None:
+            if self.get_board_pieces()[tile[0]][tile[1]] != None:
                 return False
         return True
 
     def tiles_chess(self, list_tile):
 
-        list_black_pieces = self.get_list_black_pieces()
-        list_white_pieces = self.get_list_white_pieces()
-
         if self.color == 1:
             list_tile.append((7, 4))
-            list_pieces = list_black_pieces
+            list_pieces = self.get_list_black_pieces()
         else:
             list_tile.append((0, 4))
-            list_pieces = list_white_pieces
+            list_pieces = self.get_list_white_pieces()
 
         for piece in list_pieces:
-            #piece.update_possible_moves()
             for tile in list_tile:
                 if tile in piece.available_moves:
                     return True
         return False
     
-    def castling_aux(self, list_tiles_left, list_tiles_right, tiles_left_append, tiles_right_append):
+    def castling_update(self, list_tiles_left, list_tiles_right, tiles_left_append, tiles_right_append):
          
         if self.first_move:
             if self.rook_left.first_move:
@@ -190,7 +190,7 @@ class King(Piece):
         DICO_TILES = {1 : [[(7, 5), (7, 6)], [(7, 3), (7, 2), (7, 1)], (7, 6), (7, 2)],
                      -1 : [[(0, 5), (0, 6)], [(0, 3), (0, 2), (0, 1)], (0, 6), (0, 2)]}
 
-        self.castling_aux(DICO_TILES[self.color][0], DICO_TILES[self.color][1], DICO_TILES[self.color][2], DICO_TILES[self.color][3])
+        self.castling_update(DICO_TILES[self.color][0], DICO_TILES[self.color][1], DICO_TILES[self.color][2], DICO_TILES[self.color][3])
     
     def move_piece(self, current_tile, new_tile, idx_image):
 
@@ -199,7 +199,6 @@ class King(Piece):
         if self.first_move:
             # Right castling
             if new_tile == (7, 6) or new_tile == (0, 6):
-
                 rook_piece = board_pieces[new_tile[0]][7]
                 board_pieces[new_tile[0]][5] = rook_piece
                 board_pieces[new_tile[0]][7] = None
@@ -225,7 +224,9 @@ class King(Piece):
 class Knight(Piece):
 
     def __init__(self, tile, color):
-        super().__init__(tile, color)
+
+        self.tile = tile
+        self.color = color
         
         self.list_image = [white_knight_image, black_knight_image]
         self.images = self.get_image(color, self.list_image)
@@ -263,7 +264,9 @@ class Knight(Piece):
 class Rook(Piece):
 
     def __init__(self, tile, color):
-        super().__init__(tile, color)
+        
+        self.tile = tile
+        self.color = color
 
         self.list_image = [white_rook_image, black_rook_image]
         self.images = self.get_image(color, self.list_image)
@@ -278,72 +281,65 @@ class Rook(Piece):
         board_pieces = self.get_board_pieces()
         self.available_moves = []
 
-        UP_ENTER = True
-        DOWN_ENTER = True  
-        LEFT_ENTER = True
-        RIGHT_ENTER = True
-
         # Vertical moves (Up)
         for i in range(1, self.tile[0] + 1):
-            if UP_ENTER:
-                # If the tile is empty
-                piece = board_pieces[self.tile[0] - i][self.tile[1]]
-                if piece == None:
-                    self.available_moves.append((self.tile[0] - i, self.tile[1]))
-                # If the tile is occupied by an opponent piece
-                elif piece.color == -self.color:
-                    self.available_moves.append((self.tile[0] - i, self.tile[1]))
-                    UP_ENTER = False
-                else:
-                    UP_ENTER = False
+            # If the tile is empty
+            piece = board_pieces[self.tile[0] - i][self.tile[1]]
+            if piece == None:
+                self.available_moves.append((self.tile[0] - i, self.tile[1]))
+            # If the tile is occupied by an opponent piece
+            elif piece.color == -self.color:
+                self.available_moves.append((self.tile[0] - i, self.tile[1]))
+                break
+            else:
+                break
         
         # Vertical moves (Down)
         for i in  range(1, ROW - self.tile[0]):
-            if DOWN_ENTER:
-                # If the tile is empty
-                piece = board_pieces[self.tile[0] + i][self.tile[1]]
-                if piece == None:
-                    self.available_moves.append((self.tile[0] + i, self.tile[1]))
-                # If the tile is occupied by an opponent piece
-                elif piece.color == - self.color:
-                    self.available_moves.append((self.tile[0] + i, self.tile[1]))  
-                    DOWN_ENTER = False
-                else:
-                    DOWN_ENTER = False
+            # If the tile is empty
+            piece = board_pieces[self.tile[0] + i][self.tile[1]]
+            if piece == None:
+                self.available_moves.append((self.tile[0] + i, self.tile[1]))
+            # If the tile is occupied by an opponent piece
+            elif piece.color == - self.color:
+                self.available_moves.append((self.tile[0] + i, self.tile[1]))  
+                break
+            else:
+                break
 
         # Horizontal moves (Left)
         for i in range(1, self.tile[1] + 1):
-            if LEFT_ENTER:
-                # If the tile is empty
-                piece = board_pieces[self.tile[0]][self.tile[1] - i]
-                if piece == None:
-                    self.available_moves.append((self.tile[0], self.tile[1] - i))
-                # If the tile is occupied by an opponent piece
-                elif piece.color == - self.color:
-                    self.available_moves.append((self.tile[0], self.tile[1] - i))   
-                    LEFT_ENTER = False
-                else:
-                    LEFT_ENTER = False
+            # If the tile is empty
+            piece = board_pieces[self.tile[0]][self.tile[1] - i]
+            if piece == None:
+                self.available_moves.append((self.tile[0], self.tile[1] - i))
+            # If the tile is occupied by an opponent piece
+            elif piece.color == - self.color:
+                self.available_moves.append((self.tile[0], self.tile[1] - i))   
+                break
+            else:
+                break
 
         # Horizontal moves (Right)
         for i in range(1, COL - self.tile[1]):
-            if RIGHT_ENTER:
-                # If the tile is empty
-                piece = board_pieces[self.tile[0]][self.tile[1] + i]
-                if piece == None:
-                    self.available_moves.append((self.tile[0], self.tile[1] + i))
-                # If the tile is occupied by an opponent piece
-                elif piece.color == - self.color:
-                    self.available_moves.append((self.tile[0], self.tile[1] + i))  
-                    RIGHT_ENTER = False 
-                else:
-                    RIGHT_ENTER = False 
+            # If the tile is empty
+            piece = board_pieces[self.tile[0]][self.tile[1] + i]
+            if piece == None:
+                self.available_moves.append((self.tile[0], self.tile[1] + i))
+            # If the tile is occupied by an opponent piece
+            elif piece.color == - self.color:
+                self.available_moves.append((self.tile[0], self.tile[1] + i))  
+                break 
+            else:
+                break 
 
 
 class Bishop(Piece):
 
     def __init__(self, tile, color):
-        super().__init__(tile, color)
+        
+        self.tile = tile
+        self.color = color
         
         self.list_image = [white_bishop_image, black_bishop_image]
         self.images = self.get_image(color, self.list_image)
@@ -415,11 +411,12 @@ class Bishop(Piece):
                     break
 
 
-
 class Queen(Piece):
 
     def __init__(self, tile, color):
-        super().__init__(tile, color)
+        
+        self.tile = tile
+        self.color = color
        
         self.list_image = [white_queen_image, black_queen_image]
         self.images = self.get_image(color, self.list_image)
@@ -431,10 +428,11 @@ class Queen(Piece):
 
     def update_possible_moves(self):
 
+        # Queen = Bishop + Rook
         bishop = Bishop(self.tile, self.color)
-        bishop.update_possible_moves()
-
         rook = Rook(self.tile, self.color)
+
+        bishop.update_possible_moves()
         rook.update_possible_moves()
 
         self.available_moves = (rook.available_moves + bishop.available_moves)

@@ -1,11 +1,4 @@
 class Piece:
-
-    def __init__(self, tile, color):
-        self.tile = tile
-        self.color = color
-        self.available_moves = []
-        self.image = None
-        self.first_move = True
     
     def get_board_pieces(self):
         from src.variables import board_pieces

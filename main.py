@@ -18,7 +18,7 @@ from src.game import Game
 if __name__ == '__main__':
 
     board = Board(screen)
-    piece = Piece(None, None)
+    piece = Piece()
     sound_button = Sound_Button(screen, button_sound_on, button_sound_off, button_sound_rect,
                                 (2 + button_sound_on.get_width() / 2, 2 + button_sound_on.get_width() / 2))
     board_color_button = BoardColor_Button(screen, button_changes_boardcolor, button_changes_boardcolor_rect,
