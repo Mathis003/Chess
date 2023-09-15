@@ -66,7 +66,8 @@ class Piece:
             try:
                 # Test if rook_left is an argument of piece
                 if piece.rook_left == None:
-                    return piece
+                    pass
+                return piece
             except:
                 pass
         return None
@@ -193,7 +194,6 @@ class Piece:
             piece.update_possible_moves()
         
         opponent_king = self.get_king(-moved_piece.color)
-
         # If the opponent king is not in chess
         if not self.king_in_chess(opponent_king):
             self.remove_moves_that_puts_king_in_chess(moved_piece.color)
