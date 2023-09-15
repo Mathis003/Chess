@@ -5,15 +5,17 @@ import math
 
 class Game:
 
-    def __init__(self, screen, piece, board, sound_button, board_color_button):
+    def __init__(self, screen, piece, IA_player, board, sound_button, board_color_button):
 
         self.screen = screen
         self.piece = piece
+        self.IA_player = IA_player
         self.board = board
         self.sound_button = sound_button
         self.board_color_button = board_color_button
 
         self.IA = False
+        self.turn_IA = False
         self.running = True
         self.begin_menu = True
         self.end_menu = False
@@ -207,7 +209,7 @@ class Game:
             elif not self.end_menu:
 
                 # If the player doesn't play against the IA
-                if not self.IA:
+                if (not self.IA) or (not self.turn_IA):
                     self.events_game_without_IA()
                     self.display_game()
 
@@ -242,6 +244,7 @@ class Game:
                             self.tile_pressed = None
                             self.list_colors_player[1] = self.tile_moved
                             self.color_player = self.tile_pressed
+                            self.turn_IA = True
 
                             # Update all the available moves for the new player
                             mod_of_move = self.piece.update_available_moves(self.piece_moved)
@@ -269,8 +272,9 @@ class Game:
                             self.tile_pressed = None
                             self.list_colors_player[0] = None
 
-                if self.IA:
-                    # TODO
+                if self.IA and self.turn_IA:
+                    depth = 3
+                    self.IA_player.IA_move(self.piece_moved, depth)
                     pass
             
             # If the player is in the end menu (end game)
