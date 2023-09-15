@@ -138,16 +138,13 @@ class King(Piece):
 
         if self.color == 1:
             list_tile.append((7, 4))
+            list_pieces = list_black_pieces
         else:
             list_tile.append((0, 4))
-
-        if self.color == 1:
             list_pieces = list_white_pieces
-        else:
-            list_pieces = list_black_pieces
 
         for piece in list_pieces:
-            piece.update_possible_moves()
+            #piece.update_possible_moves()
             for tile in list_tile:
                 if tile in piece.available_moves:
                     return True
@@ -178,31 +175,28 @@ class King(Piece):
     def move_piece(self, current_tile, new_tile, idx_image):
 
         board_pieces = self.get_board_pieces()
-
+    
         if self.first_move:
             # Right castling
             if new_tile == (7, 6) or new_tile == (0, 6):
-                board_pieces[new_tile[0]][6] = board_pieces[new_tile[0]][4]
+
+                rook_piece = board_pieces[new_tile[0]][7]
+                board_pieces[new_tile[0]][5] = rook_piece
                 board_pieces[new_tile[0]][7] = None
-                rook_piece = board_pieces[new_tile[0]][5]
                 rook_piece.tile = (new_tile[0], 5)
                 rook_piece.first_move = False
-                self.first_move = False
-                self.tile = new_tile
+                super().move_piece(current_tile, new_tile, idx_image)
                 return "castling"
 
             # Left castling
             elif new_tile == (7, 2) or new_tile == (0, 2):
-                board_pieces[new_tile[0]][2] = board_pieces[new_tile[0]][4]
+                rook_piece = board_pieces[new_tile[0]][0]
                 board_pieces[new_tile[0]][0] = None
-                rook_piece = board_pieces[new_tile[0]][3]
+                board_pieces[new_tile[0]][3] = rook_piece
                 rook_piece.tile = (new_tile[0], 3)
                 rook_piece.first_move = False
-                self.first_move = False
-                self.tile = new_tile
+                super().move_piece(current_tile, new_tile, idx_image)
                 return "castling"
-            else:
-                self.first_move = False
 
         # Basic move
         return super().move_piece(current_tile, new_tile, idx_image)
