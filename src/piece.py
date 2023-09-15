@@ -22,36 +22,25 @@ class Piece:
         self.image = self.images[1 - current_idx]
     
     def get_mod_move(self, new_tile):
-        board_pieces = self.get_board_pieces()
-
-        if board_pieces[new_tile[0]][new_tile[1]] != None:
+        if self.get_board_pieces()[new_tile[0]][new_tile[1]] != None:
             return "capture"
         else:
             return "move"
 
     def add_piece(self, piece):
-
-        list_white_pieces = self.get_list_white_pieces()
-        list_black_pieces = self.get_list_black_pieces()
-
         if piece.color == 1:
-            list_white_pieces.append(piece)
+            self.get_list_white_pieces().append(piece)
         elif piece.color == -1:
-            list_black_pieces.append(piece)
+            self.get_list_black_pieces().append(piece)
 
     def remove_piece(self, piece):
-
-        list_white_pieces = self.get_list_white_pieces()
-        list_black_pieces = self.get_list_black_pieces()
-
         if piece != None:
             if piece.color == 1:
-                list_white_pieces.remove(piece)
+                self.get_list_white_pieces().remove(piece)
             else:
-                list_black_pieces.remove(piece)
+                self.get_list_black_pieces().remove(piece)
     
     def move_piece(self, current_tile, new_tile, idx_image):
-
         board_pieces = self.get_board_pieces()
 
         mod_of_move = self.get_mod_move(new_tile)
@@ -60,36 +49,29 @@ class Piece:
 
         board_pieces[new_tile[0]][new_tile[1]] = self
         board_pieces[current_tile[0]][current_tile[1]] = None
-
         self.tile = new_tile
 
         if self.first_move:
             self.first_move = False
-
         return mod_of_move
-
     
     def get_list_pieces(self, color_piece):
-
-        list_white_pieces = self.get_list_white_pieces()
-        list_black_pieces = self.get_list_black_pieces()
-
         if color_piece == 1:
-            return list_white_pieces
+            return self.get_list_white_pieces()
         else:
-            return list_black_pieces
+            return self.get_list_black_pieces()
     
     def get_king(self, color):
         for piece in self.get_list_pieces(color):
             try:
-                piece.rook_left
-                return piece
+                # Test if rook_left is an argument of piece
+                if piece.rook_left == None:
+                    return piece
             except:
                 pass
         return None
 
     def get_piece_that_check(self, moved_piece_color):
-
         for piece in self.get_list_pieces(moved_piece_color):
             piece.update_possible_moves()
             if self.get_king(-moved_piece_color).tile in piece.available_moves:
@@ -97,7 +79,6 @@ class Piece:
         return None
 
     def removes_moves_that_doesnt_protect_king(self, moved_piece, opponent_piece, piece_that_check):
-
         board_pieces = self.get_board_pieces()
 
         opponent_king = self.get_king(-moved_piece.color)
@@ -110,9 +91,8 @@ class Piece:
         if self.king_in_chess(opponent_king):
             opponent_piece.available_moves = []
         else:
-
             for opponent_move in opponent_piece.available_moves:
-                
+
                 if opponent_move != piece_that_check.tile:
                 
                     # Begin Simulation 2
@@ -135,19 +115,16 @@ class Piece:
         self.add_piece(piece_that_check)
 
     def player_cant_move(self, piece_color):
-
         for piece in self.get_list_pieces(piece_color):
             if piece.available_moves != []:
                 return False
         return True
 
     def remove_moves_that_puts_king_in_chess(self, moved_piece_color):
-
         board_pieces = self.get_board_pieces()
         opponent_king = self.get_king(-moved_piece_color)
 
         for opponent_piece in self.get_list_pieces(-moved_piece_color):
-
             list_moves_to_remove = []
             for piece in self.get_list_pieces(moved_piece_color):
                 
@@ -156,7 +133,6 @@ class Piece:
 
                     # Begin Simulation 1
                     board_pieces[opponent_piece.tile[0]][opponent_piece.tile[1]] = None
-
                     for move_opponent_piece in opponent_piece.available_moves:
 
                         # Begin Simulation 2
@@ -172,20 +148,17 @@ class Piece:
 
                     # End Simulation 1
                     board_pieces[opponent_piece.tile[0]][opponent_piece.tile[1]] = opponent_piece
-                
 
             for move_to_remove in list_moves_to_remove:
                 opponent_piece.available_moves.remove(move_to_remove) 
     
     def remove_moves_of_king_that_chess_him(self, opponent_king):
-
         board_pieces = self.get_board_pieces()
         list_moves_to_remove = []
 
         # Begin Simulation 1
         board_pieces[opponent_king.tile[0]][opponent_king.tile[1]] = None
         save_opponent_king_tile = opponent_king.tile
-
         for move_opponent_king in opponent_king.available_moves:
             
             # Begin Simulation 2
@@ -207,7 +180,6 @@ class Piece:
             opponent_king.available_moves.remove(move_to_remove)
     
     def king_in_chess(self, king):
-
         for piece in self.get_list_pieces(-king.color):
             piece.update_possible_moves()
             if king.tile in piece.available_moves:
@@ -224,7 +196,6 @@ class Piece:
 
         # If the opponent king is not in chess
         if not self.king_in_chess(opponent_king):
-
             self.remove_moves_that_puts_king_in_chess(moved_piece.color)
             self.remove_moves_of_king_that_chess_him(opponent_king)
 
@@ -237,11 +208,9 @@ class Piece:
         else:
             mod_of_move = "check"
             for opponent_piece in self.get_list_pieces(-moved_piece.color):
-
                 # If the piece is the king himself
                 if opponent_piece == self.get_king(-moved_piece.color):
                     self.remove_moves_of_king_that_chess_him(opponent_piece)
-
                 # If the piece is not the king
                 else:
                     piece_that_check = self.get_piece_that_check(moved_piece.color)
