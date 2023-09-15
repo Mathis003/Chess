@@ -59,20 +59,24 @@ class Pawn(Piece):
     def move_piece(self, current_tile, new_tile, idx_image):
         
         board_pieces = self.get_board_pieces()
-        list_black_pieces = self.get_list_black_pieces()
-        list_white_pieces = self.get_list_white_pieces()
 
         # If the pawn can be promoted into a queen.
         if new_tile[0] == 0 or new_tile[0] == 7:
             mod_of_move = self.get_mod_move(new_tile)
 
-            new_queen = Queen(new_tile, self.color, [], white_queen_image, idx_image, False)
+            if self.color == 1:
+                image_queen = white_queen_image
+            else:
+                image_queen = black_queen_image
+
+            new_queen = Queen(new_tile, self.color, [], image_queen, idx_image, False)
             piece_eaten = board_pieces[new_tile[0]][new_tile[1]]
             if piece_eaten != None:
                 self.remove_piece(piece_eaten)
-            self.remove_piece(board_pieces[current_tile[0]][current_tile[1]])
+            self.remove_piece(self)
             self.add_piece(new_queen)
             board_pieces[new_tile[0]][new_tile[1]] = new_queen
+            board_pieces[current_tile[0]][current_tile[1]] = None
             return mod_of_move
         else:
             if (new_tile[0] == 3 or new_tile[0] == 4) and self.first_move:

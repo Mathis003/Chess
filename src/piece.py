@@ -103,20 +103,13 @@ class Piece:
                 return True
         return False
     
-    def stalemate(self, moved_piece):
-        """
-        Already check that the opponent king is not in chess!
-        """
-        opponent_king = self.get_king(-moved_piece.color)
-        for opponent_piece in self.get_list_pieces(opponent_king.color):
-            if opponent_piece.available_moves != []:
+    def player_cant_move(self, piece_color):
+
+        for piece in self.get_list_pieces(piece_color):
+            if piece.available_moves != []:
                 return False
         return True
 
-    def checkmate(self):
-        """
-        Already check that the opponent king is in chess!
-        """
     
     def defend_checked_king(self, color_to_defend):
 
@@ -146,41 +139,7 @@ class Piece:
                             board_pieces[move_piece[0]][move_piece[1]] =  save_piece_moved_tile
         return can_defend
 
-    def remove_moves_of_king_that_chess_him(self, moved_piece_color):
 
-        board_pieces = self.get_board_pieces()
-
-        # Begin Simulation 1
-        king = self.get_king(moved_piece_color)
-        opponent_king = self.get_king(-moved_piece_color)
-
-        board_pieces[opponent_king.tile[0]][opponent_king.tile[1]] = None
-
-        for piece in self.get_list_pieces(moved_piece_color):
-            for move_opponent_king in opponent_king.available_moves:
-                
-                # Begin Simulation 2
-                save_opponent_king_moved_tile = board_pieces[move_opponent_king.tile[0]][move_opponent_king.tile[1]]
-                board_pieces[move_opponent_king.tile[0]][move_opponent_king.tile[1]] = opponent_king
-
-                king.update_possible_moves()
-                if opponent_king in piece.available_moves:
-                    king.available_moves.remove(opponent_king)
-                
-                # End Simulation 2
-                board_pieces[move_opponent_king.tile[0]][move_opponent_king.tile[1]] =  save_opponent_king_moved_tile
-
-        # End Simulation 1
-        board_pieces[king.tile[0]][king.tile[1]] = opponent_king
-    
-
-    def king_in_chess(self, moved_piece):
-
-        opponent_king = self.get_king(-moved_piece.color)
-        for piece in self.get_list_pieces(moved_piece.color):
-            if opponent_king.tile in piece.available_moves:
-                return True
-        return False
 
     def removes_moves_that_doesnt_protect_king(self, moved_piece):
 
@@ -192,6 +151,7 @@ class Piece:
                     piece = None
                     piece.available_moves.remove(move_piece)
                 else:
+
                     # Begin Simulation 1
                     board_pieces[piece.tile[0]][piece.tile[1]] = None
                     save_piece_moved_tile = board_pieces[move_piece[0]][move_piece[1]]
@@ -221,33 +181,49 @@ class Piece:
             piece.update_possible_moves()
 
         # If the opponent king is not in chess
-        if not self.king_in_chess(moved_piece):
+        if not self.king_in_chess(self.get_king(-moved_piece.color)):
+
             self.remove_moves_that_puts_king_in_chess(moved_piece.color)
+
+            if self.player_cant_move(-moved_piece.color):
+                mod_of_move = "stalemate"
+            else:
+                mod_of_move = self.get_mod_move(moved_piece.tile)
 
         # If the opponent king is in chess
         else:
-            king = self.get_king(moved_piece.color)
+            mod_of_move = "check"
             for opponent_piece in self.get_list_pieces(-moved_piece.color):
 
                 # If the piece is the king himself
-                if opponent_piece == king:
-                    self.remove_moves_of_king_that_chess_him(moved_piece.color)
+                if opponent_piece == self.get_king(-moved_piece.color):
+                    self.remove_moves_of_king_that_chess_him(opponent_piece)
 
                 # If the piece is not the king
                 else:
-                    self.removes_moves_that_doesnt_protect_king(moved_piece)
+                    pass
+                    #self.removes_moves_that_doesnt_protect_king(moved_piece)
+                
+                if self.player_cant_move(-moved_piece.color):
+                    mod_of_move = "checkmate"
+
+        return mod_of_move
         
 
 
     def remove_moves_that_puts_king_in_chess(self, moved_piece_color):
 
+        # PAS ENCORE CORRECT
+
         board_pieces = self.get_board_pieces()
+        opponent_king = self.get_king(-moved_piece_color)
 
-        king = self.get_king(-moved_piece_color)
+        for opponent_piece in self.get_list_pieces(-moved_piece_color):
 
-        for piece in self.get_list_pieces(moved_piece_color):
-            for opponent_piece in self.get_list_pieces(-moved_piece_color):
+            list_moves_to_remove = []
+            for piece in self.get_list_pieces(moved_piece_color):
                 
+                piece.update_possible_moves()
                 if opponent_piece.tile in piece.available_moves:
 
                     # Begin Simulation 1
@@ -258,12 +234,56 @@ class Piece:
                         # Begin Simulation 2
                         save_piece_moved_tile = board_pieces[move_opponent_piece[0]][move_opponent_piece[1]]
                         board_pieces[move_opponent_piece[0]][move_opponent_piece[1]] = opponent_piece
+
                         piece.update_possible_moves()
-                        if king.tile in piece.available_moves:
-                            opponent_piece.available_moves.remove(move_opponent_piece)
+                        if opponent_king.tile in piece.available_moves:
+                            list_moves_to_remove.append(move_opponent_piece)
                         
                         # End Simulation 2
                         board_pieces[move_opponent_piece[0]][move_opponent_piece[1]] = save_piece_moved_tile
 
                     # End Simulation 1
                     board_pieces[opponent_piece.tile[0]][opponent_piece.tile[1]] = opponent_piece
+                
+
+            for move_to_remove in list_moves_to_remove:
+                opponent_piece.available_moves.remove(move_to_remove) 
+
+    
+    def remove_moves_of_king_that_chess_him(self, opponent_king):
+
+        board_pieces = self.get_board_pieces()
+        list_moves_to_remove = []
+
+        # Begin Simulation 1
+        board_pieces[opponent_king.tile[0]][opponent_king.tile[1]] = None
+        save_opponent_king_tile = opponent_king.tile
+
+        for move_opponent_king in opponent_king.available_moves:
+            
+            # Begin Simulation 2
+            save_opponent_king_moved_tile = board_pieces[move_opponent_king[0]][move_opponent_king[1]]
+            board_pieces[move_opponent_king[0]][move_opponent_king[1]] = opponent_king
+            opponent_king.tile = move_opponent_king
+
+            if self.king_in_chess(opponent_king):
+                list_moves_to_remove.append(move_opponent_king)
+
+            # End Simulation 2
+            board_pieces[move_opponent_king[0]][move_opponent_king[1]] =  save_opponent_king_moved_tile
+
+        # End Simulation 1
+        opponent_king.tile = save_opponent_king_tile
+        board_pieces[opponent_king.tile[0]][opponent_king.tile[1]] = opponent_king
+
+        for move_to_remove in list_moves_to_remove:
+            opponent_king.available_moves.remove(move_to_remove)
+    
+
+    def king_in_chess(self, king):
+
+        for piece in self.get_list_pieces(-king.color):
+            piece.update_possible_moves()
+            if king.tile in piece.available_moves:
+                return True
+        return False

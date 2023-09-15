@@ -160,18 +160,10 @@ class Game:
                             self.list_colors_player[1] = self.tile_moved
                             self.color_player = self.tile_pressed
 
-                            self.piece.update_available_moves(self.piece_moved)
-                            
-                            # If the piece put the opponent king in check
-                            if self.piece.opponent_check(self.piece_moved):
-                                mod_of_move = "check"
-                                if not self.piece.defend_checked_king(-self.piece_moved.color):
-                                    mod_of_move = "checkmate"
-                                    self.end_menu = True
-                            else:
-                                if self.piece.stalemate(self.piece_moved):
-                                    mod_of_move = "stalemate"
-                                    self.end_menu = True
+                            mod_of_move = self.piece.update_available_moves(self.piece_moved)
+
+                            if mod_of_move == "checkmate" or mod_of_move == "stalemate":
+                                self.end_menu = True
 
                             self.play_music(mod_of_move)
                             self.tile_pressed = None
