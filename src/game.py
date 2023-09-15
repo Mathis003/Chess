@@ -16,6 +16,7 @@ class Game:
         self.begin_menu = True
         self.end_menu = False
         self.white_turn = True
+        self.winner = 0
 
         self.type_image_piece = 0 # Type of pieces selected (for the images)
 
@@ -33,6 +34,19 @@ class Game:
         self.list_colors_player = [None, None]
         self.color_player = None
     
+    def reset_game(self):
+        self.white_turn = True
+        self.winner = 0
+        self.type_image_piece = 0
+        self.mouse_pressed = False
+        self.mouse_just_released = False
+        self.pressed_piece_image = None
+        self.piece_moved = None
+        self.tile_pressed = None
+        self.tile_moved = None
+        self.list_colors_player = [None, None]
+        self.color_player = None
+
     def change_image(self):
         for piece in self.piece.get_list_black_pieces() + self.piece.get_list_white_pieces():
             piece.switch_image(self.type_image_piece)
@@ -60,6 +74,7 @@ class Game:
                         self.begin_menu = False
                     game_start_sound.play()
 
+
     def events_game_without_IA(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -72,13 +87,13 @@ class Game:
                     self.change_image()
 
                 # If the mouse is clicked on the left button
-                elif ((event.button == 1) and (not self.end_menu)):
+                elif event.button == 1:
                     initial_pos_mouse = pygame.mouse.get_pos()
                     tile_clicked = (initial_pos_mouse[1] // SIZE_SQUARE, initial_pos_mouse[0] // SIZE_SQUARE)
                     piece = self.piece.get_board_pieces()[tile_clicked[0]][tile_clicked[1]]
                     if ((math.sqrt((initial_pos_mouse[0] - (2 + button_sound_on.get_width() / 2)) ** 2 + (initial_pos_mouse[1] - (2 + button_sound_on.get_width() / 2)) ** 2) > SIZE_SQUARE / 4) and \
                         (math.sqrt((initial_pos_mouse[0] - (self.screen.get_width() - button_changes_boardcolor.get_width() / 2 - 2)) ** 2 + (initial_pos_mouse[1] - 2) ** 2) > SIZE_SQUARE / 4)):
-                        if (piece != None):
+                        if ((piece != None) and (not self.end_menu)):
                             if (self.white_turn and (piece.color == 1)) or \
                                 (not self.white_turn and (piece.color == -1)):
 
@@ -90,6 +105,13 @@ class Game:
                     else:
                         self.board_color_button.buttonUpdateClick(initial_pos_mouse)
                         self.sound_button.buttonUpdateClick(initial_pos_mouse)
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    if self.end_menu:
+                        self.end_menu = False
+                        self.begin_menu = True
+                        self.reset_game()
         
     def display_menu(self):
         self.board.draw_board(self.board_color_button.mod_board)
@@ -115,6 +137,25 @@ class Game:
         mouse_pos = pygame.mouse.get_pos()
         self.board_color_button.activateFunctionButton(mouse_pos)
         self.sound_button.activateFunctionButton(mouse_pos)
+    
+    def display_winner(self):
+        if self.winner == 1:
+            winner = "WHITE"
+        elif self.winner == -1:
+            winner = "BLACK"
+        else:
+            winner = "DRAW"
+
+        font = pygame.font.Font(None, 120)
+        texte = font.render(f"WINNER : {winner}", True, (0, 0, 0))
+        texte_rect = texte.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+        self.screen.blit(texte, texte_rect)
+
+        texte = font.render(f"REPLAY : TAP 1", True, (0, 0, 0))
+        texte_rect = texte.get_rect(center=(WIDTH // 2, 100 + HEIGHT // 2))
+        self.screen.blit(texte, texte_rect)
+
+
 
     def update_moves_first_turn(self):
         for piece in self.piece.get_list_white_pieces():
@@ -179,6 +220,11 @@ class Game:
                             - stalemate : the king is NOT in chess but the player can't move any pieces.
                             """
                             if mod_of_move == "checkmate" or mod_of_move == "stalemate":
+                                if mod_of_move == "checkmate":
+                                    if self.white_turn == 0:
+                                        self.winner = 1
+                                    else:
+                                        self.winner = -1
                                 self.end_menu = True
 
                             # Launch the music of the move played
@@ -198,6 +244,8 @@ class Game:
             # If the player is in the end menu (end game)
             else:
                 # TODO
-                pass
-                    
+                self.events_game_without_IA()
+                self.display_game()
+                self.display_winner()
+
             pygame.display.update()
